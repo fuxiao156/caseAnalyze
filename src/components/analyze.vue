@@ -14,7 +14,6 @@
           <div class="section-title">生成结果展示</div>
           
           <div v-if="!analysisData.是否满足深度分析条件" class="warning-box">
-            <div class="status-tag">分析中断提示</div>
             <p class="reason">{{ analysisData.不可分析原因 }}</p>
           </div>
 
@@ -122,9 +121,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 
-const props = defineProps({ visible: Boolean, caseId: String });
+const props = defineProps({ visible: Boolean, caseId: String, analysisData: Object });
 const emit = defineEmits(['close', 'success']);
 
 const analysisData = ref({});
@@ -135,19 +134,7 @@ const annotation = reactive({ is_correct: null, feedback: '' });
 const fetchData = async () => {
   await new Promise(r => setTimeout(r, 300));
   // 模拟数据
-  analysisData.value = {
-    "是否满足深度分析条件": true,
-    "事件成因分析": ["合同条款缺失", "利益分配争议", "法律认知偏差"],
-    "事件画像": ["合同纠纷", "赔偿纠纷"],
-    "多维度分析": [
-      { "维度名": "时间维度", "分析内容": "纠纷起始于2012年，跨度长达5年，具有明显的历史遗留特征。" },
-      { "维度名": "权责维度", "分析内容": "核心争议点在于合同补充协议的法律效力认定不一。" }
-    ],
-    "多要素分析": [
-      { "要素名": "经济要素", "分析内容": "涉及土地补偿金分配，是核心驱动力。", "关键性权重": 0.6 },
-      { "要素名": "心理要素", "分析内容": "双方对调解结果存在预期落差，情绪波动大。", "关键性权重": 0.4 }
-    ]
-  };
+  analysisData.value = props.analysisData;
   metrics.value = { total_evals: 1250, correct_count: 1080, precision: "88.2%", accuracy: "86.4%", recall: "84.5%", f1_score: "0.86" };
 };
 
@@ -160,6 +147,10 @@ const handleSubmmit = async () => {
 };
 
 onMounted(fetchData);
+
+watch(props, (newVal) => {
+  fetchData()
+});
 </script>
 
 <style scoped>
@@ -232,6 +223,20 @@ onMounted(fetchData);
   padding: 20px;
   overflow-y: auto;
   border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.reason{
+  /* 将背景颜色设置浅红色，并添加阴影效果，左侧边框为深一点的红色 */
+  background-color: #ff4d5040;
+  border-left: 3px solid #ff4d4f;
+  color: #ff4d4f;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: lefts;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 5px;
+  padding: 10px;
 }
 
 .section-title {
