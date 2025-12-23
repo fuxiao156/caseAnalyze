@@ -47,6 +47,7 @@
                   <span class="factor-name-tag">{{ factor.要素名 }}</span>
                 </div>
                 <div class="factor-weight-row">
+                  <span class="weight-label">权重:</span>
                   <div class="weight-bar-container">
                     <div class="weight-fill" :style="{ width: (factor.关键性权重 * 100) + '%' }"></div>
                   </div>
@@ -293,6 +294,7 @@ watch(props, (newVal) => {
 
 /* 权重高亮样式 */
 .factor-weight-row { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+.weight-label{color: #88b0ea; width: 40px;}
 .weight-bar-container { flex: 1; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
 .weight-fill { height: 100%; background: linear-gradient(90deg, #0066ff, #00f2ff); box-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
 .weight-highlight-num {
@@ -302,6 +304,7 @@ watch(props, (newVal) => {
 
 .factor-desc{
     margin-bottom: 10px;
+    margin-left:60px;
 }
 
 /* 右侧：高度适配关键区 */
