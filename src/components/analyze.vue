@@ -34,7 +34,7 @@
             </div>
 
             <div class="detail-block">
-              <div class="sub-title">多维度分析 (Dimensions)</div>
+              <div class="sub-module-header">多维度分析 (Dimensions)</div>
               <div v-for="dim in analysisData.多维度分析" :key="dim.维度名" class="dim-item">
                 <span class="dim-name">{{ dim.维度名 }}</span>
                 <span class="dim-content">{{ dim.分析内容 }}</span>
@@ -42,14 +42,16 @@
             </div>
 
             <div class="detail-block">
-              <div class="sub-title">多要素分析 (Factors)</div>
+              <div class="sub-module-header">多要素分析 (Factors)</div>
               <div v-for="factor in analysisData.多要素分析" :key="factor.要素名" class="factor-item">
                 <div class="factor-header">
-                  <span class="factor-name">{{ factor.要素名 }}</span>
-                  <span class="factor-weight">权重: {{ factor.关键性权重 }}</span>
+                  <span class="factor-name-tag">{{ factor.要素名 }}</span>
                 </div>
-                <div class="weight-bar">
-                  <div class="weight-fill" :style="{ width: (factor.关键性权重 * 100) + '%' }"></div>
+                <div class="factor-weight-row">
+                  <div class="weight-bar-container">
+                    <div class="weight-fill" :style="{ width: (factor.关键性权重 * 100) + '%' }"></div>
+                  </div>
+                  <span class="weight-highlight-num">{{ (factor.关键性权重 * 100).toFixed(0) }}%</span>
                 </div>
                 <p class="factor-desc">{{ factor.分析内容 }}</p>
               </div>
@@ -57,7 +59,7 @@
           </div>
         </div>
 
-        <div class="evaluation-section">
+        <div class="evaluation-section  scrollbar-tech">
           <div class="section-title">效能指标与标注</div>
           
           <div class="metrics-grid">
@@ -87,7 +89,7 @@
           <div class="divider"></div>
 
           <div class="annotation-area">
-            <div class="sub-title">人工数据标注</div>
+            <div class="sub-module-header">人工数据标注</div>
             <div class="form-group">
               <label>结论合理性判定</label>
               <div class="radio-group">
@@ -110,6 +112,8 @@
             <button class="submit-btn" @click="handleSubmmit" :disabled="submitting">
               {{ submitting ? '正在同步数据...' : '确认并提交标注' }}
             </button>
+
+            <div style="height: 18px; opacity: 0;">占位符</div>
           </div>
         </div>
       </div>
@@ -257,6 +261,15 @@ onMounted(fetchData);
 .tech-tag.profile { background: rgba(0, 242, 255, 0.1); color: #00f2ff; border: 1px solid rgba(0, 242, 255, 0.3); }
 .tech-tag.cause { background: rgba(255, 207, 64, 0.1); color: #ffcf40; border: 1px solid rgba(255, 207, 64, 0.3); }
 
+.sub-module-header {
+  color: #00f2ff; font-size: 15px; font-weight: 600; margin: 25px 0 15px 0;
+  display: flex; align-items: center;
+}
+.sub-module-header::after {
+  content: ""; flex: 1; height: 1px; margin-left: 15px;
+  background: linear-gradient(90deg, rgba(0, 242, 255, 0.3), transparent);
+}
+
 .dim-item {
   background: rgba(255, 255, 255, 0.04);
   padding: 12px;
@@ -266,8 +279,25 @@ onMounted(fetchData);
 .dim-name { color: #00f2ff; font-weight: bold; margin-right: 12px; }
 .dim-content { color: #cfd9e5; font-size: 13px; line-height: 1.5; }
 
-.weight-bar { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; margin: 10px 0; overflow: hidden; }
-.weight-fill { height: 100%; background: linear-gradient(90deg, #0066ff, #00f2ff); border-radius: 3px; }
+/* 要素名高亮 */
+.factor-name-tag {
+  background: rgba(0, 242, 255, 0.1);
+  color: #00f2ff; padding: 4px 12px; border-radius: 6px;
+  font-size: 13px; font-weight: bold; border: 1px solid rgba(0, 242, 255, 0.2);
+}
+
+/* 权重高亮样式 */
+.factor-weight-row { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
+.weight-bar-container { flex: 1; height: 8px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; }
+.weight-fill { height: 100%; background: linear-gradient(90deg, #0066ff, #00f2ff); box-shadow: 0 0 10px rgba(0, 242, 255, 0.5); }
+.weight-highlight-num {
+  min-width: 45px; color: #00f2ff; font-family: 'Courier New', Courier, monospace;
+  font-weight: bold; font-size: 16px; text-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+}
+
+.factor-desc{
+    margin-bottom: 10px;
+}
 
 /* 右侧：高度适配关键区 */
 .evaluation-section {
@@ -277,7 +307,7 @@ onMounted(fetchData);
   border-radius: 12px;
   padding: 20px;
   border: 1px solid rgba(0, 242, 255, 0.1);
-  overflow: hidden;
+  overflow-y: scroll;
 }
 
 .metrics-grid {
@@ -293,11 +323,19 @@ onMounted(fetchData);
   text-align: center;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+    border-color: rgba(0, 242, 255, 0.4);
+    background: rgba(0, 242, 255, 0.05); 
 }
 
-.metric-card.highlight { border-color: rgba(0, 242, 255, 0.4); box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.1); }
 .metric-card .num { font-size: 22px; color: #00f2ff; font-weight: bold; }
 .metric-card .name { font-size: 11px; color: #88b0ea; text-transform: uppercase; margin-top: 4px; }
+
+.count-info{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
 
 /* 标注表单：占据剩余高度 */
 .annotation-area {
@@ -346,20 +384,15 @@ onMounted(fetchData);
 }
 
 .submit-btn {
-  width: 100%;
-  padding: 14px;
-  margin-top: 15px;
-  border-radius: 8px;
-  background: linear-gradient(180deg, #0096ff, #0055ff);
-  border: none;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 85, 255, 0.3);
+  width: 80%; padding: 14px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #0066ff, #00f2ff);
+  color: white; font-weight: bold; font-size: 16px; cursor: pointer;
+  box-shadow: 0 5px 20px rgba(0, 102, 255, 0.4);
+  margin-left: 10%;
+  margin-bottom: 20px;
 }
 
-.submit-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-.submit-btn:active { transform: translateY(0); }
+.submit-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
 /* 滚动条美化 */
 .scrollbar-tech::-webkit-scrollbar { width: 4px; }
