@@ -1,12 +1,12 @@
 <template>
-  <div v-if="visible" class="tech-modal-mask">
+  <div v-if="visible" class="tech-modal-mask" @click.self="$emit('close')">
     <div class="tech-modal-container">
       <div class="modal-header">
         <div class="header-title">
           <span class="icon-pulse"></span>
-          大模型生成信息分析与评估系统
+          <span class="title-text">AI 语义分析与标注效能评估</span>
         </div>
-        <button class="close-btn" @click="$emit('close')">×</button>
+        <button class="close-btn" @click="$emit('close')">✕</button>
       </div>
 
       <div class="modal-body">
@@ -14,7 +14,7 @@
           <div class="section-title">生成结果展示</div>
           
           <div v-if="!analysisData.是否满足深度分析条件" class="warning-box">
-            <div class="status-tag">分析终止</div>
+            <div class="status-tag">分析中断提示</div>
             <p class="reason">{{ analysisData.不可分析原因 }}</p>
           </div>
 
@@ -22,14 +22,14 @@
             <div class="info-card">
               <div class="label">事件画像</div>
               <div class="tag-group">
-                <span v-for="tag in analysisData.事件画像" :key="tag" class="tech-tag">{{ tag }}</span>
+                <span v-for="tag in analysisData.事件画像" :key="tag" class="tech-tag profile">{{ tag }}</span>
               </div>
             </div>
 
             <div class="info-card">
-              <div class="label">核心成因</div>
+              <div class="label">核心成因分析</div>
               <div class="tag-group">
-                <span v-for="cause in analysisData.事件成因分析" :key="cause" class="cause-tag">{{ cause }}</span>
+                <span v-for="cause in analysisData.事件成因分析" :key="cause" class="tech-tag cause">{{ cause }}</span>
               </div>
             </div>
 
@@ -58,7 +58,7 @@
         </div>
 
         <div class="evaluation-section">
-          <div class="section-title">评估指标与标注</div>
+          <div class="section-title">效能指标与标注</div>
           
           <div class="metrics-grid">
             <div class="metric-card">
@@ -80,8 +80,8 @@
           </div>
 
           <div class="count-info">
-            <span>总评价数: <b>{{ metrics.total_evals }}</b></span>
-            <span>正确数: <b>{{ metrics.correct_count }}</b></span>
+            <span>样本总计: <b>{{ metrics.total_evals }}</b></span>
+            <span>正确匹配: <b>{{ metrics.correct_count }}</b></span>
           </div>
 
           <div class="divider"></div>
@@ -89,24 +89,26 @@
           <div class="annotation-area">
             <div class="sub-title">人工数据标注</div>
             <div class="form-group">
-              <label>结论是否合理？</label>
+              <label>结论合理性判定</label>
               <div class="radio-group">
                 <button 
-                  :class="['opt-btn', annotation.is_correct === true ? 'active' : '']"
+                  :class="['opt-btn', annotation.is_correct === true ? 'active-yes' : '']"
                   @click="annotation.is_correct = true"
-                >准确</button>
+                >准确 / 合理</button>
                 <button 
-                  :class="['opt-btn', annotation.is_correct === false ? 'active' : '']"
+                  :class="['opt-btn', annotation.is_correct === false ? 'active-no' : '']"
                   @click="annotation.is_correct = false"
-                >有误</button>
+                >存在偏差</button>
               </div>
             </div>
-            <div class="form-group">
-              <label>详细评价 / 修正意见</label>
-              <textarea v-model="annotation.feedback" placeholder="请输入您的评价内容..." class="tech-input"></textarea>
+            
+            <div class="form-group flex-fill">
+              <label>修正评价意见</label>
+              <textarea v-model="annotation.feedback" placeholder="请在此输入您的专业评价或修正建议..." class="tech-input"></textarea>
             </div>
+
             <button class="submit-btn" @click="handleSubmmit" :disabled="submitting">
-              {{ submitting ? '提交中...' : '提交标注' }}
+              {{ submitting ? '正在同步数据...' : '确认并提交标注' }}
             </button>
           </div>
         </div>
@@ -116,318 +118,251 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 
-const props = defineProps({
-  visible: Boolean,
-  caseId: String
-});
-
+const props = defineProps({ visible: Boolean, caseId: String });
 const emit = defineEmits(['close', 'success']);
 
-// --- 数据状态 ---
 const analysisData = ref({});
 const metrics = ref({});
 const submitting = ref(false);
-const annotation = reactive({
-  is_correct: null,
-  feedback: ''
-});
+const annotation = reactive({ is_correct: null, feedback: '' });
 
-// --- Mock 接口 1: 获取数据 ---
 const fetchData = async () => {
-  // 模拟 API 请求延迟
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  // 这里返回您提供的 4.1 结构作为示例
+  await new Promise(r => setTimeout(r, 300));
+  // 模拟数据
   analysisData.value = {
     "是否满足深度分析条件": true,
-    "不可分析原因": null,
     "事件成因分析": ["合同条款缺失", "利益分配争议", "法律认知偏差"],
     "事件画像": ["合同纠纷", "赔偿纠纷"],
     "多维度分析": [
-      { "维度名": "时间维度", "分析内容": "土地互换发生在2012年，土地征用发生在2017年..." },
-      { "维度名": "权责维度", "分析内容": "合同未明确约定补偿款归属，导致双方分歧。" }
+      { "维度名": "时间维度", "分析内容": "纠纷起始于2012年，跨度长达5年，具有明显的历史遗留特征。" },
+      { "维度名": "权责维度", "分析内容": "核心争议点在于合同补充协议的法律效力认定不一。" }
     ],
     "多要素分析": [
-      { "要素名": "经济要素", "分析内容": "土地补偿金共计40万元，是核心利益。", "关键性权重": 0.6 },
-      { "要素名": "社会要素", "分析内容": "农村土地承包法规是调解依据。", "关键性权重": 0.3 }
+      { "要素名": "经济要素", "分析内容": "涉及土地补偿金分配，是核心驱动力。", "关键性权重": 0.6 },
+      { "要素名": "心理要素", "分析内容": "双方对调解结果存在预期落差，情绪波动大。", "关键性权重": 0.4 }
     ]
   };
-
-  metrics.value = {
-    total_evals: 1250,
-    correct_count: 1080,
-    precision: "88.2%",
-    accuracy: "86.4%",
-    recall: "84.5%",
-    f1_score: "86.3"
-  };
+  metrics.value = { total_evals: 1250, correct_count: 1080, precision: "88.2%", accuracy: "86.4%", recall: "84.5%", f1_score: "0.86" };
 };
 
-// --- Mock 接口 2: 提交标注 ---
 const handleSubmmit = async () => {
-  if (annotation.is_correct === null) {
-    alert("请先选择是否合理");
-    return;
-  }
-  
+  if (annotation.is_correct === null) return alert("请先进行合理性判定");
   submitting.value = true;
-  console.log("提交的标注数据:", { caseId: props.caseId, ...annotation });
-  
-  // 模拟请求
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
+  await new Promise(r => setTimeout(r, 600));
   submitting.value = false;
-  alert("标注提交成功！");
-  emit('success');
   emit('close');
 };
 
-onMounted(() => {
-  fetchData();
-});
+onMounted(fetchData);
 </script>
 
 <style scoped>
-/* 科技感深蓝配色变量 */
-:host {
-  --bg-dark: #060c20;
-  --panel-blue: rgba(16, 35, 78, 0.8);
-  --border-cyan: #00f2ff;
-  --text-main: #e0f7ff;
-  --accent-gold: #ffcf40;
-}
-
+/* 全局变量：模糊感配色 */
 .tech-modal-mask {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
+  inset: 0;
+  background: rgba(4, 10, 25, 0.9);
+  backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
-  font-family: 'Microsoft YaHei', sans-serif;
+  z-index: 1000;
 }
 
+/* 窗体：加大尺寸 + 大圆角 + 柔化边框 */
 .tech-modal-container {
-  width: 90%;
-  max-width: 1200px;
-  height: 80vh;
-  background: #060c20;
-  border: 1px solid #1a5cad;
-  box-shadow: 0 0 20px rgba(0, 150, 255, 0.5);
-  position: relative;
+  width: 92vw;
+  height: 85vh;
+  background: linear-gradient(145deg, #0a1633 0%, #050a19 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 242, 255, 0.15);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 242, 255, 0.05);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-/* 装饰线条 */
-.tech-modal-container::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 2px;
-  background: linear-gradient(90deg, transparent, #00f2ff, transparent);
-}
-
 .modal-header {
-  height: 60px;
-  padding: 0 20px;
-  background: rgba(26, 92, 173, 0.3);
+  height: 65px;
+  padding: 0 30px;
+  background: rgba(255, 255, 255, 0.03);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #1a5cad;
+  border-bottom: 1px solid rgba(0, 242, 255, 0.1);
 }
 
-.header-title {
-  color: #00f2ff;
+.title-text {
   font-size: 20px;
   font-weight: bold;
-  letter-spacing: 2px;
-  display: flex;
-  align-items: center;
+  color: #fff;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
 }
 
 .icon-pulse {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
   background: #00f2ff;
   border-radius: 50%;
   margin-right: 12px;
   box-shadow: 0 0 10px #00f2ff;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(0.9); opacity: 0.7; }
-  50% { transform: scale(1.2); opacity: 1; }
-  100% { transform: scale(0.9); opacity: 0.7; }
+  display: inline-block;
 }
 
 .modal-body {
   flex: 1;
   display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  overflow: hidden;
+  grid-template-columns: 1.4fr 1fr;
+  padding: 25px;
+  gap: 25px;
+  overflow: hidden; /* 内部区域自滚动 */
+}
+
+/* 左侧：内容卡片化与圆角 */
+.content-section {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
   padding: 20px;
-  gap: 20px;
+  overflow-y: auto;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .section-title {
   color: #00f2ff;
   font-size: 16px;
-  margin-bottom: 15px;
-  padding-left: 10px;
-  border-left: 4px solid #00f2ff;
+  margin-bottom: 20px;
+  padding-left: 12px;
+  border-left: 3px solid #00f2ff;
 }
 
-.sub-title {
-  color: #88b0ea;
-  font-size: 14px;
-  margin: 15px 0 10px 0;
+.info-card {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
 }
 
-/* 左侧滚动区 */
-.content-section {
-  background: rgba(16, 35, 78, 0.4);
-  padding: 20px;
-  border-radius: 4px;
-  overflow-y: auto;
-}
-
-.warning-box {
-  border: 1px dashed #ff4d4f;
-  background: rgba(255, 77, 79, 0.1);
-  padding: 20px;
-  text-align: center;
-}
-
-.status-tag { color: #ff4d4f; font-weight: bold; margin-bottom: 10px; }
-.reason { color: #ccc; }
+.label { color: #88b0ea; font-size: 13px; margin-bottom: 10px; }
 
 .tech-tag {
-  background: rgba(0, 242, 255, 0.1);
-  border: 1px solid #00f2ff;
-  color: #00f2ff;
-  padding: 4px 12px;
-  margin-right: 8px;
+  padding: 4px 14px;
+  border-radius: 15px;
   font-size: 12px;
+  margin-right: 10px;
+  display: inline-block;
 }
-
-.cause-tag {
-  background: rgba(255, 207, 64, 0.1);
-  border: 1px solid #ffcf40;
-  color: #ffcf40;
-  padding: 4px 12px;
-  margin-right: 8px;
-  font-size: 12px;
-}
+.tech-tag.profile { background: rgba(0, 242, 255, 0.1); color: #00f2ff; border: 1px solid rgba(0, 242, 255, 0.3); }
+.tech-tag.cause { background: rgba(255, 207, 64, 0.1); color: #ffcf40; border: 1px solid rgba(255, 207, 64, 0.3); }
 
 .dim-item {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 10px;
-  margin-bottom: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
+.dim-name { color: #00f2ff; font-weight: bold; margin-right: 12px; }
+.dim-content { color: #cfd9e5; font-size: 13px; line-height: 1.5; }
 
-.dim-name { color: #00f2ff; font-weight: bold; margin-right: 15px; }
-.dim-content { color: #b0c4de; font-size: 13px; }
+.weight-bar { height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; margin: 10px 0; overflow: hidden; }
+.weight-fill { height: 100%; background: linear-gradient(90deg, #0066ff, #00f2ff); border-radius: 3px; }
 
-.factor-item {
-  margin-bottom: 15px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.factor-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
-.weight-bar { height: 4px; background: #1a3a63; margin: 8px 0; }
-.weight-fill { height: 100%; background: linear-gradient(90deg, #00f2ff, #0066ff); }
-
-/* 右侧评估区 */
+/* 右侧：高度适配关键区 */
 .evaluation-section {
-  background: rgba(16, 35, 78, 0.6);
+  display: flex;
+  flex-direction: column; /* 纵向排列 */
+  background: rgba(16, 35, 78, 0.3);
+  border-radius: 12px;
   padding: 20px;
-  border-left: 1px solid #1a5cad;
+  border: 1px solid rgba(0, 242, 255, 0.1);
+  overflow: hidden;
 }
 
 .metrics-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
   margin-bottom: 20px;
 }
 
 .metric-card {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.2);
   padding: 15px;
   text-align: center;
-  border: 1px solid #1a3a63;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.metric-card.highlight { border-color: #00f2ff; box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.2); }
-.metric-card .num { font-size: 24px; color: #00f2ff; font-family: 'Arial'; }
-.metric-card .name { font-size: 12px; color: #88b0ea; }
+.metric-card.highlight { border-color: rgba(0, 242, 255, 0.4); box-shadow: inset 0 0 10px rgba(0, 242, 255, 0.1); }
+.metric-card .num { font-size: 22px; color: #00f2ff; font-weight: bold; }
+.metric-card .name { font-size: 11px; color: #88b0ea; text-transform: uppercase; margin-top: 4px; }
 
-.count-info {
+/* 标注表单：占据剩余高度 */
+.annotation-area {
+  flex: 1;
   display: flex;
-  justify-content: space-between;
-  color: #ccc;
-  font-size: 13px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  min-height: 0; /* 防止溢出 */
 }
 
-.divider { height: 1px; background: rgba(255,255,255,0.1); margin: 20px 0; }
+.form-group { margin-bottom: 18px; }
+.form-group.flex-fill {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-/* 标注表单 */
-.form-group { margin-bottom: 20px; }
 .form-group label { display: block; color: #88b0ea; margin-bottom: 10px; font-size: 14px; }
 
-.radio-group { display: flex; gap: 10px; }
+.radio-group { display: flex; gap: 12px; }
 .opt-btn {
   flex: 1;
-  padding: 8px;
-  background: transparent;
-  border: 1px solid #1a5cad;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #88b0ea;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.opt-btn.active {
-  background: #1a5cad;
-  color: white;
-  border-color: #00f2ff;
-}
+.opt-btn.active-yes { border-color: #00f2ff; color: #fff; background: rgba(0, 242, 255, 0.15); box-shadow: 0 0 10px rgba(0, 242, 255, 0.1); }
+.opt-btn.active-no { border-color: #ff4d4f; color: #fff; background: rgba(255, 77, 79, 0.15); }
 
 .tech-input {
   width: 100%;
-  height: 100px;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid #1a5cad;
-  color: white;
-  padding: 10px;
+  flex: 1; /* 自动撑满表单剩余空间 */
+  min-height: 80px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  padding: 12px;
   box-sizing: border-box;
+  resize: none;
+  font-family: inherit;
 }
 
 .submit-btn {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
+  margin-top: 15px;
+  border-radius: 8px;
   background: linear-gradient(180deg, #0096ff, #0055ff);
   border: none;
   color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: 0.3s;
+  box-shadow: 0 4px 15px rgba(0, 85, 255, 0.3);
 }
 
-.submit-btn:hover { filter: brightness(1.2); }
-.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.submit-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.submit-btn:active { transform: translateY(0); }
 
 /* 滚动条美化 */
 .scrollbar-tech::-webkit-scrollbar { width: 4px; }
-.scrollbar-tech::-webkit-scrollbar-thumb { background: #1a5cad; }
-.close-btn { background: none; border: none; color: #88b0ea; font-size: 24px; cursor: pointer; }
+.scrollbar-tech::-webkit-scrollbar-thumb { background: rgba(0, 242, 255, 0.2); border-radius: 10px; }
+.close-btn { background: none; border: none; color: #88b0ea; font-size: 20px; cursor: pointer; }
 </style>
