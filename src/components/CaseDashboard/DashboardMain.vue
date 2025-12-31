@@ -1,75 +1,77 @@
 <template>
   <div v-if="visible" class="dashboard-root">
-    <!-- 头部：大屏标题与全局指标 -->
-    <header class="dashboard-header">
-      <div class="header-title">案件全维度监测分析系统</div>
-      <div class="header-meta">
-        <span class="meta-item">Acc: {{ metrics.accuracy }}</span>
-        <span class="meta-item">F1: {{ metrics.f1_score }}</span>
-        <button class="close-btn" @click="$emit('close')">✕</button>
-      </div>
-    </header>
-
-    <div class="dashboard-body">
-      <!-- 左侧：多要素 (1/3 宽度) - 仅包含 1.1 和 1.2 -->
-      <aside class="dashboard-left">
-        <!-- 1.1 事件画像与成因分析 -->
-        <EventFactorCard 
-          :profiling="analysisData.事件画像" 
-          :causes="analysisData.核心成因分析" 
-        />
-        
-        <!-- 1.2 要素雷达图 -->
-        <FactorRadarCard 
-          :data="analysisData.要素雷达数据"
-          :active-factor="activeFactorName"
-          @select-factor="handleFactorSelect"
-        />
-      </aside>
-
-      <!-- 右侧：多维度展示 (2/3 宽度) - 上中下结构 -->
-      <main class="dashboard-right-container">
-        <!-- 2.1 维度选择 (上部分) -->
-        <div class="right-top-nav">
-          <DimensionSwitch 
-            :dimensions="analysisData.维度配置" 
-            v-model:active-id="activeDimensionId"
-          />
+    <div class="dashboard-scale-wrapper" :style="scaleStyle">
+      <!-- 头部：大屏标题与全局指标 -->
+      <header class="dashboard-header">
+        <div class="header-title">案件全维度监测分析系统</div>
+        <div class="header-meta">
+          <span class="meta-item">Acc: {{ metrics.accuracy }}</span>
+          <span class="meta-item">F1: {{ metrics.f1_score }}</span>
+          <button class="close-btn" @click="$emit('close')">✕</button>
         </div>
+      </header>
 
-        <!-- 维度详情 (中部分) -->
-        <div class="right-middle-content">
-          <Transition name="fade-content" mode="out-in">
-            <!-- 时间维度 -->
-            <TimeDimensionCard 
-              v-if="activeDimensionId === 'time'"
-              :data="analysisData.时间维度数据"
-              :focused-time="focusedTime"
+      <div class="dashboard-body">
+        <!-- 左侧：多要素 (1/3 宽度) - 仅包含 1.1 和 1.2 -->
+        <aside class="dashboard-left">
+          <!-- 1.1 事件画像与成因分析 -->
+          <EventFactorCard 
+            :profiling="analysisData.事件画像" 
+            :causes="analysisData.核心成因分析" 
+          />
+          
+          <!-- 1.2 要素雷达图 -->
+          <FactorRadarCard 
+            :data="analysisData.要素雷达数据"
+            :active-factor="activeFactorName"
+            @select-factor="handleFactorSelect"
+          />
+        </aside>
+
+        <!-- 右侧：多维度展示 (2/3 宽度) - 上中下结构 -->
+        <main class="dashboard-right-container">
+          <!-- 2.1 维度选择 (上部分) -->
+          <div class="right-top-nav">
+            <DimensionSwitch 
+              :dimensions="analysisData.维度配置" 
+              v-model:active-id="activeDimensionId"
             />
-            
-            <!-- 其他维度占位 -->
-            <div v-else class="placeholder-card-large">
-              {{ analysisData.维度配置?.find(d => d.id === activeDimensionId)?.name }} 维度详情分析中...
-            </div>
-          </Transition>
-        </div>
+          </div>
 
-        <!-- 要素模块横向轮播 (下部分) -->
-        <div class="right-bottom-carousel">
-          <FactorCarousel 
-            :factors="analysisData.要素详情"
-            :active-factor-name="activeFactorName"
-            :psychology-data="analysisData.心理情绪数据"
-            @focus-timeline="handleFocusTimeline"
-          />
-        </div>
-      </main>
+          <!-- 维度详情 (中部分) -->
+          <div class="right-middle-content">
+            <Transition name="fade-content" mode="out-in">
+              <!-- 时间维度 -->
+              <TimeDimensionCard 
+                v-if="activeDimensionId === 'time'"
+                :data="analysisData.时间维度数据"
+                :focused-time="focusedTime"
+              />
+              
+              <!-- 其他维度占位 -->
+              <div v-else class="placeholder-card-large">
+                {{ analysisData.维度配置?.find(d => d.id === activeDimensionId)?.name }} 维度详情分析中...
+              </div>
+            </Transition>
+          </div>
+
+          <!-- 要素模块横向轮播 (下部分) -->
+          <div class="right-bottom-carousel">
+            <FactorCarousel 
+              :factors="analysisData.要素详情"
+              :active-factor-name="activeFactorName"
+              :psychology-data="analysisData.心理情绪数据"
+              @focus-timeline="handleFocusTimeline"
+            />
+          </div>
+        </main>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import EventFactorCard from './EventFactorCard.vue';
 import DimensionSwitch from './DimensionSwitch.vue';
 import TimeDimensionCard from './TimeDimensionCard.vue';
@@ -85,6 +87,39 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close']);
+
+// 设计稿尺寸
+const DESIGN_WIDTH = 1820;
+const DESIGN_HEIGHT = 880;
+
+const scale = ref(1);
+
+const updateScale = () => {
+  const ww = window.innerWidth / DESIGN_WIDTH;
+  const wh = window.innerHeight / DESIGN_HEIGHT;
+  // 取最小比例，确保内容完整显示（等比例缩放，会有黑边）
+  scale.value = ww < wh ? ww : wh;
+};
+
+const scaleStyle = computed(() => ({
+  width: `${DESIGN_WIDTH}px`,
+  height: `${DESIGN_HEIGHT}px`,
+  transform: `scale(${scale.value}) translate(-50%, -50%)`,
+  position: 'absolute',
+  left: '50%',
+  top: '50%',
+  transformOrigin: '0 0',
+  transition: 'transform 0.1s ease-out'
+}));
+
+onMounted(() => {
+  updateScale();
+  window.addEventListener('resize', updateScale);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateScale);
+});
 
 const metrics = ref({ accuracy: '86.4%', f1_score: '0.86' });
 const activeDimensionId = ref('time'); // 默认选中时间维度
@@ -109,12 +144,15 @@ const handleFocusTimeline = (time) => {
   width: 100vw;
   height: 100vh;
   background: radial-gradient(circle at center, #0a1b3e 0%, #050a19 100%);
-  display: flex;
-  flex-direction: column;
   color: #fff;
   z-index: 2000;
   overflow: hidden;
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+.dashboard-scale-wrapper {
+  display: flex;
+  flex-direction: column;
 }
 
 .dashboard-header {
@@ -125,10 +163,11 @@ const handleFocusTimeline = (time) => {
   align-items: center;
   background: linear-gradient(180deg, rgba(0, 242, 255, 0.1) 0%, transparent 100%);
   border-bottom: 2px solid rgba(0, 242, 255, 0.2);
+  flex-shrink: 0;
 }
 
 .header-title {
-  font-size: 26px;
+  font-size: 20px;
   font-weight: 900;
   letter-spacing: 2px;
   text-shadow: 0 0 15px rgba(0, 242, 255, 0.6);

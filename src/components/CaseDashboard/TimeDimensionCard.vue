@@ -95,7 +95,7 @@ const selectNode = (idx) => {
 
 .card-title {
   color: #00f2ff;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
   margin-bottom: 15px;
   border-left: 4px solid #00f2ff;

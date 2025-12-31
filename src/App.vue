@@ -67,9 +67,6 @@ onMounted(() => {
   <div class="app-container">
     <div class="controls">
       <button class="switch-btn" @click="dataIndex = (dataIndex+1)%analysisData.length">切换数据</button>
-      <button class="toggle-dash-btn" @click="showNewDashboard = !showNewDashboard">
-        {{ showNewDashboard ? '切换至旧版' : '查看新版大屏' }}
-      </button>
     </div>
 
     <!-- 旧版分析页面 -->
