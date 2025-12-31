@@ -28,7 +28,7 @@
 
     <!-- 2.2.2 交互：显示关联要素 -->
     <Transition name="fade-slide">
-      <div v-if="activeNodeIdx !== null" class="associated-factors">
+      <div v-if="activeNodeIdx !== null && data.timeline[activeNodeIdx]" class="associated-factors">
         <div class="factor-header">关联要素分析 ({{ data.timeline[activeNodeIdx].date }})</div>
         <div class="factor-tags">
           <span 
@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
   data: {
@@ -52,10 +52,28 @@ const props = defineProps({
       summary: '',
       timeline: []
     })
-  }
+  },
+  focusedTime: String
 });
 
-const activeNodeIdx = ref(0); // 默认选中第一个
+const emit = defineEmits(['update:focusedTime']);
+
+const activeNodeIdx = ref(0); 
+
+// 监听数据变化，重置索引
+watch(() => props.data.timeline, (newTimeline) => {
+  if (activeNodeIdx.value >= newTimeline.length) {
+    activeNodeIdx.value = newTimeline.length > 0 ? 0 : null;
+  }
+}, { deep: true });
+
+// 监听外部时间聚焦
+watch(() => props.focusedTime, (newTime) => {
+  if (newTime) {
+    const idx = props.data.timeline.findIndex(n => n.date === newTime);
+    if (idx > -1) activeNodeIdx.value = idx;
+  }
+});
 
 const selectNode = (idx) => {
   activeNodeIdx.value = idx;

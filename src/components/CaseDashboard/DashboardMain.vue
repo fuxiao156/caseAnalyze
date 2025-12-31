@@ -19,11 +19,20 @@
           :causes="analysisData.核心成因分析" 
         />
         
-        <!-- 1.2 要素雷达图 (未来集成) -->
-        <div class="placeholder-card">1.2 要素雷达图区</div>
+        <!-- 1.2 要素雷达图 -->
+        <FactorRadarCard 
+          :data="analysisData.要素雷达数据"
+          :active-factor="activeFactorName"
+          @select-factor="handleFactorSelect"
+        />
         
-        <!-- 其他要素 (未来集成) -->
-        <div class="placeholder-card">其他要素区</div>
+        <!-- 1.3 - 1.9 要素详细块 -->
+        <FactorDetailBlocks 
+          :factors="analysisData.要素详情"
+          :active-factor-name="activeFactorName"
+          :psychology-data="analysisData.心理情绪数据"
+          @focus-timeline="handleFocusTimeline"
+        />
       </aside>
 
       <!-- 右侧：多维度展示 (2/3 宽度) -->
@@ -38,6 +47,7 @@
         <TimeDimensionCard 
           v-if="activeDimensions.includes('time')"
           :data="analysisData.时间维度数据"
+          :focused-time="focusedTime"
         />
         
         <!-- 2.3 - 2.6 其他维度 (未来集成) -->
@@ -52,6 +62,8 @@ import { ref, onMounted } from 'vue';
 import EventFactorCard from './EventFactorCard.vue';
 import DimensionSwitch from './DimensionSwitch.vue';
 import TimeDimensionCard from './TimeDimensionCard.vue';
+import FactorRadarCard from './FactorRadarCard.vue';
+import FactorDetailBlocks from './FactorDetailBlocks.vue';
 
 const props = defineProps({
   visible: Boolean,
@@ -64,11 +76,21 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const metrics = ref({ accuracy: '86.4%', f1_score: '0.86' });
-const activeDimensions = ref(['time', 'duty']); // 默认开启维度
+const activeDimensions = ref(['time', 'duty']); 
+const activeFactorName = ref('');
+const focusedTime = ref('');
 
-onMounted(() => {
-  // 初始化逻辑
-});
+const handleFactorSelect = (name) => {
+  activeFactorName.value = name;
+};
+
+const handleFocusTimeline = (time) => {
+  focusedTime.value = time;
+  // 如果时间维度未开启，则开启
+  if (!activeDimensions.value.includes('time')) {
+    activeDimensions.value.push('time');
+  }
+};
 </script>
 
 <style scoped>
