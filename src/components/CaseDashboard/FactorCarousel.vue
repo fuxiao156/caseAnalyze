@@ -1,6 +1,11 @@
 <template>
   <div class="factor-carousel dashboard-card">
-    <div class="card-title">要素详细拆解 (Factor Details)</div>
+    <div class="card-title-row">
+      <div class="card-title">要素详细拆解 (Factor Details)</div>
+      <button class="eval-trigger-btn" @click="$emit('open-eval', '要素详细拆解', 'factor-details')">
+        <span class="eval-icon">📊</span> 评测
+      </button>
+    </div>
     
     <div class="accordion-container">
       <div class="accordion-wrapper">
@@ -64,7 +69,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['focus-timeline']);
+const emit = defineEmits(['focus-timeline', 'open-eval']);
 
 const openIds = ref([]);
 
@@ -119,14 +124,44 @@ const getIntensityColor = (intensity) => {
   overflow: hidden; /* 防止内容溢出导致高度跳变 */
 }
 
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex: 0 0 auto;
+}
+
 .card-title {
   color: #00f2ff;
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 12px;
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
-  flex: 0 0 auto;
+  margin-bottom: 0;
+}
+
+.eval-trigger-btn {
+  background: rgba(0, 242, 255, 0.1);
+  border: 1px solid rgba(0, 242, 255, 0.3);
+  color: #00f2ff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+}
+
+.eval-trigger-btn:hover {
+  background: rgba(0, 242, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+}
+
+.eval-icon {
+  font-size: 14px;
 }
 
 .accordion-container {

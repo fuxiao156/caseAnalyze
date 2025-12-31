@@ -1,6 +1,11 @@
 <template>
   <div class="radar-card dashboard-card">
-    <div class="card-title">全要素冲突权重分析 (Factor Analysis)</div>
+    <div class="card-title-row">
+      <div class="card-title">全要素冲突权重分析 (Factor Analysis)</div>
+      <button class="eval-trigger-btn" @click="$emit('open-eval', '全要素权重分析', 'factor-radar')">
+        <span class="eval-icon">📊</span> 评测
+      </button>
+    </div>
     <div class="radar-content">
       <!-- 雷达图容器 -->
       <div ref="radarRef" class="radar-chart"></div>
@@ -38,7 +43,7 @@ const props = defineProps({
   activeFactor: String
 });
 
-const emit = defineEmits(['select-factor']);
+const emit = defineEmits(['select-factor', 'open-eval']);
 
 const radarRef = ref(null);
 let myChart = null;
@@ -115,14 +120,44 @@ window.addEventListener('resize', () => myChart?.resize());
   flex-direction: column;
 }
 
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex: 0 0 auto;
+}
+
 .card-title {
   color: #00f2ff;
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 15px;
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
-  flex: 0 0 auto;
+  margin-bottom: 0;
+}
+
+.eval-trigger-btn {
+  background: rgba(0, 242, 255, 0.1);
+  border: 1px solid rgba(0, 242, 255, 0.3);
+  color: #00f2ff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+}
+
+.eval-trigger-btn:hover {
+  background: rgba(0, 242, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+}
+
+.eval-icon {
+  font-size: 14px;
 }
 
 .radar-content {

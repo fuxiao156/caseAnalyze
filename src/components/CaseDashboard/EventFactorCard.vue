@@ -1,6 +1,11 @@
 <template>
   <div class="factor-card dashboard-card">
-    <div class="card-title">事件画像与成因分析</div>
+    <div class="card-title-row">
+      <div class="card-title">事件画像与成因分析</div>
+      <button class="eval-trigger-btn" @click="$emit('open-eval', '事件画像与成因分析', 'event-factor')">
+        <span class="eval-icon">📊</span> 评测
+      </button>
+    </div>
     
     <!-- 上部：事件画像标签 -->
     <div class="tag-section top">
@@ -56,6 +61,8 @@ const props = defineProps({
     default: () => []
   }
 });
+
+const emit = defineEmits(['open-eval']);
 
 const profilePieRef = ref(null);
 const causePieRef = ref(null);
@@ -184,14 +191,44 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   flex-direction: column;
 }
 
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex: 0 0 auto;
+}
+
 .card-title {
   color: #00f2ff;
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 15px;
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
-  flex: 0 0 auto;
+  margin-bottom: 0;
+}
+
+.eval-trigger-btn {
+  background: rgba(0, 242, 255, 0.1);
+  border: 1px solid rgba(0, 242, 255, 0.3);
+  color: #00f2ff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+}
+
+.eval-trigger-btn:hover {
+  background: rgba(0, 242, 255, 0.2);
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
+}
+
+.eval-icon {
+  font-size: 14px;
 }
 
 .mini-label {

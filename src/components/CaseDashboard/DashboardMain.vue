@@ -18,6 +18,7 @@
           <EventFactorCard 
             :profiling="analysisData.事件画像" 
             :causes="analysisData.核心成因分析" 
+            @open-eval="openEval"
           />
           
           <!-- 1.2 要素雷达图 -->
@@ -25,6 +26,7 @@
             :data="analysisData.要素雷达数据"
             :active-factor="activeFactorName"
             @select-factor="handleFactorSelect"
+            @open-eval="openEval"
           />
         </aside>
 
@@ -46,6 +48,7 @@
                 v-if="activeDimensionId === 'time'"
                 :data="analysisData.时间维度数据"
                 :focused-time="focusedTime"
+                @open-eval="openEval"
               />
               
               <!-- 其他维度占位 -->
@@ -62,11 +65,22 @@
               :active-factor-name="activeFactorName"
               :psychology-data="analysisData.心理情绪数据"
               @focus-timeline="handleFocusTimeline"
+              @open-eval="openEval"
             />
           </div>
         </main>
       </div>
     </div>
+
+    <!-- 评估 Modal -->
+    <AnnotationModal
+      v-if="evalModalVisible"
+      :visible="evalModalVisible"
+      :sectionName="activeSection.name"
+      :sectionId="activeSection.id"
+      @close="evalModalVisible = false"
+      @submit="handleEvalSubmit"
+    />
   </div>
 </template>
 
@@ -77,6 +91,7 @@ import DimensionSwitch from './DimensionSwitch.vue';
 import TimeDimensionCard from './TimeDimensionCard.vue';
 import FactorRadarCard from './FactorRadarCard.vue';
 import FactorCarousel from './FactorCarousel.vue';
+import AnnotationModal from '../AnnotationModal.vue';
 
 const props = defineProps({
   visible: Boolean,
@@ -87,6 +102,21 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close']);
+
+// 评估 Modal 状态
+const evalModalVisible = ref(false);
+const activeSection = ref({ name: '', id: '' });
+
+const openEval = (name, id) => {
+  activeSection.value = { name, id };
+  evalModalVisible.value = true;
+};
+
+const handleEvalSubmit = (data) => {
+  console.log('提交评估数据:', data);
+  // 这里可以添加将评估数据保存到后端的逻辑
+  evalModalVisible.value = false;
+};
 
 // 设计稿尺寸
 const DESIGN_WIDTH = 1820;
