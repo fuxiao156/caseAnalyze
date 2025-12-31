@@ -47,8 +47,14 @@ import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import * as echarts from 'echarts';
 
 const props = defineProps({
-  profiling: Array,
-  causes: Array
+  profiling: {
+    type: Array,
+    default: () => []
+  },
+  causes: {
+    type: Array,
+    default: () => []
+  }
 });
 
 const profilePieRef = ref(null);
@@ -136,11 +142,11 @@ const startRotation = () => {
   rotationTimer = setInterval(() => {
     // 如果 5 秒内没有操作，则轮播
     if (Date.now() - lastInteractionTime.value > 5000) {
-      if (props.profiling) {
+      if (props.profiling && props.profiling.length > 0) {
         activeProfileIdx.value = (activeProfileIdx.value + 1) % props.profiling.length;
         updateProfileChart();
       }
-      if (props.causes) {
+      if (props.causes && props.causes.length > 0) {
         activeCauseIdx.value = (activeCauseIdx.value + 1) % props.causes.length;
         updateCauseChart();
       }
@@ -173,21 +179,25 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   padding: 20px;
   position: relative;
   box-shadow: inset 0 0 20px rgba(0, 242, 255, 0.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-title {
   color: #00f2ff;
   font-size: 18px;
   font-weight: bold;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
+  flex: 0 0 auto;
 }
 
 .mini-label {
   color: #88b0ea;
   font-size: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   opacity: 0.8;
 }
 
@@ -228,8 +238,9 @@ watch(() => props.causes, updateCauseChart, { deep: true });
 
 .charts-row {
   display: flex;
-  height: 180px;
-  margin: 20px 0;
+  flex: 1; /* 让图表区域自适应填充 */
+  min-height: 120px;
+  margin: 15px 0;
 }
 
 .chart-container {
@@ -237,17 +248,20 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
 }
 
 .pie-chart {
   width: 100%;
   flex: 1;
+  min-height: 0;
 }
 
 .chart-label {
   font-size: 11px;
   color: #88b0ea;
   margin-top: 5px;
+  flex: 0 0 auto;
 }
 
 .tag-section {

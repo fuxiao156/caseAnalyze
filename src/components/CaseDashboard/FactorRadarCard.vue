@@ -31,7 +31,10 @@ import { ref, onMounted, watch, nextTick } from 'vue';
 import * as echarts from 'echarts';
 
 const props = defineProps({
-  data: Array,
+  data: {
+    type: Array,
+    default: () => []
+  },
   activeFactor: String
 });
 
@@ -107,6 +110,9 @@ window.addEventListener('resize', () => myChart?.resize());
   border: 1px solid rgba(0, 242, 255, 0.15);
   border-radius: 8px;
   padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-title {
@@ -116,12 +122,14 @@ window.addEventListener('resize', () => myChart?.resize());
   margin-bottom: 15px;
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
+  flex: 0 0 auto;
 }
 
 .radar-content {
   display: flex;
-  height: 220px;
+  flex: 1; /* 填充可用高度 */
   align-items: center;
+  min-height: 0;
 }
 
 .radar-chart {
@@ -133,8 +141,11 @@ window.addEventListener('resize', () => myChart?.resize());
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  justify-content: center;
+  gap: 8px;
   padding-left: 20px;
+  height: 100%;
+  overflow-y: auto;
 }
 
 .weight-item {
@@ -143,6 +154,7 @@ window.addEventListener('resize', () => myChart?.resize());
   border-radius: 4px;
   transition: all 0.3s;
   border: 1px solid transparent;
+  flex: 0 0 auto;
 }
 
 .weight-item:hover {

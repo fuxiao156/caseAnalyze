@@ -11,7 +11,7 @@
     </header>
 
     <div class="dashboard-body">
-      <!-- 左侧：多要素 (1/3 宽度) -->
+      <!-- 左侧：多要素 (1/3 宽度) - 仅包含 1.1 和 1.2 -->
       <aside class="dashboard-left">
         <!-- 1.1 事件画像与成因分析 -->
         <EventFactorCard 
@@ -25,45 +25,56 @@
           :active-factor="activeFactorName"
           @select-factor="handleFactorSelect"
         />
-        
-        <!-- 1.3 - 1.9 要素详细块 -->
-        <FactorDetailBlocks 
-          :factors="analysisData.要素详情"
-          :active-factor-name="activeFactorName"
-          :psychology-data="analysisData.心理情绪数据"
-          @focus-timeline="handleFocusTimeline"
-        />
       </aside>
 
-      <!-- 右侧：多维度展示 (2/3 宽度) -->
-      <main class="dashboard-right">
-        <!-- 2.1 维度列表开关 -->
-        <DimensionSwitch 
-          :dimensions="analysisData.维度配置" 
-          v-model:active-ids="activeDimensions"
-        />
+      <!-- 右侧：多维度展示 (2/3 宽度) - 上中下结构 -->
+      <main class="dashboard-right-container">
+        <!-- 2.1 维度选择 (上部分) -->
+        <div class="right-top-nav">
+          <DimensionSwitch 
+            :dimensions="analysisData.维度配置" 
+            v-model:active-id="activeDimensionId"
+          />
+        </div>
 
-        <!-- 2.2 时间维度 -->
-        <TimeDimensionCard 
-          v-if="activeDimensions.includes('time')"
-          :data="analysisData.时间维度数据"
-          :focused-time="focusedTime"
-        />
-        
-        <!-- 2.3 - 2.6 其他维度 (未来集成) -->
-        <div v-if="activeDimensions.includes('duty')" class="placeholder-card-large">2.5 权责维度展示区</div>
+        <!-- 维度详情 (中部分) -->
+        <div class="right-middle-content">
+          <Transition name="fade-content" mode="out-in">
+            <!-- 时间维度 -->
+            <TimeDimensionCard 
+              v-if="activeDimensionId === 'time'"
+              :data="analysisData.时间维度数据"
+              :focused-time="focusedTime"
+            />
+            
+            <!-- 其他维度占位 -->
+            <div v-else class="placeholder-card-large">
+              {{ analysisData.维度配置?.find(d => d.id === activeDimensionId)?.name }} 维度详情分析中...
+            </div>
+          </Transition>
+        </div>
+
+        <!-- 要素模块横向轮播 (下部分) -->
+        <div class="right-bottom-carousel">
+          <FactorCarousel 
+            :factors="analysisData.要素详情"
+            :active-factor-name="activeFactorName"
+            :psychology-data="analysisData.心理情绪数据"
+            @focus-timeline="handleFocusTimeline"
+          />
+        </div>
       </main>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import EventFactorCard from './EventFactorCard.vue';
 import DimensionSwitch from './DimensionSwitch.vue';
 import TimeDimensionCard from './TimeDimensionCard.vue';
 import FactorRadarCard from './FactorRadarCard.vue';
-import FactorDetailBlocks from './FactorDetailBlocks.vue';
+import FactorCarousel from './FactorCarousel.vue';
 
 const props = defineProps({
   visible: Boolean,
@@ -76,7 +87,7 @@ const props = defineProps({
 const emit = defineEmits(['close']);
 
 const metrics = ref({ accuracy: '86.4%', f1_score: '0.86' });
-const activeDimensions = ref(['time', 'duty']); 
+const activeDimensionId = ref('time'); // 默认选中时间维度
 const activeFactorName = ref('');
 const focusedTime = ref('');
 
@@ -86,10 +97,8 @@ const handleFactorSelect = (name) => {
 
 const handleFocusTimeline = (time) => {
   focusedTime.value = time;
-  // 如果时间维度未开启，则开启
-  if (!activeDimensions.value.includes('time')) {
-    activeDimensions.value.push('time');
-  }
+  // 聚焦时间线时，确保维度切回时间维度
+  activeDimensionId.value = 'time';
 };
 </script>
 
@@ -146,22 +155,46 @@ const handleFocusTimeline = (time) => {
   overflow: hidden;
 }
 
-.dashboard-left, .dashboard-right {
+.dashboard-left {
   display: flex;
   flex-direction: column;
   gap: 20px;
   height: 100%;
 }
 
-.placeholder-card {
-  background: rgba(16, 35, 78, 0.4);
-  border: 1px solid rgba(0, 242, 255, 0.1);
-  height: 200px;
+.dashboard-left > * {
+  flex: 1;
+  min-height: 0; /* 允许子项在 flex 容器中收缩 */
+}
+
+.dashboard-right-container {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.right-top-nav {
+  flex: 0 0 auto;
+}
+
+.right-middle-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 确保 TimeDimensionCard 或占位符填充父容器 */
+.right-middle-content > * {
+  flex: 1;
+  height: 100%;
+}
+
+.right-bottom-carousel {
+  flex: 0 0 280px; /* 增加固定高度，防止交互时抖动 */
+  min-height: 0;
 }
 
 .placeholder-card-large {
@@ -184,4 +217,12 @@ const handleFocusTimeline = (time) => {
   padding: 5px;
 }
 .close-btn:hover { color: #fff; }
+
+/* 切换动画 */
+.fade-content-enter-active, .fade-content-leave-active {
+  transition: all 0.3s ease;
+}
+.fade-content-enter-from { opacity: 0; transform: translateX(20px); }
+.fade-content-leave-to { opacity: 0; transform: translateX(-20px); }
 </style>
+

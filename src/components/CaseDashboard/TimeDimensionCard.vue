@@ -88,6 +88,9 @@ const selectNode = (idx) => {
   padding: 20px;
   position: relative;
   box-shadow: inset 0 0 20px rgba(0, 242, 255, 0.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-title {
@@ -97,14 +100,16 @@ const selectNode = (idx) => {
   margin-bottom: 15px;
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
+  flex: 0 0 auto;
 }
 
 .dimension-summary {
   background: rgba(255, 255, 255, 0.03);
-  padding: 15px;
+  padding: 12px 15px;
   border-radius: 6px;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  flex: 0 0 auto;
 }
 
 .dimension-summary p {
@@ -116,14 +121,19 @@ const selectNode = (idx) => {
 
 .timeline-wrapper {
   overflow-x: auto;
-  padding: 20px 0;
-  margin-bottom: 20px;
+  padding: 15px 0;
+  margin-bottom: 15px;
+  flex: 1; /* 让时间轴区域自适应 */
+  display: flex;
+  align-items: center;
+  min-height: 0;
 }
 
 .timeline-horizontal {
   display: flex;
   min-width: max-content;
   padding: 0 40px;
+  align-items: center;
 }
 
 .timeline-node-box {
@@ -133,6 +143,7 @@ const selectNode = (idx) => {
   width: 180px;
   cursor: pointer;
   transition: all 0.3s;
+  flex: 0 0 auto;
 }
 
 .node-time {
@@ -182,6 +193,7 @@ const selectNode = (idx) => {
   text-align: center;
   padding: 0 10px;
   transition: all 0.3s;
+  max-width: 160px;
 }
 
 .timeline-node-box.active .node-event {
@@ -195,7 +207,9 @@ const selectNode = (idx) => {
   background: linear-gradient(135deg, rgba(0, 242, 255, 0.1) 0%, transparent 100%);
   border: 1px solid rgba(0, 242, 255, 0.2);
   border-radius: 8px;
-  padding: 15px;
+  padding: 12px 15px;
+  flex: 0 0 auto;
+  min-height: 80px; /* 固定最小高度，防止点击节点时高度抖动 */
 }
 
 .factor-header {
