@@ -233,6 +233,18 @@ watch(() => props.data, () => {
 </script>
 
 <style scoped>
+.dashboard-card {
+  background: rgba(16, 35, 78, 0.4);
+  border: 1px solid rgba(0, 242, 255, 0.15);
+  border-radius: 8px;
+  padding: 20px;
+  position: relative;
+  box-shadow: inset 0 0 20px rgba(0, 242, 255, 0.05);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .responsibility-dimension {
   height: 100%;
   display: flex;
@@ -474,9 +486,10 @@ watch(() => props.data, () => {
 /* 托盘平台 */
 .pan-platform {
   position: absolute;
-  top: 0;
-  width: 140px; /* 缩小宽度 */
+  top: 75px; /* 缩短为 75px */
+  width: 140px;
   transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center -75px; /* 同步调整旋转中心 */
 }
 
 .left-platform { left: 50px; }
@@ -519,10 +532,10 @@ watch(() => props.data, () => {
 
 .connection-line {
   position: absolute;
-  top: -150px; 
+  top: -75px; 
   left: 50%;
   width: 1px;
-  height: 150px;
+  height: 75px;
   background: rgba(0, 242, 255, 0.5);
 }
 
