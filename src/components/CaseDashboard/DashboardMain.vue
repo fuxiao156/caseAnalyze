@@ -41,7 +41,7 @@
           </div>
 
           <!-- 维度详情 (中部分) -->
-          <div class="right-middle-content">
+          <div class="right-middle-content" :class="{ 'full-height': activeDimensionId === 'duty' }">
             <Transition name="fade-content" mode="out-in">
               <!-- 时间维度 -->
               <TimeDimensionCard 
@@ -49,6 +49,14 @@
                 :data="analysisData.时间维度数据"
                 :focused-time="focusedTime"
                 @open-eval="openEval"
+              />
+
+              <!-- 权责维度 (占据右侧全部) -->
+              <ResponsibilityDimension
+                v-else-if="activeDimensionId === 'duty'"
+                :data="analysisData.权责维度数据"
+                @open-eval="openEval"
+                @highlight-factor="handleFactorSelect"
               />
               
               <!-- 其他维度占位 -->
@@ -58,8 +66,8 @@
             </Transition>
           </div>
 
-          <!-- 要素模块横向轮播 (下部分) -->
-          <div class="right-bottom-carousel">
+          <!-- 要素模块横向轮播 (下部分) - 权责维度下隐藏 -->
+          <div v-if="activeDimensionId !== 'duty'" class="right-bottom-carousel">
             <FactorCarousel 
               :factors="analysisData.要素详情"
               :active-factor-name="activeFactorName"
@@ -91,6 +99,7 @@ import DimensionSwitch from './DimensionSwitch.vue';
 import TimeDimensionCard from './TimeDimensionCard.vue';
 import FactorRadarCard from './FactorRadarCard.vue';
 import FactorCarousel from './FactorCarousel.vue';
+import ResponsibilityDimension from './ResponsibilityDimension.vue';
 import AnnotationModal from '../AnnotationModal.vue';
 
 const props = defineProps({
@@ -253,6 +262,10 @@ const handleFocusTimeline = (time) => {
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.right-middle-content.full-height {
+  flex: 1 1 100%;
 }
 
 /* 确保 TimeDimensionCard 或占位符填充父容器 */

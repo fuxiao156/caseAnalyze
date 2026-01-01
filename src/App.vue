@@ -51,6 +51,54 @@ onMounted(() => {
         { "date": "2018-12-13", "event": "达成最终调解协议", "factors": ["政策要素", "经济要素"] }
       ]
     },
+    "权责维度数据": {
+      "summary": "基于博弈论的权责平衡分析：通过引入政策变通变量，降低了诉求的执行成本，实现了博弈均衡。",
+      "states": [
+        {
+          "id": "initial",
+          "name": "初始僵局",
+          "status": "调解僵局：诉求过重且执行受阻",
+          "leftWeights": [
+            { "id": "L1", "name": "养老保险认缴", "value": 50, "type": "commitment", "isFloating": true },
+            { "id": "L2", "name": "过往补偿协议", "value": 20, "type": "responsibility" }
+          ],
+          "rightWeights": [
+            { "id": "R1", "name": "工伤前误工/医疗费", "value": 40, "type": "claim" },
+            { "id": "R2", "name": "职工养老保险硬性要求", "value": 60, "type": "obsession" }
+          ]
+        },
+        {
+          "id": "mediating",
+          "name": "动态加码",
+          "status": "平衡调整中：引入政策变通",
+          "leftWeights": [
+            { "id": "L1", "name": "养老保险认缴", "value": 50, "type": "commitment", "isFloating": true },
+            { "id": "L2", "name": "过往补偿协议", "value": 20, "type": "responsibility" },
+            { "id": "L3", "name": "让步补偿:4.3万元", "value": 30, "type": "concession", "linkedFactor": "经济要素" }
+          ],
+          "rightWeights": [
+            { "id": "R1", "name": "工伤前误工/医疗费", "value": 40, "type": "claim" },
+            { "id": "R3", "name": "农村失地养老保险变通", "value": 30, "type": "compromise" }
+          ]
+        },
+        {
+          "id": "final",
+          "name": "达成和解",
+          "status": "达成和解点：完美博弈平衡",
+          "leftWeights": [
+            { "id": "L1", "name": "养老保险认缴", "value": 50, "type": "commitment" },
+            { "id": "L2", "name": "过往补偿协议", "value": 20, "type": "responsibility" },
+            { "id": "L3", "name": "让步补偿:4.3万元", "value": 30, "type": "concession" },
+            { "id": "L4", "name": "支付97020元", "value": 45, "type": "final_payment" }
+          ],
+          "rightWeights": [
+            { "id": "R1", "name": "工伤前误工/医疗费", "value": 40, "type": "claim" },
+            { "id": "R3", "name": "农村失地养老保险变通", "value": 30, "type": "compromise" },
+            { "id": "R4", "name": "放弃无效执念", "value": 75, "type": "psychological_balance" }
+          ]
+        }
+      ]
+    },
     "要素详情": [
       { "id": "economic", "name": "经济要素", "content": "补偿金额共计140,020元，包含误工工资、医疗费及失地农民养老保险费用。选厂承诺一次性全部付清，有效解决了当事人的核心生存诉求。", "type": "detail" },
       { "id": "psychological", "name": "心理要素", "content": "刘某多年纠纷心力交瘁，产生强烈焦虑与抵触情绪。选厂方持有防御心理。调解中采取“以情说理”策略，成功疏导双方对立情绪。", "type": "psychology" },
