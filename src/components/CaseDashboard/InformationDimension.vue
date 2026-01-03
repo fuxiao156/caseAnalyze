@@ -20,13 +20,13 @@
         <!-- 科技背景：流动的数据流，置于 grid 中间列 -->
         <div class="data-stream-bg">
           <div 
-            v-for="i in 6" 
+            v-for="i in 3" 
             :key="i" 
             class="stream-ray" 
             :style="{ 
               '--delay': (i * 1.2) + 's', 
-              '--top': (i * 12 + 20) + '%',
-              '--duration': (3 + Math.random() * 1) + 's'
+              '--top': (i * 24 + 20) + '%',
+              '--duration': (3.5 + Math.random() * 1) + 's'
             }"
           ></div>
         </div>
@@ -494,31 +494,25 @@ const connectionPath = computed(() => {
     opacity: 0;
   }
   10% {
-    opacity: 1;
+    opacity: 80%;
   }
   45% {
-    width: 50%; /* 延伸到中间 */
+    width: 85%; /* 延伸到中间 */
     background: #00f2ff;
     box-shadow: 0 0 8px #00f2ff;
-    transform: translateY(0) skewX(0);
-    opacity: 1;
+    transform: translateY(0);
+    opacity: 80%;
   }
-  48% {
+  50% {
     background: #ff4757;
     box-shadow: 0 0 12px #ff4757;
-    transform: translateY(-4px) skewX(30deg);
+    transform: translateY(0);
+    opacity: 80%;
   }
-  51% {
-    transform: translateY(4px) skewX(-30deg);
-  }
-  54% {
-    transform: translateY(-2px) skewX(15deg);
-    opacity: 1;
-  }
-  60% {
+  65% {
     width: 50%;
     opacity: 0;
-    transform: translateY(0) scale(0.5);
+    transform: translateY(0) scale(0.9);
   }
   100% {
     opacity: 0;
