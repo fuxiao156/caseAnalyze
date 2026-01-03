@@ -15,11 +15,22 @@
       <p>{{ data.summary }}</p>
     </div>
 
-    <div class="cognitive-container">
-      <!-- 科技背景：流动的数据流 -->
-      <div class="data-stream-bg"></div>
-
+    <div class="cognitive-container" :class="{ 'has-mediation': !!activeBiasId }">
       <div class="bias-comparison-grid">
+        <!-- 科技背景：流动的数据流，置于 grid 中间列 -->
+        <div class="data-stream-bg">
+          <div 
+            v-for="i in 6" 
+            :key="i" 
+            class="stream-ray" 
+            :style="{ 
+              '--delay': (i * 1.2) + 's', 
+              '--top': (i * 12 + 20) + '%',
+              '--duration': (3 + Math.random() * 1) + 's'
+            }"
+          ></div>
+        </div>
+
         <!-- 左侧：主观认知 (Perception) -->
         <div class="column subjective-column">
           <div class="column-header">主观认知 (Subjective Perception)</div>
@@ -444,6 +455,96 @@ const connectionPath = computed(() => {
   inset: 0;
   background-image: radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.05) 0%, transparent 80%);
   pointer-events: none;
+}
+
+/* 霓虹运动光线样式 */
+.data-stream-bg {
+  grid-column: 2 / 3; /* 明确指定起止网格线，防止延伸到最右侧 */
+  position: absolute; /* 改为绝对定位，不占据 Grid 空间 */
+  width: calc(100% + 30px); /* 宽度覆盖左侧 gap(15px) 和 右侧 gap(15px) */
+  left: -15px; /* 向左偏移一个 gap 的距离，对齐左侧卡片右边缘 */
+  top: 0;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.stream-ray {
+  position: absolute;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #00f2ff, #00f2ff, transparent);
+  box-shadow: 0 0 8px #00f2ff;
+  opacity: 0;
+  animation: ray-failure var(--duration) infinite ease-in-out;
+  animation-delay: var(--delay);
+  top: var(--top);
+  transform-origin: left center;
+}
+
+.has-mediation .stream-ray {
+  animation: ray-success var(--duration) infinite ease-in-out;
+  animation-delay: var(--delay);
+}
+
+@keyframes ray-failure {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  45% {
+    width: 50%; /* 延伸到中间 */
+    background: #00f2ff;
+    box-shadow: 0 0 8px #00f2ff;
+    transform: translateY(0) skewX(0);
+    opacity: 1;
+  }
+  48% {
+    background: #ff4757;
+    box-shadow: 0 0 12px #ff4757;
+    transform: translateY(-4px) skewX(30deg);
+  }
+  51% {
+    transform: translateY(4px) skewX(-30deg);
+  }
+  54% {
+    transform: translateY(-2px) skewX(15deg);
+    opacity: 1;
+  }
+  60% {
+    width: 50%;
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes ray-success {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  45% {
+    width: 50%; /* 经过中点 */
+    opacity: 1;
+  }
+  85% {
+    width: 100%; /* 延伸到右侧边界 */
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 0;
+  }
 }
 </style>
 
