@@ -26,7 +26,7 @@
             :style="{ 
               '--delay': (i * 1.2) + 's', 
               '--top': (i * 24 + 20) + '%',
-              '--duration': (3.5 + Math.random() * 1) + 's'
+              '--duration': (3 + Math.random() * 1) + 's'
             }"
           ></div>
         </div>
@@ -56,15 +56,21 @@
           </div>
         </div>
 
-        <!-- 中间：逻辑桥梁 (Logic Bridge) -->
+        <!-- 中间：逻辑桥梁 (Logic Bridge) / 信息差障碍 -->
         <div class="column bridge-column">
           <div class="bridge-pillar">
-            <Transition name="bridge-fade">
-              <div v-if="activeBiasId" class="bridge-content">
+            <Transition name="bridge-fade" mode="out-in">
+              <div v-if="activeBiasId" class="bridge-content" key="bridge">
                 <div class="bridge-icon">⚡</div>
                 <div class="bridge-label">调解破局点</div>
                 <div class="bridge-text">{{ activeBridgeText }}</div>
                 <div class="bridge-pulse"></div>
+              </div>
+              <div v-else class="bridge-content obstacle-content" key="obstacle">
+                <div class="bridge-icon obstacle-icon">🚧</div>
+                <div class="bridge-label obstacle-label">信息差鸿沟</div>
+                <div class="bridge-text">认知碎片与客观事实间存在巨大鸿沟，阻碍双方信息的透明与信任转化</div>
+                <div class="obstacle-line"></div>
               </div>
             </Transition>
           </div>
@@ -156,10 +162,11 @@ const connectionPath = computed(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: rgba(5, 15, 40, 0.4) !important;
-  border: 1px solid rgba(0, 242, 255, 0.1);
+  background: rgba(5, 15, 40, 0.85) !important;
+  border: 1px solid rgba(0, 242, 255, 0.2);
   position: relative;
   overflow: hidden;
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
 }
 
 .card-title-row {
@@ -391,22 +398,34 @@ const connectionPath = computed(() => {
 }
 
 .bridge-content {
-  background: rgba(0, 242, 255, 0.15);
+  background: rgba(0, 242, 255, 0.25);
   border: 1px solid #00f2ff;
   padding: 20px;
   width: 220px;
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0 0 40px rgba(0, 242, 255, 0.2);
-  backdrop-filter: blur(10px);
+  box-shadow: 0 0 40px rgba(0, 242, 255, 0.3), inset 0 0 20px rgba(0, 242, 255, 0.1);
+  backdrop-filter: blur(15px);
   z-index: 5;
   position: relative;
+  transition: all 0.3s ease;
+}
+
+.obstacle-content {
+  background: rgba(255, 107, 107, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.6);
+  box-shadow: 0 0 30px rgba(255, 107, 107, 0.2), inset 0 0 15px rgba(255, 107, 107, 0.1);
 }
 
 .bridge-icon {
   font-size: 24px;
   margin-bottom: 10px;
   text-shadow: 0 0 10px #00f2ff;
+}
+
+.obstacle-icon {
+  text-shadow: 0 0 10px #ff6b6b;
+  filter: grayscale(0.5);
 }
 
 .bridge-label {
@@ -417,10 +436,30 @@ const connectionPath = computed(() => {
   font-weight: bold;
 }
 
+.obstacle-label {
+  color: #ff6b6b;
+  opacity: 0.8;
+}
+
 .bridge-text {
   font-size: 12px;
   color: #fff;
   line-height: 1.6;
+}
+
+.obstacle-content .bridge-text {
+  color: #88b0ea;
+  font-style: italic;
+}
+
+.obstacle-line {
+  position: absolute;
+  bottom: 0;
+  left: 10%;
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ff6b6b, transparent);
+  opacity: 0.5;
 }
 
 .bridge-pulse {
@@ -494,25 +533,31 @@ const connectionPath = computed(() => {
     opacity: 0;
   }
   10% {
-    opacity: 80%;
+    opacity: 1;
   }
   45% {
-    width: 85%; /* 延伸到中间 */
+    width: 50%; /* 延伸到中间 */
     background: #00f2ff;
     box-shadow: 0 0 8px #00f2ff;
-    transform: translateY(0);
-    opacity: 80%;
+    transform: translateY(0) skewX(0);
+    opacity: 1;
   }
-  50% {
+  48% {
     background: #ff4757;
     box-shadow: 0 0 12px #ff4757;
-    transform: translateY(0);
-    opacity: 80%;
+    transform: translateY(-4px) skewX(30deg);
   }
-  65% {
+  51% {
+    transform: translateY(4px) skewX(-30deg);
+  }
+  54% {
+    transform: translateY(-2px) skewX(15deg);
+    opacity: 1;
+  }
+  60% {
     width: 50%;
     opacity: 0;
-    transform: translateY(0) scale(0.9);
+    transform: translateY(0) scale(0.5);
   }
   100% {
     opacity: 0;
