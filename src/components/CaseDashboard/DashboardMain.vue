@@ -41,7 +41,7 @@
           </div>
 
           <!-- 维度详情 (中部分) -->
-          <div class="right-middle-content" :class="{ 'full-height': activeDimensionId === 'duty' }">
+          <div class="right-middle-content" :class="{ 'full-height': activeDimensionId === 'duty' || activeDimensionId === 'info' }">
             <Transition name="fade-content" mode="out-in">
               <!-- 时间维度 -->
               <TimeDimensionCard 
@@ -58,6 +58,13 @@
                 @open-eval="openEval"
                 @highlight-factor="handleFactorSelect"
               />
+
+              <!-- 信息维度 (占据右侧全部) -->
+              <InformationDimension
+                v-else-if="activeDimensionId === 'info'"
+                :data="analysisData.信息维度数据"
+                @open-eval="openEval"
+              />
               
               <!-- 其他维度占位 -->
               <div v-else class="placeholder-card-large">
@@ -66,8 +73,8 @@
             </Transition>
           </div>
 
-          <!-- 要素模块横向轮播 (下部分) - 权责维度下隐藏 -->
-          <div v-if="activeDimensionId !== 'duty'" class="right-bottom-carousel">
+          <!-- 要素模块横向轮播 (下部分) - 权责维度/信息维度下隐藏 -->
+          <div v-if="activeDimensionId !== 'duty' && activeDimensionId !== 'info'" class="right-bottom-carousel">
             <FactorCarousel 
               :factors="analysisData.要素详情"
               :active-factor-name="activeFactorName"
@@ -100,6 +107,7 @@ import TimeDimensionCard from './TimeDimensionCard.vue';
 import FactorRadarCard from './FactorRadarCard.vue';
 import FactorCarousel from './FactorCarousel.vue';
 import ResponsibilityDimension from './ResponsibilityDimension.vue';
+import InformationDimension from './InformationDimension.vue';
 import AnnotationModal from '../AnnotationModal.vue';
 
 const props = defineProps({
