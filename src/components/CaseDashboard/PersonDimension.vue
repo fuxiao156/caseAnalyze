@@ -40,14 +40,8 @@
                 <div class="attr-label">利益原动力 (Core Drivers)</div>
                 <div class="driver-list">
                   <div v-for="driver in activePerson.drivers" :key="driver.label" class="driver-item">
-                    <div class="driver-info">
-                      <span class="d-label">{{ driver.label }}</span>
-                      <span class="d-val">{{ (driver.value * 100).toFixed(0) }}%</span>
-                    </div>
-                    <div class="d-bar-bg">
-                      <div class="d-bar-fill" :style="{ width: driver.value * 100 + '%' }"></div>
-                    </div>
-                    <div class="d-desc">{{ driver.desc }}</div>
+                    <span class="d-title">【{{ driver.label }}】</span>
+                    <span class="d-desc">{{ driver.desc }}</span>
                   </div>
                 </div>
               </div>
@@ -72,11 +66,6 @@
                 </div>
                 <div class="conclusion-text">
                   {{ activePerson.attribution }}
-                </div>
-                <div class="attribution-tags">
-                  <span class="attr-tag">人物致因</span>
-                  <span class="attr-tag">冲突源</span>
-                  <span class="attr-tag">{{ activePerson.personality }}</span>
                 </div>
               </div>
             </div>
@@ -278,39 +267,17 @@ watch(() => props.data.characters, (newChars) => {
 }
 
 .driver-item {
-  margin-bottom: 12px;
-}
-
-.driver-info {
-  display: flex;
-  justify-content: space-between;
+  background: rgba(0, 242, 255, 0.05);
+  border: 1px solid rgba(0, 242, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
   font-size: 12px;
-  margin-bottom: 4px;
+  line-height: 1.5;
 }
 
-.d-label { color: #cfd9e5; }
-.d-val { color: #00f2ff; font-family: monospace; font-weight: bold; }
-
-.d-bar-bg {
-  height: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 2px;
-  margin-bottom: 6px;
-}
-
-.d-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #0066ff, #00f2ff);
-  border-radius: 2px;
-  box-shadow: 0 0 5px #00f2ff;
-}
-
-.d-desc {
-  font-size: 11px;
-  color: #88b0ea;
-  font-style: italic;
-  line-height: 1.4;
-}
+.d-title { color: #00f2ff; font-weight: bold; }
+.d-desc { color: #cfd9e5; }
 
 .bias-item {
   background: rgba(255, 107, 107, 0.05);
@@ -352,21 +319,6 @@ watch(() => props.data.characters, (newChars) => {
   line-height: 1.8;
   text-align: justify;
   flex: 1;
-}
-
-.attribution-tags {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.attr-tag {
-  font-size: 11px;
-  color: #00f2ff;
-  border: 1px solid rgba(0, 242, 255, 0.3);
-  padding: 2px 10px;
-  border-radius: 12px;
-  background: rgba(0, 242, 255, 0.05);
 }
 
 .eval-trigger-btn {
