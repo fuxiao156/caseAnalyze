@@ -41,13 +41,20 @@
           </div>
 
           <!-- 维度详情 (中部分) -->
-          <div class="right-middle-content" :class="{ 'full-height': activeDimensionId === 'duty' || activeDimensionId === 'info' }">
+          <div class="right-middle-content" :class="{ 'full-height': activeDimensionId === 'duty' || activeDimensionId === 'info' || activeDimensionId === 'person' }">
             <Transition name="fade-content" mode="out-in">
               <!-- 时间维度 -->
               <TimeDimensionCard 
                 v-if="activeDimensionId === 'time'"
                 :data="analysisData.时间维度数据"
                 v-model:active-index="activeTimeNodeIndex"
+                @open-eval="openEval"
+              />
+
+              <!-- 人物维度 (占据右侧全部) -->
+              <PersonDimension
+                v-else-if="activeDimensionId === 'person'"
+                :data="analysisData.人物维度数据"
                 @open-eval="openEval"
               />
 
@@ -73,8 +80,8 @@
             </Transition>
           </div>
 
-          <!-- 要素模块横向轮播 (下部分) - 权责维度/信息维度下隐藏 -->
-          <div v-if="activeDimensionId !== 'duty' && activeDimensionId !== 'info'" class="right-bottom-carousel">
+          <!-- 要素模块横向轮播 (下部分) - 权责维度/信息维度/人物维度下隐藏 -->
+          <div v-if="activeDimensionId !== 'duty' && activeDimensionId !== 'info' && activeDimensionId !== 'person'" class="right-bottom-carousel">
             <FactorCarousel 
               :factors="currentFactors"
               :active-factor-name="activeFactorName"
@@ -106,6 +113,7 @@ import TimeDimensionCard from './TimeDimensionCard.vue';
 import FactorCarousel from './FactorCarousel.vue';
 import ResponsibilityDimension from './ResponsibilityDimension.vue';
 import InformationDimension from './InformationDimension.vue';
+import PersonDimension from './PersonDimension.vue';
 import AnnotationModal from '../AnnotationModal.vue';
 
 const props = defineProps({
