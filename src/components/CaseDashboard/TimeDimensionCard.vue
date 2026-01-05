@@ -185,56 +185,125 @@ const selectNode = (idx) => {
   font-family: monospace;
   font-size: 13px;
   color: #88b0ea;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  transition: all 0.3s;
+}
+
+.timeline-node-box:hover .node-time,
+.timeline-node-box.active .node-time {
+  color: #00f2ff;
+  text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
 }
 
 .node-marker {
   display: flex;
+  justify-content: center;
   align-items: center;
   width: 100%;
   position: relative;
-  height: 20px;
+  height: 30px;
 }
 
 .node-dot {
-  width: 12px;
-  height: 12px;
-  background: rgba(0, 242, 255, 0.3);
-  border: 2px solid #00f2ff;
+  width: 18px;
+  height: 18px;
+  background: rgba(10, 27, 62, 0.8);
+  border: 3px solid rgba(0, 242, 255, 0.4);
   border-radius: 50%;
   z-index: 2;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+}
+
+.node-dot::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 242, 255, 0);
   transition: all 0.3s;
+}
+
+.timeline-node-box:hover .node-dot {
+  border-color: #00f2ff;
+  transform: scale(1.2);
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+}
+
+.timeline-node-box:hover .node-dot::after {
+  inset: -8px;
+  border-color: rgba(0, 242, 255, 0.3);
 }
 
 .timeline-node-box.active .node-dot {
   background: #00f2ff;
-  box-shadow: 0 0 15px #00f2ff;
-  transform: scale(1.3);
+  border-color: #fff;
+  box-shadow: 0 0 20px #00f2ff, 0 0 40px rgba(0, 242, 255, 0.4);
+  transform: scale(1.4);
 }
 
 .node-line {
   position: absolute;
-  left: calc(50% + 6px);
-  width: calc(100% - 12px);
+  left: calc(50% + 12px);
+  width: calc(100% - 24px);
   height: 2px;
-  background: linear-gradient(90deg, #00f2ff, rgba(0, 242, 255, 0.1));
+  background: rgba(0, 242, 255, 0.2);
   z-index: 1;
+}
+
+.node-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, transparent, #00f2ff, transparent);
+  background-size: 200% 100%;
+  animation: flow 3s linear infinite;
+}
+
+.node-line::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: 6px solid rgba(0, 242, 255, 0.5);
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+
+@keyframes flow {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.timeline-node-box.active + .timeline-node-box .node-line {
+  opacity: 1;
 }
 
 .node-event {
   margin-top: 15px;
-  font-size: 12px;
+  font-size: 13px;
   color: #cfd9e5;
   text-align: center;
   padding: 0 10px;
   transition: all 0.3s;
   max-width: 160px;
+  line-height: 1.4;
+}
+
+.timeline-node-box:hover .node-event {
+  color: #fff;
 }
 
 .timeline-node-box.active .node-event {
   color: #fff;
   font-weight: bold;
   transform: translateY(-2px);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 /* 关联要素样式 */
