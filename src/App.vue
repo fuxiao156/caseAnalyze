@@ -1,5 +1,4 @@
 <script setup>
-import analyze from './components/analyze.vue'
 import DashboardMain from './components/CaseDashboard/DashboardMain.vue'
 import { ref, onMounted } from 'vue';
 const analysisData = ref([]);
@@ -246,12 +245,8 @@ onMounted(() => {
       <button class="switch-btn" @click="dataIndex = (dataIndex+1)%analysisData.length">切换数据</button>
     </div>
 
-    <!-- 旧版分析页面 -->
-    <analyze v-if="!showNewDashboard" :visible="true" :analysisData="analysisData[dataIndex]" />
-
     <!-- 新版全屏大屏 -->
     <DashboardMain 
-      v-else 
       :visible="true" 
       :analysisData="analysisData[dataIndex]" 
       @close="showNewDashboard = false"
