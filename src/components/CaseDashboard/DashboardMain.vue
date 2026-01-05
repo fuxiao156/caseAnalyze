@@ -12,20 +12,20 @@
       </header>
 
       <div class="dashboard-body">
-        <!-- 左侧：多要素 (1/3 宽度) - 仅包含 1.1 和 1.2 -->
+        <!-- 左侧：多要素 (1/3 宽度) -->
         <aside class="dashboard-left">
-          <!-- 1.1 事件画像与成因分析 -->
-          <EventFactorCard 
-            :profiling="analysisData.事件画像" 
-            :causes="analysisData.核心成因分析" 
+          <!-- 1.1 事件描述 -->
+          <EventDescriptionCard 
+            class="event-description-section"
+            :title="analysisData.title"
+            :detail="analysisData.detail"
             @open-eval="openEval"
           />
           
-          <!-- 1.2 要素雷达图 -->
-          <FactorRadarCard 
-            :data="analysisData.要素雷达数据"
-            :active-factor="activeFactorName"
-            @select-factor="handleFactorSelect"
+          <!-- 1.2 事件画像与成因分析 -->
+          <EventFactorCard 
+            :profiling="analysisData.事件画像" 
+            :causes="analysisData.核心成因分析" 
             @open-eval="openEval"
           />
         </aside>
@@ -102,9 +102,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import EventFactorCard from './EventFactorCard.vue';
+import EventDescriptionCard from './EventDescriptionCard.vue';
 import DimensionSwitch from './DimensionSwitch.vue';
 import TimeDimensionCard from './TimeDimensionCard.vue';
-import FactorRadarCard from './FactorRadarCard.vue';
 import FactorCarousel from './FactorCarousel.vue';
 import ResponsibilityDimension from './ResponsibilityDimension.vue';
 import InformationDimension from './InformationDimension.vue';
@@ -251,6 +251,10 @@ const handleFocusTimeline = (time) => {
 .dashboard-left > * {
   flex: 1;
   min-height: 0; /* 允许子项在 flex 容器中收缩 */
+}
+
+.event-description-section {
+  flex: 0 0 320px; /* 固定高度为 320px */
 }
 
 .dashboard-right-container {
