@@ -47,7 +47,6 @@
               <TimeDimensionCard 
                 v-if="activeDimensionId === 'time'"
                 :data="analysisData.时间维度数据"
-                :focused-time="focusedTime"
                 @open-eval="openEval"
               />
 
@@ -78,8 +77,6 @@
             <FactorCarousel 
               :factors="analysisData.要素详情"
               :active-factor-name="activeFactorName"
-              :psychology-data="analysisData.心理情绪数据"
-              @focus-timeline="handleFocusTimeline"
               @open-eval="openEval"
             />
           </div>
@@ -171,16 +168,9 @@ onUnmounted(() => {
 const metrics = ref({ accuracy: '86.4%', f1_score: '0.86' });
 const activeDimensionId = ref('time'); // 默认选中时间维度
 const activeFactorName = ref('');
-const focusedTime = ref('');
 
 const handleFactorSelect = (name) => {
   activeFactorName.value = name;
-};
-
-const handleFocusTimeline = (time) => {
-  focusedTime.value = time;
-  // 聚焦时间线时，确保维度切回时间维度
-  activeDimensionId.value = 'time';
 };
 </script>
 

@@ -57,11 +57,10 @@ const props = defineProps({
       summary: '',
       timeline: []
     })
-  },
-  focusedTime: String
+  }
 });
 
-const emit = defineEmits(['update:focusedTime', 'open-eval']);
+const emit = defineEmits(['open-eval']);
 
 const activeNodeIdx = ref(0); 
 
@@ -71,14 +70,6 @@ watch(() => props.data.timeline, (newTimeline) => {
     activeNodeIdx.value = newTimeline.length > 0 ? 0 : null;
   }
 }, { deep: true });
-
-// 监听外部时间聚焦
-watch(() => props.focusedTime, (newTime) => {
-  if (newTime) {
-    const idx = props.data.timeline.findIndex(n => n.date === newTime);
-    if (idx > -1) activeNodeIdx.value = idx;
-  }
-});
 
 const selectNode = (idx) => {
   activeNodeIdx.value = idx;

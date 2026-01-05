@@ -17,7 +17,7 @@
         >
           <!-- 侧边/头部标签（折叠时可见） -->
           <div class="item-tab">
-            <span class="tab-icon">{{ factor.type === 'psychology' ? '🧠' : '📋' }}</span>
+            <span class="tab-icon">📋</span>
             <span class="tab-title">{{ factor.name }}</span>
           </div>
 
@@ -28,24 +28,8 @@
             </div>
             
             <div class="block-content">
-              <!-- 1.5 心理要素特定展示 -->
-              <div v-if="factor.type === 'psychology'" class="psychology-grid">
-                <div 
-                  v-for="(emotion, eIdx) in psychologyData" 
-                  :key="eIdx"
-                  class="emotion-chip"
-                  @click.stop="$emit('focus-timeline', emotion.time)"
-                >
-                  <div class="e-person">{{ emotion.person }}</div>
-                  <div class="e-val" :style="{ color: getIntensityColor(emotion.intensity) }">
-                    {{ emotion.emotion }}
-                  </div>
-                  <div class="e-time">{{ emotion.time }}</div>
-                </div>
-              </div>
-              
               <!-- 通用要素展示 -->
-              <p v-else class="generic-content">{{ factor.content }}</p>
+              <p class="generic-content">{{ factor.content }}</p>
             </div>
           </div>
         </div>
@@ -55,21 +39,17 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 
 const props = defineProps({
   factors: {
     type: Array,
     default: () => []
   },
-  activeFactorName: String,
-  psychologyData: {
-    type: Array,
-    default: () => []
-  }
+  activeFactorName: String
 });
 
-const emit = defineEmits(['focus-timeline', 'open-eval']);
+const emit = defineEmits(['open-eval']);
 
 const openIds = ref([]);
 
@@ -103,12 +83,6 @@ const toggleId = (id, forceOpen = false) => {
       openIds.value.shift();
     }
   }
-};
-
-const getIntensityColor = (intensity) => {
-  if (intensity > 0.8) return '#ff4d4f';
-  if (intensity > 0.5) return '#ffcf40';
-  return '#4dff88';
 };
 </script>
 
@@ -272,29 +246,4 @@ const getIntensityColor = (intensity) => {
   line-height: 1.6;
   margin: 0;
 }
-
-.psychology-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-}
-
-.emotion-chip {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 8px;
-  border-radius: 6px;
-  cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  transition: all 0.2s;
-}
-
-.emotion-chip:hover {
-  border-color: #00f2ff;
-  background: rgba(0, 242, 255, 0.1);
-}
-
-.e-person { font-size: 11px; color: #88b0ea; }
-.e-val { font-size: 13px; font-weight: bold; margin: 2px 0; }
-.e-time { font-size: 10px; color: rgba(255, 255, 255, 0.4); }
-
 </style>
