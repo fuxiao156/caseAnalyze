@@ -292,7 +292,7 @@ const handleFocusTimeline = (time) => {
 }
 
 .placeholder-card-large {
-  background: rgba(16, 35, 78, 0.4);
+  background: rgba(26, 58, 122, 0.6);
   border: 1px solid rgba(0, 242, 255, 0.1);
   flex: 1;
   display: flex;

@@ -160,9 +160,9 @@ const handleSubmit = async () => {
 .annotation-modal-container {
   width: 500px;
   max-height: 90vh;
-  background: linear-gradient(145deg, #0d1b3e 0%, #08112b 100%);
+  background: linear-gradient(145deg, #1a3a7a 0%, #0d1b3e 100%);
   border-radius: 12px;
-  border: 1px solid rgba(0, 242, 255, 0.2);
+  border: 1px solid rgba(0, 242, 255, 0.3);
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 40px rgba(0, 242, 255, 0.15);

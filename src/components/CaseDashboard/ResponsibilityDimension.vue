@@ -234,8 +234,8 @@ watch(() => props.data, () => {
 
 <style scoped>
 .dashboard-card {
-  background: rgba(16, 35, 78, 0.4);
-  border: 1px solid rgba(0, 242, 255, 0.15);
+  background: rgba(26, 58, 122, 0.6);
+  border: 1px solid rgba(0, 242, 255, 0.2);
   border-radius: 8px;
   padding: 20px;
   position: relative;
@@ -251,7 +251,7 @@ watch(() => props.data, () => {
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  background: rgba(5, 15, 40, 0.6) !important;
+  background: rgba(26, 58, 122, 0.6) !important;
   border: 1px solid rgba(0, 242, 255, 0.2);
 }
 
