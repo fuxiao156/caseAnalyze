@@ -2,10 +2,6 @@
   <div class="info-dimension dashboard-card">
     <div class="card-title-row">
       <div class="card-title">信息维度分析 (Information Dimension)</div>
-      <div class="view-hint">
-        <span class="hint-icon">💡</span>
-        <span>悬停认知碎片，解码信息偏差</span>
-      </div>
       <button class="eval-trigger-btn" @click="$emit('open-eval', '信息维度分析', 'info-dimension')">
         <span class="eval-icon">📊</span> 评测
       </button>
@@ -15,7 +11,7 @@
       <p>{{ data.summary }}</p>
     </div>
 
-    <div class="cognitive-container" :class="{ 'has-mediation': !!activeBiasId }">
+    <div class="cognitive-container">
       <div class="bias-comparison-grid">
         <!-- 科技背景：流动的数据流，置于 grid 中间列 -->
         <div class="data-stream-bg">
@@ -25,7 +21,7 @@
             class="stream-ray" 
             :style="{ 
               '--delay': (i * 1.2) + 's', 
-              '--top': (i * 24 + 20) + '%',
+              '--top': (i * 25) + '%',
               '--duration': (3 + Math.random() * 1) + 's'
             }"
           ></div>
@@ -59,29 +55,14 @@
         <!-- 中间：逻辑桥梁 (Logic Bridge) / 信息差障碍 -->
         <div class="column bridge-column">
           <div class="bridge-pillar">
-            <Transition name="bridge-fade" mode="out-in">
-              <div v-if="activeBiasId" class="bridge-content" key="bridge">
-                <div class="bridge-icon">⚡</div>
-                <div class="bridge-label">调解破局点</div>
-                <div class="bridge-text">{{ activeBridgeText }}</div>
-                <div class="bridge-pulse"></div>
-              </div>
-              <div v-else class="bridge-content obstacle-content" key="obstacle">
-                <div class="bridge-icon obstacle-icon">🚧</div>
-                <div class="bridge-label obstacle-label">信息差鸿沟</div>
-                <div class="bridge-text">认知碎片与客观事实间存在巨大鸿沟，阻碍双方信息的透明与信任转化</div>
-                <div class="obstacle-line"></div>
-              </div>
-            </Transition>
+            <div class="bridge-content obstacle-content">
+              <div class="bridge-icon obstacle-icon">🚧</div>
+              <div class="bridge-label obstacle-label">信息差鸿沟</div>
+              <div class="bridge-text">认知碎片与客观事实间存在巨大鸿沟，阻碍双方信息的透明与信任转化</div>
+              <div class="obstacle-line"></div>
+              <div class="bridge-pulse"></div>
+            </div>
           </div>
-          <!-- 动态连接线 SVG -->
-          <svg class="connection-svg">
-            <path 
-              v-if="activeBiasId"
-              :d="connectionPath"
-              class="connection-path"
-            />
-          </svg>
         </div>
 
         <!-- 右侧：客观事实 (Objective Reality) -->
@@ -131,17 +112,6 @@ const emit = defineEmits(['open-eval']);
 
 const activeBiasId = ref(null);
 
-const activeBridgeText = computed(() => {
-  const item = props.data.items?.find(i => i.id === activeBiasId.value);
-  return item ? item.bridge : '';
-});
-
-// 计算 SVG 路径以连接两侧卡片 (简化的直线/曲线逻辑)
-const connectionPath = computed(() => {
-  if (!activeBiasId.value) return '';
-  // 这里在实际开发中可能需要 getBoundingClientRect，这里用示意路径
-  return "M 100 150 Q 200 150 300 150"; 
-});
 
 </script>
 
@@ -185,17 +155,6 @@ const connectionPath = computed(() => {
   padding-left: 12px;
 }
 
-.view-hint {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(0, 242, 255, 0.1);
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #00f2ff;
-}
-
 .eval-trigger-btn {
   background: rgba(0, 242, 255, 0.1);
   border: 1px solid rgba(0, 242, 255, 0.3);
@@ -235,7 +194,7 @@ const connectionPath = computed(() => {
 .bias-comparison-grid {
   display: grid;
   grid-template-columns: 1fr 0.4fr 1fr;
-  gap: 15px;
+  gap: 26px;
   height: 100%;
   position: relative;
   z-index: 2;
@@ -387,10 +346,7 @@ const connectionPath = computed(() => {
 
 .bridge-pillar {
   width: 100%;
-  height: 80%;
-  background: linear-gradient(180deg, transparent, rgba(0, 242, 255, 0.05), transparent);
-  border-left: 1px dashed rgba(0, 242, 255, 0.2);
-  border-right: 1px dashed rgba(0, 242, 255, 0.2);
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -465,7 +421,7 @@ const connectionPath = computed(() => {
 .bridge-pulse {
   position: absolute;
   inset: -5px;
-  border: 1px solid #00f2ff;
+  border: 1px solid #ff6b6b;
   border-radius: 12px;
   animation: pulse-out 2s infinite;
 }
@@ -479,14 +435,6 @@ const connectionPath = computed(() => {
   0%, 100% { transform: scale(1.05) translateX(0); }
   25% { transform: scale(1.05) translateX(-1px); }
   75% { transform: scale(1.05) translateX(1px); }
-}
-
-.bridge-fade-enter-active, .bridge-fade-leave-active {
-  transition: all 0.5s ease;
-}
-.bridge-fade-enter-from, .bridge-fade-leave-to {
-  opacity: 0;
-  transform: scale(0.8);
 }
 
 .tech-grid {
@@ -520,11 +468,6 @@ const connectionPath = computed(() => {
   animation-delay: var(--delay);
   top: var(--top);
   transform-origin: left center;
-}
-
-.has-mediation .stream-ray {
-  animation: ray-success var(--duration) infinite ease-in-out;
-  animation-delay: var(--delay);
 }
 
 @keyframes ray-failure {
