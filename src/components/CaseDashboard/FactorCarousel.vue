@@ -9,30 +9,32 @@
     
     <div class="accordion-container">
       <div class="accordion-wrapper">
-        <div 
-          v-for="factor in factors" 
-          :key="factor.id"
-          :class="['accordion-item', openIds.includes(factor.id) ? 'open' : '', activeFactorName === factor.name ? 'active-highlight' : '']"
-          @click="toggleId(factor.id)"
-        >
-          <!-- 侧边/头部标签（折叠时可见） -->
-          <div class="item-tab">
-            <span class="tab-icon">📋</span>
-            <span class="tab-title">{{ factor.name }}</span>
-          </div>
+        <TransitionGroup name="list-complete">
+          <div 
+            v-for="factor in factors" 
+            :key="factor.id"
+            :class="['accordion-item', openIds.includes(factor.id) ? 'open' : '', activeFactorName === factor.name ? 'active-highlight' : '']"
+            @click="toggleId(factor.id)"
+          >
+            <!-- 侧边/头部标签（折叠时可见） -->
+            <div class="item-tab">
+              <span class="tab-icon">📋</span>
+              <span class="tab-title">{{ factor.name }}</span>
+            </div>
 
-          <!-- 内容区域（展开时可见） -->
-          <div class="item-content-wrapper scrollbar-tech" v-show="openIds.includes(factor.id)">
-            <div class="block-header">
-              <span class="block-title">{{ factor.name }} 详细分析</span>
-            </div>
-            
-            <div class="block-content">
-              <!-- 通用要素展示 -->
-              <p class="generic-content">{{ factor.content }}</p>
+            <!-- 内容区域（展开时可见） -->
+            <div class="item-content-wrapper scrollbar-tech" v-show="openIds.includes(factor.id)">
+              <div class="block-header">
+                <span class="block-title">{{ factor.name }} 详细分析</span>
+              </div>
+              
+              <div class="block-content">
+                <!-- 通用要素展示 -->
+                <p class="generic-content">{{ factor.content }}</p>
+              </div>
             </div>
           </div>
-        </div>
+        </TransitionGroup>
       </div>
     </div>
   </div>
@@ -69,6 +71,13 @@ watch(() => props.activeFactorName, (newName) => {
     }
   }
 });
+
+// 监听 factors 变化（时间点切换时），自动展开所有要素
+watch(() => props.factors, (newFactors) => {
+  if (newFactors && newFactors.length > 0) {
+    openIds.value = newFactors.map(f => f.id);
+  }
+}, { immediate: true, deep: true });
 
 const toggleId = (id, forceOpen = false) => {
   const index = openIds.value.indexOf(id);
@@ -149,16 +158,18 @@ const toggleId = (id, forceOpen = false) => {
   display: flex;
   height: 100%;
   gap: 10px;
+  position: relative; /* 必须：为离开时的绝对定位元素提供定位基准 */
 }
 
 .accordion-item {
-  flex: 0 0 50px;
+  flex: 0 0 auto; /* 关键：改为 auto 配合 min-width/flex:1 实现平滑过渡 */
+  min-width: 50px;
   height: 100%;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   overflow: hidden;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
   display: flex;
   position: relative;
@@ -226,6 +237,28 @@ const toggleId = (id, forceOpen = false) => {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateX(10px); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+/* 列表过渡动画 */
+.list-complete-enter-active {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.list-complete-leave-active {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute; /* 关键：离开时脱离文档流，让其他元素能平滑移动 */
+  width: 100%; /* 保持宽度一致性 */
+  max-width: 300px; /* 限制宽度，防止绝对定位后拉伸 */
+}
+
+.list-complete-enter-from,
+.list-complete-leave-to {
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+}
+
+.list-complete-move {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .block-header {

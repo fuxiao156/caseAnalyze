@@ -18,7 +18,7 @@
         <div 
           v-for="(node, index) in data.timeline" 
           :key="index"
-          :class="['timeline-node-box', activeNodeIdx === index ? 'active' : '']"
+          :class="['timeline-node-box', activeIndex === index ? 'active' : '']"
           @click="selectNode(index)"
         >
           <div class="node-time">{{ node.date }}</div>
@@ -33,11 +33,11 @@
 
     <!-- 2.2.2 交互：显示关联要素 -->
     <Transition name="fade-slide">
-      <div v-if="activeNodeIdx !== null && data.timeline[activeNodeIdx]" class="associated-factors">
-        <div class="factor-header">关联要素分析 ({{ data.timeline[activeNodeIdx].date }})</div>
+      <div v-if="activeIndex !== null && data.timeline[activeIndex]" class="associated-factors">
+        <div class="factor-header">关联要素分析 ({{ data.timeline[activeIndex].date }})</div>
         <div class="factor-tags">
           <span 
-            v-for="factor in data.timeline[activeNodeIdx].factors" 
+            v-for="factor in data.timeline[activeIndex].factors" 
             :key="factor"
             class="factor-tag"
           >{{ factor }}</span>
@@ -57,22 +57,24 @@ const props = defineProps({
       summary: '',
       timeline: []
     })
+  },
+  activeIndex: {
+    type: Number,
+    default: 0
   }
 });
 
-const emit = defineEmits(['open-eval']);
-
-const activeNodeIdx = ref(0); 
+const emit = defineEmits(['open-eval', 'update:activeIndex']);
 
 // 监听数据变化，重置索引
 watch(() => props.data.timeline, (newTimeline) => {
-  if (activeNodeIdx.value >= newTimeline.length) {
-    activeNodeIdx.value = newTimeline.length > 0 ? 0 : null;
+  if (props.activeIndex >= newTimeline.length) {
+    emit('update:activeIndex', newTimeline.length > 0 ? 0 : null);
   }
 }, { deep: true });
 
 const selectNode = (idx) => {
-  activeNodeIdx.value = idx;
+  emit('update:activeIndex', idx);
 };
 </script>
 
