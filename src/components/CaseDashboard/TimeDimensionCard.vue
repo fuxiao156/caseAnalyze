@@ -193,6 +193,7 @@ const selectNode = (idx) => {
 .timeline-node-box.active .node-time {
   color: #00f2ff;
   text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+  transform: translateY(-2px);
 }
 
 .node-marker {
@@ -229,6 +230,12 @@ const selectNode = (idx) => {
   border-color: #00f2ff;
   transform: scale(1.2);
   box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
+  animation: hover-bounce 1s ease-in-out infinite;
+}
+
+@keyframes hover-bounce {
+  0%, 100% { transform: scale(1.2); }
+  50% { transform: scale(1.3); }
 }
 
 .timeline-node-box:hover .node-dot::after {
@@ -241,15 +248,29 @@ const selectNode = (idx) => {
   border-color: #fff;
   box-shadow: 0 0 20px #00f2ff, 0 0 40px rgba(0, 242, 255, 0.4);
   transform: scale(1.4);
+  animation: node-pulse 2s infinite;
+}
+
+@keyframes node-pulse {
+  0% {
+    box-shadow: 0 0 20px #00f2ff, 0 0 0 0 rgba(0, 242, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 25px #00f2ff, 0 0 0 15px rgba(0, 242, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 20px #00f2ff, 0 0 0 0 rgba(0, 242, 255, 0);
+  }
 }
 
 .node-line {
   position: absolute;
-  left: calc(50% + 12px);
-  width: calc(100% - 24px);
-  height: 2px;
-  background: rgba(0, 242, 255, 0.2);
+  left: calc(50% + 20px);
+  width: calc(100% - 40px);
+  height: 4px;
+  background: rgba(0, 242, 255, 0.15);
   z-index: 1;
+  border-radius: 2px;
 }
 
 .node-line::before {
@@ -262,17 +283,18 @@ const selectNode = (idx) => {
   background: linear-gradient(90deg, transparent, #00f2ff, transparent);
   background-size: 200% 100%;
   animation: flow 3s linear infinite;
+  border-radius: 2px;
 }
 
 .node-line::after {
   content: "";
   position: absolute;
-  right: -4px;
+  right: -6px;
   top: 50%;
   transform: translateY(-50%);
-  border-left: 6px solid rgba(0, 242, 255, 0.5);
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
+  border-left: 8px solid rgba(0, 242, 255, 0.6);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
 }
 
 @keyframes flow {
