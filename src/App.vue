@@ -40,7 +40,7 @@ onMounted(() => {
     "维度配置": [
       { "id": "time", "name": "时间维度", "enabled": true },
       { "id": "person", "name": "人物维度", "enabled": true },
-      { "id": "duty", "name": "权责维度", "enabled": true },
+      { "id": "duty", "name": "驱动力维度", "enabled": true },
       { "id": "info", "name": "信息维度", "enabled": true },
       { "id": "attribution", "name": "归因图谱", "enabled": true }
     ],
@@ -180,50 +180,49 @@ onMounted(() => {
         }
       ]
     },
-    "权责维度数据": {
-      "summary": "基于博弈论的权责平衡分析：通过引入政策变通变量，降低了诉求的执行成本，实现了博弈均衡。",
+    "驱动力维度数据": {
+      "summary": "动力平衡归因分析：通过模拟案件发生前的驱动力与约束力博弈，识别导致失衡的关键致因。",
       "states": [
         {
           "id": "initial",
-          "name": "初始僵局",
-          "status": "调解僵局：诉求过重且执行受阻",
+          "name": "失衡诱发",
+          "status": "致因状态：驱动力显著超过约束力，案件诱发",
           "leftWeights": [
-            { "id": "L1", "name": "养老保险认缴", "value": 50, "type": "commitment", "isFloating": true },
-            { "id": "L2", "name": "过往补偿协议", "value": 20, "type": "responsibility" }
+            { "id": "L1", "name": "养老保险补缴诉求", "value": 50, "type": "obsession", "isFloating": true },
+            { "id": "L2", "name": "医疗/误工补偿驱动", "value": 40, "type": "claim" }
           ],
           "rightWeights": [
-            { "id": "R1", "name": "工伤前误工/医疗费", "value": 40, "type": "claim" },
-            { "id": "R2", "name": "职工养老保险硬性要求", "value": 60, "type": "obsession" }
+            { "id": "R1", "name": "法律程序限制", "value": 30, "type": "responsibility" },
+            { "id": "R2", "name": "历史协议约束", "value": 20, "type": "commitment" }
           ]
         },
         {
           "id": "mediating",
-          "name": "动态加码",
-          "status": "平衡调整中：引入政策变通",
+          "name": "动力干预",
+          "status": "致因状态：引入外部干预变量，尝试重构平衡",
           "leftWeights": [
-            { "id": "L1", "name": "养老保险认缴", "value": 50, "type": "commitment", "isFloating": true },
-            { "id": "L2", "name": "过往补偿协议", "value": 20, "type": "responsibility" },
-            { "id": "L3", "name": "让步补偿:4.3万元", "value": 30, "type": "concession", "linkedFactor": "经济要素" }
+            { "id": "L1", "name": "养老保险补缴诉求", "value": 50, "type": "obsession", "isFloating": true },
+            { "id": "L2", "name": "医疗/误工补偿驱动", "value": 40, "type": "claim" }
           ],
           "rightWeights": [
-            { "id": "R1", "name": "工伤前误工/医疗费", "value": 40, "type": "claim" },
-            { "id": "R3", "name": "农村失地养老保险变通", "value": 30, "type": "compromise" }
+            { "id": "R1", "name": "法律程序限制", "value": 30, "type": "responsibility" },
+            { "id": "R2", "name": "历史协议约束", "value": 20, "type": "commitment" },
+            { "id": "R3", "name": "政策变通抑制力", "value": 35, "type": "compromise" }
           ]
         },
         {
           "id": "final",
-          "name": "达成和解",
-          "status": "达成和解点：完美博弈平衡",
+          "name": "归因闭环",
+          "status": "致因状态：动力达成动态平衡，风险化解",
           "leftWeights": [
-            { "id": "L1", "name": "养老保险认缴", "value": 50, "type": "commitment" },
-            { "id": "L2", "name": "过往补偿协议", "value": 20, "type": "responsibility" },
-            { "id": "L3", "name": "让步补偿:4.3万元", "value": 30, "type": "concession" },
-            { "id": "L4", "name": "支付97020元", "value": 45, "type": "final_payment" }
+            { "id": "L1", "name": "养老保险补缴诉求", "value": 50, "type": "obsession" },
+            { "id": "L2", "name": "医疗/误工补偿驱动", "value": 40, "type": "claim" }
           ],
           "rightWeights": [
-            { "id": "R1", "name": "工伤前误工/医疗费", "value": 40, "type": "claim" },
-            { "id": "R3", "name": "农村失地养老保险变通", "value": 30, "type": "compromise" },
-            { "id": "R4", "name": "放弃无效执念", "value": 75, "type": "psychological_balance" }
+            { "id": "R1", "name": "法律程序限制", "value": 30, "type": "responsibility" },
+            { "id": "R2", "name": "历史协议约束", "value": 20, "type": "commitment" },
+            { "id": "R3", "name": "政策变通抑制力", "value": 35, "type": "compromise" },
+            { "id": "R4", "name": "心理预期回归", "value": 15, "type": "psychological_balance" }
           ]
         }
       ]

@@ -1,7 +1,7 @@
 <template>
   <div class="responsibility-dimension dashboard-card">
     <div class="card-title-row">
-      <div class="card-title">权责维度分析 (Responsibility Dimension)</div>
+      <div class="card-title">动力平衡分析 (Dynamics Analysis)</div>
       <div class="state-selector">
         <button 
           v-for="state in data.states" 
@@ -12,7 +12,7 @@
           {{ state.name }}
         </button>
       </div>
-      <button class="eval-trigger-btn" @click="$emit('open-eval', '权责维度分析', 'responsibility-dimension')">
+      <button class="eval-trigger-btn" @click="$emit('open-eval', '动力平衡分析', 'responsibility-dimension')">
         <span class="eval-icon">📊</span> 评测
       </button>
     </div>
@@ -37,7 +37,7 @@
           <div class="foundation-tech">
             <div class="settlement-indicator" :class="{ active: isEquilibrium }">
               <div class="indicator-light"></div>
-              <span>和解均衡监测</span>
+              <span>动力失衡监测</span>
             </div>
           </div>
         </div>
@@ -54,7 +54,7 @@
           <!-- 左托盘平台 -->
           <div class="pan-platform left-platform" :style="reverseRotationStyle">
             <div class="platform-base">
-              <div class="platform-label">责任端 (厂方)</div>
+              <div class="platform-label">驱动项 (Driving Factors)</div>
               <div class="weights-container">
                 <TransitionGroup name="weight-list">
                   <div 
@@ -81,7 +81,7 @@
           <!-- 右托盘平台 -->
           <div class="pan-platform right-platform" :style="reverseRotationStyle">
             <div class="platform-base">
-              <div class="platform-label">权益端 (刘某)</div>
+              <div class="platform-label">约束项 (Restraining Factors)</div>
               <div class="weights-container">
                 <TransitionGroup name="weight-list">
                   <div 
@@ -112,7 +112,7 @@
         <div v-if="hoveredWeight" class="hover-insight">
           <div class="insight-header">
             <span class="insight-icon">🔍</span>
-            <h4>砝码详情: {{ hoveredWeight.name }}</h4>
+            <h4>致因要素: {{ hoveredWeight.name }}</h4>
           </div>
           <div class="insight-content">
             <p>{{ getWeightDescription(hoveredWeight) }}</p>
@@ -127,13 +127,13 @@
       <Transition name="pulse-gold">
         <div v-if="currentState.id === 'final' && isEquilibrium" class="settlement-overlay">
           <div class="protocol-preview">
-            <div class="protocol-header">调解协议书 (2017-12-13)</div>
+            <div class="protocol-header">致因冲突焦点分析</div>
             <div class="protocol-body">
-              <p>1. 补偿金 43,000 元整...</p>
-              <p>2. 失地农民养老保险变通...</p>
-              <p>3. 支付保险费 97,020 元...</p>
+              <p>1. 核心矛盾已通过外部变量（如政策/环境变迁）实现对冲；</p>
+              <p>2. 驱动力与约束力在当前节点达成动态平衡；</p>
+              <p>3. 行为动机被有效抑制，案件触发风险降低。</p>
             </div>
-            <div class="protocol-seal">已锁定</div>
+            <div class="protocol-seal">已归因</div>
           </div>
         </div>
       </Transition>
@@ -212,16 +212,16 @@ const handleWeightHover = (weight) => {
 
 const getWeightDescription = (w) => {
   const baseDesc = {
-    'commitment': '厂方基于社会责任作出的承诺，但由于政策限制目前难以执行。',
-    'responsibility': '用人单位应尽的法律义务及过往协议中的存续部分。',
-    'claim': '劳动者基于《工伤保险条例》提出的法定经济补偿要求。',
-    'obsession': '劳动者对特定身份待遇的原始诉求，受限于现行政策。',
-    'concession': '厂方为达成和解而额外承担的经济赔偿部分。',
-    'compromise': '劳动者接受变通方案，降低了执行难度。',
-    'final_payment': '达成最终平衡的关键支付项。',
-    'psychological_balance': '心态转变带来的虚拟重量，抵消了原始诉求的阻力。'
+    'commitment': '主体基于外部环境或社会责任作出的承诺，起到一定的抑制/平衡作用。',
+    'responsibility': '主体应尽的法律或契约义务，属于基础约束项。',
+    'claim': '当事人基于特定权利主张提出的要求，构成案件的主要驱动力。',
+    'obsession': '当事人对特定结果的强烈主觉诉求，通常是导致僵局的核心驱动项。',
+    'concession': '主体为达成平衡而作出的额外让步或资源投入。',
+    'compromise': '当事人接受替代方案，降低了系统的对抗强度。',
+    'final_payment': '达成最终动力平衡的关键补偿或投入项。',
+    'psychological_balance': '心态转变或认知更新带来的正向拉力，有效抵消了冲突驱动力。'
   };
-  return baseDesc[w.type] || '权责争议砝码。';
+  return baseDesc[w.type] || '动力平衡博弈要素。';
 };
 
 watch(() => props.data, () => {

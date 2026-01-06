@@ -61,7 +61,7 @@
               <!-- 权责维度 (占据右侧全部) -->
               <ResponsibilityDimension
                 v-else-if="activeDimensionId === 'duty'"
-                :data="analysisData.权责维度数据"
+                :data="analysisData.驱动力维度数据"
                 @open-eval="openEval"
                 @highlight-factor="handleFactorSelect"
               />
