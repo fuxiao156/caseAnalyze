@@ -110,7 +110,6 @@ import EventFactorCard from './EventFactorCard.vue';
 import EventDescriptionCard from './EventDescriptionCard.vue';
 import DimensionSwitch from './DimensionSwitch.vue';
 import TimeDimensionCard from './TimeDimensionCard.vue';
-import FactorCarousel from './FactorCarousel.vue';
 import ResponsibilityDimension from './ResponsibilityDimension.vue';
 import InformationDimension from './InformationDimension.vue';
 import PersonDimension from './PersonDimension.vue';

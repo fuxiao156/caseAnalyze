@@ -140,8 +140,8 @@ watch(() => props.data.characters, (newChars) => {
 }
 
 .dimension-summary p {
-  font-size: 13px;
-  color: #88b0ea;
+  font-size: 15px;
+  color: #c8ddfb;
   margin: 0;
   line-height: 1.5;
 }
@@ -206,8 +206,8 @@ watch(() => props.data.characters, (newChars) => {
 }
 
 .person-type-tag {
-  font-size: 11px;
-  color: #88b0ea;
+  font-size: 13px;
+  color: #c8ddfb;
   background: rgba(136, 176, 234, 0.1);
   padding: 1px 6px;
   border-radius: 2px;
@@ -246,7 +246,7 @@ watch(() => props.data.characters, (newChars) => {
 }
 
 .attr-label {
-  font-size: 14px;
+  font-size: 16px;
   color: #00f2ff;
   font-weight: bold;
   margin-bottom: 15px;
@@ -272,7 +272,7 @@ watch(() => props.data.characters, (newChars) => {
   padding: 8px 12px;
   border-radius: 4px;
   margin-bottom: 10px;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
@@ -285,7 +285,7 @@ watch(() => props.data.characters, (newChars) => {
   padding: 8px 12px;
   border-radius: 4px;
   margin-bottom: 10px;
-  font-size: 12px;
+  font-size: 15px;
   line-height: 1.5;
 }
 
@@ -314,7 +314,7 @@ watch(() => props.data.characters, (newChars) => {
 }
 
 .conclusion-text {
-  font-size: 14px;
+  font-size: 16px;
   color: #fff;
   line-height: 1.8;
   text-align: justify;

@@ -205,7 +205,7 @@ const selectNode = (idx) => {
 }
 
 .dimension-summary p {
-  font-size: 14px;
+  font-size: 15px;
   color: #cfd9e5;
   line-height: 1.6;
   margin: 0;
