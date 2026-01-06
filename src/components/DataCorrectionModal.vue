@@ -54,6 +54,48 @@
           </div>
         </div>
 
+        <div v-else-if="sectionId === 'time-dimension'" class="correction-panel">
+          <div class="panel-group">
+            <div class="panel-label">时间维度总结</div>
+            <textarea 
+              v-model="localData.时间维度数据.summary" 
+              class="tech-textarea custom-scrollbar small-height" 
+              placeholder="请输入时间维度总结..."
+            ></textarea>
+          </div>
+          <div class="panel-group">
+            <div class="panel-label">事件时间轴 (Timeline)</div>
+            <div class="timeline-edit-list">
+              <div v-for="(node, index) in localData.时间维度数据.timeline" :key="'node-' + index" class="timeline-edit-card">
+                <div class="card-header">
+                  <span class="node-index">节点 {{ index + 1 }}</span>
+                  <button class="remove-btn small" @click="localData.时间维度数据.timeline.splice(index, 1)">✕</button>
+                </div>
+                <div class="card-body">
+                  <div class="input-row">
+                    <input v-model="node.date" class="tech-input small" placeholder="时间 (如: 2024-01)" />
+                    <input v-model="node.event" class="tech-input small" placeholder="事件简称" />
+                  </div>
+                  
+                  <!-- 节点下要素校正 -->
+                  <div class="node-factors-edit">
+                    <div class="sub-label">影响要素 (Factors)</div>
+                    <div v-for="(factor, fIdx) in node.nodeFactors" :key="'f-' + fIdx" class="factor-row">
+                      <div class="factor-header">
+                        <input v-model="factor.name" class="tech-input small" placeholder="要素名称" />
+                        <button class="remove-btn mini" @click="node.nodeFactors.splice(fIdx, 1)">✕</button>
+                      </div>
+                      <textarea v-model="factor.content" class="tech-textarea custom-scrollbar tiny-height" placeholder="要素分析内容..."></textarea>
+                    </div>
+                    <button class="add-btn mini" @click="node.nodeFactors.push({ id: Date.now(), name: '', content: '' })">+ 添加影响要素</button>
+                  </div>
+                </div>
+              </div>
+              <button class="add-btn" @click="localData.时间维度数据.timeline.push({ date: '', event: '', nodeFactors: [] })">+ 添加时间节点</button>
+            </div>
+          </div>
+        </div>
+
         <!-- 未来可以在这里添加其他模块的面板 -->
         <div v-else class="placeholder-text">
           {{ sectionName }} 的校正面板正在开发中...
@@ -238,6 +280,16 @@ const handleUpdate = async () => {
   padding-right: 15px;
 }
 
+.tech-textarea.small-height {
+  height: 80px;
+}
+
+.tech-textarea.tiny-height {
+  height: 60px;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
 /* 要素编辑列表样式 */
 .factor-edit-list {
   display: flex;
@@ -290,6 +342,91 @@ const handleUpdate = async () => {
 .remove-btn:hover {
   background: #ff4d4f;
   color: #fff;
+}
+
+.remove-btn.small {
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+}
+
+.remove-btn.mini {
+  width: 18px;
+  height: 18px;
+  font-size: 8px;
+  padding: 0;
+}
+
+.add-btn.mini {
+  padding: 4px 8px;
+  font-size: 11px;
+  margin-top: 5px;
+}
+
+/* 时间轴编辑样式 */
+.timeline-edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.timeline-edit-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 242, 255, 0.1);
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.timeline-edit-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 8px;
+}
+
+.node-index {
+  font-size: 12px;
+  color: #88b0ea;
+  font-weight: bold;
+}
+
+.timeline-edit-card .input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.node-factors-edit {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 242, 255, 0.05);
+}
+
+.sub-label {
+  font-size: 11px;
+  color: #00f2ff;
+  margin-bottom: 8px;
+  opacity: 0.8;
+  text-transform: uppercase;
+}
+
+.factor-row {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+}
+
+.factor-row:last-of-type {
+  border-bottom: none;
+}
+
+.factor-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .modal-footer {
