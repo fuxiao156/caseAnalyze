@@ -19,14 +19,14 @@
             class="event-description-section"
             :title="analysisData.title"
             :detail="analysisData.detail"
-            @open-eval="openEval"
+            @open-correction="openCorrection"
           />
           
           <!-- 1.2 事件画像与成因分析 -->
           <EventFactorCard 
             :profiling="analysisData.事件画像" 
             :causes="analysisData.核心成因分析" 
-            @open-eval="openEval"
+            @open-correction="openCorrection"
           />
         </aside>
 
@@ -50,21 +50,21 @@
                 :factors="currentFactors"
                 :active-factor-name="activeFactorName"
                 v-model:active-index="activeTimeNodeIndex"
-                @open-eval="openEval"
+                @open-correction="openCorrection"
               />
 
               <!-- 人物维度 (占据右侧全部) -->
               <PersonDimension
                 v-else-if="activeDimensionId === 'person'"
                 :data="analysisData.人物维度数据"
-                @open-eval="openEval"
+                @open-correction="openCorrection"
               />
 
               <!-- 权责维度 (占据右侧全部) -->
               <ResponsibilityDimension
                 v-else-if="activeDimensionId === 'duty'"
                 :data="analysisData.驱动力维度数据"
-                @open-eval="openEval"
+                @open-correction="openCorrection"
                 @highlight-factor="handleFactorSelect"
               />
 
@@ -72,14 +72,14 @@
               <InformationDimension
                 v-else-if="activeDimensionId === 'info'"
                 :data="analysisData.信息维度数据"
-                @open-eval="openEval"
+                @open-correction="openCorrection"
               />
               
               <!-- 归因图谱 (占据右侧全部) -->
               <AttributionDimension
                 v-else-if="activeDimensionId === 'attribution'"
                 :case-title="analysisData.title"
-                @open-eval="openEval"
+                @open-correction="openCorrection"
               />
 
               <!-- 其他维度占位 -->
@@ -92,14 +92,15 @@
       </div>
     </div>
 
-    <!-- 评估 Modal -->
-    <AnnotationModal
-      v-if="evalModalVisible"
-      :visible="evalModalVisible"
+    <!-- 数据校正 Modal -->
+    <DataCorrectionModal
+      v-if="correctionModalVisible"
+      :visible="correctionModalVisible"
       :sectionName="activeSection.name"
       :sectionId="activeSection.id"
-      @close="evalModalVisible = false"
-      @submit="handleEvalSubmit"
+      :allData="analysisData"
+      @close="correctionModalVisible = false"
+      @update-all="handleDataUpdate"
     />
   </div>
 </template>
@@ -114,7 +115,7 @@ import ResponsibilityDimension from './ResponsibilityDimension.vue';
 import InformationDimension from './InformationDimension.vue';
 import PersonDimension from './PersonDimension.vue';
 import AttributionDimension from './AttributionDimension.vue';
-import AnnotationModal from '../AnnotationModal.vue';
+import DataCorrectionModal from '../DataCorrectionModal.vue';
 
 const props = defineProps({
   visible: Boolean,
@@ -124,21 +125,21 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'update-data']);
 
-// 评估 Modal 状态
-const evalModalVisible = ref(false);
+// 数据校正 Modal 状态
+const correctionModalVisible = ref(false);
 const activeSection = ref({ name: '', id: '' });
 
-const openEval = (name, id) => {
+const openCorrection = (name, id) => {
   activeSection.value = { name, id };
-  evalModalVisible.value = true;
+  correctionModalVisible.value = true;
 };
 
-const handleEvalSubmit = (data) => {
-  console.log('提交评估数据:', data);
-  // 这里可以添加将评估数据保存到后端的逻辑
-  evalModalVisible.value = false;
+const handleDataUpdate = (newData) => {
+  console.log('收到全量校正数据:', newData);
+  emit('update-data', newData);
+  // 这里可以根据需要进行本地状态更新或重新请求
 };
 
 // 设计稿尺寸

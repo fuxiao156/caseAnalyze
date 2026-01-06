@@ -12,8 +12,8 @@
           {{ state.name }}
         </button>
       </div>
-      <button class="eval-trigger-btn" @click="$emit('open-eval', '动力平衡分析', 'responsibility-dimension')">
-        <span class="eval-icon">📊</span> 评测
+      <button class="eval-trigger-btn" @click="$emit('open-correction', '动力平衡分析', 'responsibility-dimension')">
+        <span class="eval-icon">📝</span> 数据校正
       </button>
     </div>
 
@@ -172,7 +172,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['open-eval', 'highlight-factor']);
+const emit = defineEmits(['open-correction', 'highlight-factor']);
 
 const activeStateId = ref('initial');
 const hoveredWeight = ref(null);

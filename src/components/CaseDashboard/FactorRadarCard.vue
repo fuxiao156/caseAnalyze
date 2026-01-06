@@ -2,8 +2,8 @@
   <div class="radar-card dashboard-card">
     <div class="card-title-row">
       <div class="card-title">全要素冲突权重分析 (Factor Analysis)</div>
-      <button class="eval-trigger-btn" @click="$emit('open-eval', '全要素权重分析', 'factor-radar')">
-        <span class="eval-icon">📊</span> 评测
+      <button class="eval-trigger-btn" @click="$emit('open-correction', '全要素权重分析', 'factor-radar')">
+        <span class="eval-icon">📝</span> 数据校正
       </button>
     </div>
     <div class="radar-content">
@@ -43,7 +43,7 @@ const props = defineProps({
   activeFactor: String
 });
 
-const emit = defineEmits(['select-factor', 'open-eval']);
+const emit = defineEmits(['select-factor', 'open-correction']);
 
 const radarRef = ref(null);
 let myChart = null;

@@ -2,8 +2,8 @@
   <div class="attribution-dimension dashboard-card">
     <div class="card-title-row">
       <div class="card-title">全局归因图谱 (Global Attribution Map)</div>
-      <button class="eval-trigger-btn" @click="$emit('open-eval', '归因图谱', 'attribution-map')">
-        <span class="eval-icon">📊</span> 评测
+      <button class="eval-trigger-btn" @click="$emit('open-correction', '归因图谱', 'attribution-map')">
+        <span class="eval-icon">📝</span> 数据校正
       </button>
     </div>
 
@@ -34,7 +34,7 @@ const props = defineProps({
   }
 });
 
-defineEmits(['open-eval']);
+defineEmits(['open-correction']);
 
 // --- 拖拽逻辑 ---
 const containerRef = ref(null);

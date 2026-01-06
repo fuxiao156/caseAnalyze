@@ -2,8 +2,8 @@
   <div class="time-dimension dashboard-card">
     <div class="card-title-row">
       <div class="card-title">时间维度分析 (Time Dimension)</div>
-      <button class="eval-trigger-btn" @click="$emit('open-eval', '时间维度分析', 'time-dimension')">
-        <span class="eval-icon">📊</span> 评测
+      <button class="eval-trigger-btn" @click="$emit('open-correction', '时间维度分析', 'time-dimension')">
+        <span class="eval-icon">📝</span> 数据校正
       </button>
     </div>
     
@@ -90,7 +90,7 @@ const props = defineProps({
   activeFactorName: String
 });
 
-const emit = defineEmits(['open-eval', 'update:activeIndex']);
+const emit = defineEmits(['open-correction', 'update:activeIndex']);
 
 const openIds = ref([]);
 

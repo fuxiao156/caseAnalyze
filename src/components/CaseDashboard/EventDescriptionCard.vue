@@ -2,8 +2,8 @@
   <div class="description-card dashboard-card">
     <div class="card-title-row">
       <div class="card-title">事件描述 (Description)</div>
-      <button class="eval-trigger-btn" @click="$emit('open-eval', '事件描述', 'event-description')">
-        <span class="eval-icon">📊</span> 评测
+      <button class="eval-trigger-btn" @click="$emit('open-correction', '事件描述', 'event-description')">
+        <span class="eval-icon">📝</span> 数据校正
       </button>
     </div>
     <div class="description-content custom-scrollbar">
@@ -19,7 +19,7 @@ defineProps({
   detail: String
 });
 
-defineEmits(['open-eval']);
+defineEmits(['open-correction']);
 </script>
 
 <style scoped>

@@ -2,8 +2,8 @@
   <div class="info-dimension dashboard-card">
     <div class="card-title-row">
       <div class="card-title">认知差异分析 (Cognition Analysis)</div>
-      <button class="eval-trigger-btn" @click="$emit('open-eval', '认知差异分析', 'info-dimension')">
-        <span class="eval-icon">📊</span> 评测
+      <button class="eval-trigger-btn" @click="$emit('open-correction', '认知差异分析', 'info-dimension')">
+        <span class="eval-icon">📝</span> 数据校正
       </button>
     </div>
 
@@ -101,7 +101,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['open-eval']);
+const emit = defineEmits(['open-correction']);
 
 const activeBiasId = ref(null);
 

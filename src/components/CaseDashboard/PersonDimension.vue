@@ -2,8 +2,8 @@
   <div class="person-dimension dashboard-card">
     <div class="card-title-row">
       <div class="card-title">人物维度分析 (Character Attribution)</div>
-      <button class="eval-trigger-btn" @click="$emit('open-eval', '人物维度分析', 'person-dimension')">
-        <span class="eval-icon">📊</span> 评测
+      <button class="eval-trigger-btn" @click="$emit('open-correction', '人物维度分析', 'person-dimension')">
+        <span class="eval-icon">📝</span> 数据校正
       </button>
     </div>
 
@@ -89,7 +89,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['open-eval']);
+const emit = defineEmits(['open-correction']);
 
 const activePersonId = ref(null);
 
