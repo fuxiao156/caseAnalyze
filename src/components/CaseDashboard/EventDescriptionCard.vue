@@ -86,8 +86,8 @@ defineEmits(['open-eval']);
 }
 
 .event-detail {
-  font-size: 13px;
-  color: #88b0ea;
+  font-size: 15px;
+  color: #c8ddfb;
   line-height: 1.8;
   text-align: justify;
   white-space: pre-wrap;

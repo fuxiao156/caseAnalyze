@@ -23,12 +23,22 @@
     <!-- 中部：双饼图 -->
     <div class="charts-row">
       <div class="chart-container">
-        <div ref="profilePieRef" class="pie-chart"></div>
-        <div class="chart-label">画像占比</div>
+        <div class="chart-wrapper">
+          <div class="chart-bg-ring"></div>
+          <div class="chart-bg-ring-inner"></div>
+          <div class="chart-scan-beam"></div>
+          <div ref="profilePieRef" class="pie-chart"></div>
+        </div>
+        <div class="chart-label">画像全库占比</div>
       </div>
       <div class="chart-container">
-        <div ref="causePieRef" class="pie-chart"></div>
-        <div class="chart-label">成因占比</div>
+        <div class="chart-wrapper">
+          <div class="chart-bg-ring highlight"></div>
+          <div class="chart-bg-ring-inner highlight"></div>
+          <div class="chart-scan-beam highlight"></div>
+          <div ref="causePieRef" class="pie-chart"></div>
+        </div>
+        <div class="chart-label">成因全库占比</div>
       </div>
     </div>
 
@@ -71,41 +81,89 @@ let causeChart = null;
 
 const activeProfileIdx = ref(0);
 const activeCauseIdx = ref(0);
-let rotationTimer = null;
-const lastInteractionTime = ref(Date.now());
 
-const getPieOption = (title, data, activeIdx) => {
+const getPieOption = (title, data, activeIdx, isYellow = false) => {
+  const activeItem = data[activeIdx] || { tag: '未知', percentage: 0 };
+  const percent = activeItem.percentage || 0;
+  const themeColor = isYellow ? '#ffd700' : '#00f2ff';
+  const shadowColor = isYellow ? 'rgba(255, 215, 0, 0.6)' : 'rgba(0, 242, 255, 0.6)';
+  
   return {
     backgroundColor: 'transparent',
-    tooltip: { trigger: 'item' },
+    // 启用动画
+    animation: true,
+    animationDuration: 1200,
+    animationEasing: 'cubicOut',
+    animationDurationUpdate: 800,
+    animationEasingUpdate: 'exponentialOut',
+    title: {
+      text: percent + '%',
+      left: 'center',
+      top: 'center',
+      textStyle: {
+        color: themeColor,
+        fontSize: 16,
+        fontWeight: 'bold',
+        fontFamily: 'monospace',
+        textShadowBlur: 10,
+        textShadowColor: shadowColor
+      }
+    },
+    tooltip: { 
+      trigger: 'item',
+      backgroundColor: 'rgba(10, 27, 62, 0.9)',
+      borderColor: themeColor,
+      textStyle: { color: '#fff' },
+      formatter: (params) => {
+        if (params.name === '全库其他案件') return null;
+        return `${params.name}<br/>全库占比: ${params.value}%`;
+      }
+    },
     series: [{
       name: title,
       type: 'pie',
-      radius: ['40%', '70%'],
+      radius: ['55%', '75%'],
       avoidLabelOverlap: false,
+      // 科技感动画效果：展开进入
+      animationType: 'expansion',
+      animationDelay: 200,
       itemStyle: {
-        borderRadius: 4,
+        borderRadius: 2,
         borderColor: '#0a1b3e',
-        borderWidth: 2
+        borderWidth: 1
+      },
+      emphasis: {
+        scale: true,
+        scaleSize: 5
       },
       label: { show: false },
-      emphasis: {
-        label: {
-          show: true,
-          fontSize: 12,
-          fontWeight: 'bold',
-          color: '#fff',
-          formatter: '{b}\n{d}%'
+      data: [
+        {
+          value: percent,
+          name: activeItem.tag,
+          itemStyle: {
+            color: isYellow 
+              ? new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: '#ffd700' },
+                  { offset: 1, color: '#ffa500' }
+                ])
+              : new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  { offset: 0, color: '#00f2ff' },
+                  { offset: 1, color: '#0066ff' }
+                ]),
+            shadowBlur: 15,
+            shadowColor: shadowColor
+          }
+        },
+        {
+          value: 100 - percent,
+          name: '全库其他案件',
+          itemStyle: {
+            color: 'rgba(255, 255, 255, 0.05)'
+          },
+          tooltip: { show: false }
         }
-      },
-      data: data.map((item, idx) => ({
-        value: item.count,
-        name: item.tag,
-        selected: idx === activeIdx,
-        itemStyle: {
-          color: idx === activeIdx ? '#00f2ff' : 'rgba(0, 242, 255, 0.2)'
-        }
-      }))
+      ]
     }]
   };
 };
@@ -123,53 +181,33 @@ const initCharts = () => {
 
 const updateProfileChart = () => {
   if (profileChart && props.profiling) {
-    profileChart.setOption(getPieOption('画像', props.profiling, activeProfileIdx.value));
+    profileChart.setOption(getPieOption('画像分布', props.profiling, activeProfileIdx.value, false));
   }
 };
 
 const updateCauseChart = () => {
   if (causeChart && props.causes) {
-    causeChart.setOption(getPieOption('成因', props.causes, activeCauseIdx.value));
+    causeChart.setOption(getPieOption('成因分布', props.causes, activeCauseIdx.value, true));
   }
 };
 
 const selectProfile = (idx) => {
   activeProfileIdx.value = idx;
-  lastInteractionTime.value = Date.now();
   updateProfileChart();
 };
 
 const selectCause = (idx) => {
   activeCauseIdx.value = idx;
-  lastInteractionTime.value = Date.now();
   updateCauseChart();
-};
-
-const startRotation = () => {
-  rotationTimer = setInterval(() => {
-    // 如果 5 秒内没有操作，则轮播
-    if (Date.now() - lastInteractionTime.value > 5000) {
-      if (props.profiling && props.profiling.length > 0) {
-        activeProfileIdx.value = (activeProfileIdx.value + 1) % props.profiling.length;
-        updateProfileChart();
-      }
-      if (props.causes && props.causes.length > 0) {
-        activeCauseIdx.value = (activeCauseIdx.value + 1) % props.causes.length;
-        updateCauseChart();
-      }
-    }
-  }, 3000);
 };
 
 onMounted(() => {
   nextTick(() => {
     initCharts();
-    startRotation();
   });
 });
 
 onUnmounted(() => {
-  if (rotationTimer) clearInterval(rotationTimer);
   profileChart?.dispose();
   causeChart?.dispose();
 });
@@ -232,8 +270,8 @@ watch(() => props.causes, updateCauseChart, { deep: true });
 }
 
 .mini-label {
-  color: #88b0ea;
-  font-size: 12px;
+  font-size: 15px;
+  color: #c8ddfb;
   margin-bottom: 8px;
   opacity: 0.8;
 }
@@ -247,7 +285,7 @@ watch(() => props.causes, updateCauseChart, { deep: true });
 .tech-tag {
   padding: 4px 12px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.3s;
   border: 1px solid transparent;
@@ -264,13 +302,13 @@ watch(() => props.causes, updateCauseChart, { deep: true });
 }
 
 .tech-tag.cause {
-  background: rgba(255, 207, 64, 0.1);
-  color: #ffcf40;
+  background: rgba(255, 215, 0, 0.1);
+  color: #ffd700;
 }
 .tech-tag.cause.active, .tech-tag.cause:hover {
-  background: #ffcf40;
+  background: #ffd700;
   color: #000;
-  box-shadow: 0 0 10px rgba(255, 207, 64, 0.5);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
 }
 
 .charts-row {
@@ -286,16 +324,114 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   flex-direction: column;
   align-items: center;
   height: 100%;
+  position: relative;
+}
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: chart-float 6s ease-in-out infinite;
+}
+
+.chart-bg-ring {
+  position: absolute;
+  width: 90px;
+  height: 90px;
+  border: 1px dashed rgba(0, 242, 255, 0.2);
+  border-radius: 50%;
+  animation: ring-rotate 15s linear infinite;
+}
+
+.chart-bg-ring::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border: 1px solid rgba(0, 242, 255, 0.05);
+  border-radius: 50%;
+  animation: ring-pulse 4s ease-in-out infinite;
+}
+
+.chart-bg-ring-inner {
+  position: absolute;
+  width: 65px;
+  height: 65px;
+  border: 1px solid rgba(0, 242, 255, 0.1);
+  border-radius: 50%;
+  animation: ring-rotate-reverse 10s linear infinite;
+}
+
+.chart-bg-ring-inner::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  background: #00f2ff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00f2ff;
+}
+
+.chart-scan-beam {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent 0%, rgba(0, 242, 255, 0.1) 10%, transparent 20%);
+  animation: ring-rotate 4s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.chart-bg-ring.highlight {
+  border-color: rgba(255, 215, 0, 0.2);
+}
+.chart-bg-ring.highlight::before {
+  border-color: rgba(255, 215, 0, 0.05);
+}
+.chart-bg-ring-inner.highlight {
+  border-color: rgba(255, 215, 0, 0.1);
+}
+.chart-bg-ring-inner.highlight::after {
+  background: #ffd700;
+  box-shadow: 0 0 8px #ffd700;
+}
+.chart-scan-beam.highlight {
+  background: conic-gradient(from 0deg, transparent 0%, rgba(255, 215, 0, 0.1) 10%, transparent 20%);
+}
+
+@keyframes ring-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ring-rotate-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes ring-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.15); opacity: 0.6; }
+}
+
+@keyframes chart-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 .pie-chart {
   width: 100%;
-  flex: 1;
-  min-height: 0;
+  height: 100%;
+  z-index: 2;
 }
 
 .chart-label {
-  font-size: 11px;
+  font-size: 14px;
   color: #88b0ea;
   margin-top: 5px;
   flex: 0 0 auto;
