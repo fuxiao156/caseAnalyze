@@ -189,8 +189,9 @@
                           <input v-model.number="w.value" type="number" class="tech-input weight-val-input" placeholder="权重" />
                           <button class="remove-btn mini" @click="state.leftWeights.splice(wIdx, 1)">✕</button>
                         </div>
+                        <textarea v-model="w.describe" class="tech-textarea custom-scrollbar tiny-height" placeholder="动力详情描述..."></textarea>
                       </div>
-                      <button class="add-btn mini" @click="state.leftWeights.push({ id: Date.now(), name: '', value: 10, type: 'claim' })">+ 添加驱动项</button>
+                      <button class="add-btn mini" @click="state.leftWeights.push({ id: Date.now(), name: '', value: 10, describe: '' })">+ 添加驱动项</button>
                     </div>
 
                     <!-- 右侧：约束项 -->
@@ -202,8 +203,9 @@
                           <input v-model.number="w.value" type="number" class="tech-input weight-val-input" placeholder="权重" />
                           <button class="remove-btn mini" @click="state.rightWeights.splice(wIdx, 1)">✕</button>
                         </div>
+                        <textarea v-model="w.describe" class="tech-textarea custom-scrollbar tiny-height" placeholder="约束详情描述..."></textarea>
                       </div>
-                      <button class="add-btn mini" @click="state.rightWeights.push({ id: Date.now(), name: '', value: 10, type: 'responsibility' })">+ 添加约束项</button>
+                      <button class="add-btn mini" @click="state.rightWeights.push({ id: Date.now(), name: '', value: 10, describe: '' })">+ 添加约束项</button>
                     </div>
                   </div>
 

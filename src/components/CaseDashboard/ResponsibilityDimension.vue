@@ -65,7 +65,6 @@
                     v-for="w in currentState.leftWeights" 
                     :key="w.id"
                     class="weight-item-tech"
-                    :class="[w.type, { floating: w.isFloating }]"
                     @mouseenter="handleWeightHover(w)"
                     @mouseleave="hoveredWeight = null"
                   >
@@ -92,7 +91,6 @@
                     v-for="w in currentState.rightWeights" 
                     :key="w.id"
                     class="weight-item-tech"
-                    :class="w.type"
                     @mouseenter="handleWeightHover(w)"
                     @mouseleave="hoveredWeight = null"
                   >
@@ -248,17 +246,7 @@ const handleWeightHover = (weight) => {
 };
 
 const getWeightDescription = (w) => {
-  const baseDesc = {
-    'commitment': '主体基于外部环境或社会责任作出的承诺，起到一定的抑制/平衡作用。',
-    'responsibility': '主体应尽的法律或契约义务，属于基础约束项。',
-    'claim': '当事人基于特定权利主张提出的要求，构成案件的主要驱动力。',
-    'obsession': '当事人对特定结果的强烈主觉诉求，通常是导致僵局的核心驱动项。',
-    'concession': '主体为达成平衡而作出的额外让步或资源投入。',
-    'compromise': '当事人接受替代方案，降低了系统的对抗强度。',
-    'final_payment': '达成最终动力平衡的关键补偿或投入项。',
-    'psychological_balance': '心态转变或认知更新带来的正向拉力，有效抵消了冲突驱动力。'
-  };
-  return baseDesc[w.type] || '动力平衡博弈要素。';
+  return w.describe || '动力平衡博弈要素。';
 };
 
 watch(() => props.data, () => {

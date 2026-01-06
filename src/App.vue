@@ -182,26 +182,26 @@ onMounted(() => {
           "name": "失衡诱发",
           "status": "致因状态：驱动力显著超过约束力，案件诱发",
           "leftWeights": [
-            { "id": "L1", "name": "养老保险补缴诉求", "value": 50, "type": "obsession", "isFloating": true },
-            { "id": "L2", "name": "医疗/误工补偿驱动", "value": 40, "type": "claim" }
+            { "id": "L1", "name": "养老保险补缴诉求", "value": 50, "describe": "当事人对特定结果的强烈主觉诉求，通常是导致僵局的核心驱动项。" },
+            { "id": "L2", "name": "医疗/误工补偿驱动", "value": 40, "describe": "当事人基于特定权利主张提出的要求，构成案件的主要驱动力。" }
           ],
           "rightWeights": [
-            { "id": "R1", "name": "法律程序限制", "value": 30, "type": "responsibility" },
-            { "id": "R2", "name": "历史协议约束", "value": 20, "type": "commitment" }
+            { "id": "R1", "name": "法律程序限制", "value": 30, "describe": "主体应尽的法律或契约义务，属于基础约束项。" },
+            { "id": "R2", "name": "历史协议约束", "value": 20, "describe": "主体基于外部环境或社会责任作出的承诺，起到一定的抑制/平衡作用。" }
           ]
         },
         {
           "id": "mediating",
           "name": "动力干预",
-          "status": "致因状态：引入外部干预变量，尝试重构平衡",
+          "status": "致育状态：引入外部干预变量，尝试重构平衡",
           "leftWeights": [
-            { "id": "L1", "name": "养老保险补缴诉求", "value": 50, "type": "obsession", "isFloating": true },
-            { "id": "L2", "name": "医疗/误工补偿驱动", "value": 40, "type": "claim" }
+            { "id": "L1", "name": "养老保险补缴诉求", "value": 50, "describe": "当事人对特定结果的强烈主觉诉求，通常是导致僵局的核心驱动项。" },
+            { "id": "L2", "name": "医疗/误工补偿驱动", "value": 40, "describe": "当事人基于特定权利主张提出的要求，构成案件的主要驱动力。" }
           ],
           "rightWeights": [
-            { "id": "R1", "name": "法律程序限制", "value": 30, "type": "responsibility" },
-            { "id": "R2", "name": "历史协议约束", "value": 20, "type": "commitment" },
-            { "id": "R3", "name": "政策变通抑制力", "value": 35, "type": "compromise" }
+            { "id": "R1", "name": "法律程序限制", "value": 30, "describe": "主体应尽的法律或契约义务，属于基础约束项。" },
+            { "id": "R2", "name": "历史协议约束", "value": 20, "describe": "主体基于外部环境或社会责任作出的承诺，起到一定的抑制/平衡作用。" },
+            { "id": "R3", "name": "政策变通抑制力", "value": 35, "describe": "主体为达成平衡而作出的额外让步或资源投入。" }
           ]
         },
         {
@@ -214,14 +214,14 @@ onMounted(() => {
             "3. 行为动机被有效抑制，案件触发风险降低。"
           ],
           "leftWeights": [
-            { "id": "L1", "name": "养老保险补缴诉求", "value": 50, "type": "obsession" },
-            { "id": "L2", "name": "医疗/误工补偿驱动", "value": 40, "type": "claim" }
+            { "id": "L1", "name": "养老保险补缴诉求", "value": 50, "describe": "当事人对特定结果的强烈主觉诉求，通常是导致僵局的核心驱动项。" },
+            { "id": "L2", "name": "医疗/误工补偿驱动", "value": 40, "describe": "当事人基于特定权利主张提出的要求，构成案件的主要驱动力。" }
           ],
           "rightWeights": [
-            { "id": "R1", "name": "法律程序限制", "value": 30, "type": "responsibility" },
-            { "id": "R2", "name": "历史协议约束", "value": 20, "type": "commitment" },
-            { "id": "R3", "name": "政策变通抑制力", "value": 35, "type": "compromise" },
-            { "id": "R4", "name": "心理预期回归", "value": 15, "type": "psychological_balance" }
+            { "id": "R1", "name": "法律程序限制", "value": 30, "describe": "主体应尽的法律或契约义务，属于基础约束项。" },
+            { "id": "R2", "name": "历史协议约束", "value": 20, "describe": "主体基于外部环境或社会责任作出的承诺，起到一定的抑制/平衡作用。" },
+            { "id": "R3", "name": "政策变通抑制力", "value": 35, "describe": "主体为达成平衡而作出的额外让步或资源投入。" },
+            { "id": "R4", "name": "心理预期回归", "value": 15, "describe": "心态转变或认知更新带来的正向拉力，有效抵消了冲突驱动力。" }
           ]
         }
       ]
