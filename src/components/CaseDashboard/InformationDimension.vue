@@ -45,9 +45,6 @@
               <div class="card-tags">
                 <span v-for="tag in item.subjective.tags" :key="tag" class="tag subjective-tag">{{ tag }}</span>
               </div>
-              <div class="intensity-bar">
-                <div class="intensity-fill" :style="{ width: (item.subjective.intensity * 100) + '%' }"></div>
-              </div>
             </div>
           </div>
         </div>
@@ -82,10 +79,6 @@
               <div class="card-text">{{ item.objective.text }}</div>
               <div class="card-tags">
                 <span v-for="tag in item.objective.tags" :key="tag" class="tag objective-tag">{{ tag }}</span>
-              </div>
-              <div class="certainty-indicator">
-                <div class="certainty-dot" v-for="i in 5" :key="i" :class="{ filled: i <= (item.objective.certainty * 5) }"></div>
-                <span class="certainty-label">事实/环境置信度</span>
               </div>
             </div>
           </div>
@@ -290,16 +283,6 @@ const activeBiasId = ref(null);
   border: 1px solid rgba(162, 155, 254, 0.3);
 }
 
-.intensity-bar {
-  height: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  margin-top: 12px;
-}
-.intensity-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #a29bfe, #ff4757);
-}
-
 /* 客观侧样式：蓝色/绿色/稳定效果 */
 .objective-card {
   border-left: 3px solid #2ed573;
@@ -312,28 +295,6 @@ const activeBiasId = ref(null);
   background: rgba(46, 213, 115, 0.1);
   color: #2ed573;
   border: 1px solid rgba(46, 213, 115, 0.3);
-}
-
-.certainty-indicator {
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.certainty-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-}
-.certainty-dot.filled {
-  background: #2ed573;
-  box-shadow: 0 0 5px #2ed573;
-}
-.certainty-label {
-  font-size: 10px;
-  color: #888;
-  margin-left: 6px;
 }
 
 /* 中间桥梁列 */
