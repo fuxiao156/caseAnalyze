@@ -10,6 +10,12 @@
       </div>
 
       <div class="modal-body scrollbar-tech">
+        <!-- 提示信息 -->
+        <div class="correction-info-tip">
+          <span class="tip-icon">ℹ️</span>
+          <span class="tip-text">您手动校正的数据将作为高质量语料用于模型微调（Fine-tuning），帮助系统在后续案件中提供更精准的分析效果。</span>
+        </div>
+
         <!-- 动态渲染不同的校正面板 -->
         <div v-if="sectionId === 'event-description'" class="correction-panel">
           <div class="panel-group">
@@ -432,6 +438,30 @@ const handleUpdate = async () => {
   margin-bottom: 10px;
   border-left: 3px solid #00f2ff;
   padding-left: 10px;
+}
+
+/* 顶部提示信息 */
+.correction-info-tip {
+  background: rgba(0, 242, 255, 0.05);
+  border: 1px solid rgba(0, 242, 255, 0.2);
+  border-radius: 6px;
+  padding: 12px 15px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.tip-icon {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.tip-text {
+  font-size: 13px;
+  color: #c8ddfb;
+  line-height: 1.6;
+  text-align: justify;
 }
 
 .tech-input, .tech-textarea {
