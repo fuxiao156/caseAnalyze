@@ -21,7 +21,7 @@
           :class="['timeline-node-box', activeIndex === index ? 'active' : '']"
           @click="selectNode(index)"
         >
-          <div class="node-time">{{ node.date }}</div>
+          <div v-if="node.date" class="node-time">{{ node.date }}</div>
           <div class="node-marker">
             <div class="node-dot"></div>
             <div class="node-line" v-if="index !== data.timeline.length - 1"></div>
@@ -33,9 +33,8 @@
 
     <!-- 2.2.2 要素详细拆解融合 -->
     <div class="factor-details-section">
-      <div class="section-header">
-        <span class="header-icon">🔍</span>
-        <span class="header-title">当前节点要素拆解 (Factor Dissection)</span>
+      <div class="card-title-row">
+        <div class="card-title">当前节点要素拆解 (Factor Dissection)</div>
       </div>
       
       <div class="accordion-container">
@@ -243,7 +242,7 @@ const selectNode = (idx) => {
 
 .node-time {
   font-family: monospace;
-  font-size: 13px;
+  font-size: 14px;
   color: #88b0ea;
   margin-bottom: 12px;
   transition: all 0.3s;
@@ -297,6 +296,19 @@ const selectNode = (idx) => {
   border-color: #fff;
   box-shadow: 0 0 20px #00f2ff, 0 0 40px rgba(0, 242, 255, 0.4);
   transform: scale(1.4);
+  animation: node-pulse 2s infinite;
+}
+
+@keyframes node-pulse {
+  0% {
+    box-shadow: 0 0 20px #00f2ff, 0 0 0 0 rgba(0, 242, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 25px #00f2ff, 0 0 0 15px rgba(0, 242, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 20px #00f2ff, 0 0 0 0 rgba(0, 242, 255, 0);
+  }
 }
 
 .node-line {
@@ -322,6 +334,17 @@ const selectNode = (idx) => {
   border-radius: 2px;
 }
 
+.node-line::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left: 8px solid rgba(0, 242, 255, 0.6);
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
 @keyframes flow {
   from { background-position: 200% 0; }
   to { background-position: -200% 0; }
@@ -329,7 +352,7 @@ const selectNode = (idx) => {
 
 .node-event {
   margin-top: 15px;
-  font-size: 13px;
+  font-size: 15px;
   color: #cfd9e5;
   text-align: center;
   padding: 0 10px;
@@ -428,7 +451,7 @@ const selectNode = (idx) => {
 .tab-title {
   writing-mode: vertical-lr;
   color: #88b0ea;
-  font-size: 12px;
+  font-size: 16px;
   letter-spacing: 4px;
   opacity: 0.7;
 }
@@ -436,6 +459,7 @@ const selectNode = (idx) => {
 .open .tab-title {
   color: #00f2ff;
   opacity: 1;
+  font-weight: bold;
 }
 
 .item-content-wrapper {
@@ -460,14 +484,14 @@ const selectNode = (idx) => {
 }
 
 .block-title {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: bold;
   color: #00f2ff;
 }
 
 .generic-content {
-  font-size: 13px;
-  color: #cfd9e5;
+  font-size: 16px;
+  color: #e5ecf5;
   line-height: 1.6;
 }
 
