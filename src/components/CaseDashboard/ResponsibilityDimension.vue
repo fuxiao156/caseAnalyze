@@ -829,7 +829,7 @@ watch(() => props.data, () => {
   color: #00f2ff;
   padding: 4px 10px;
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
