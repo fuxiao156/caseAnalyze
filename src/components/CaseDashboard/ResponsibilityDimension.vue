@@ -35,9 +35,13 @@
         <div class="scale-base-tech">
           <div class="pillar-tech"></div>
           <div class="foundation-tech">
-            <div class="settlement-indicator" :class="{ active: isEquilibrium }">
+            <div 
+              class="settlement-indicator" 
+              :class="imbalanceStatus"
+              :style="imbalanceIndicatorStyle"
+            >
               <div class="indicator-light"></div>
-              <span>动力失衡监测</span>
+              <span>动力失衡检测</span>
             </div>
           </div>
         </div>
@@ -178,7 +182,25 @@ const diffPercentage = computed(() => {
 });
 
 const isEquilibrium = computed(() => {
-  return diffPercentage.value < 0.05;
+  return rightTotal.value >= leftTotal.value;
+});
+
+const imbalanceStatus = computed(() => {
+  return leftTotal.value > rightTotal.value ? 'imbalanced' : 'balanced';
+});
+
+const imbalanceIndicatorStyle = computed(() => {
+  if (imbalanceStatus.value === 'balanced') return {};
+  
+  // 计算失衡程度 (驱动力超出约束力的比例)
+  const diff = leftTotal.value - rightTotal.value;
+  const intensity = Math.min(1, diff / 50); // 以 50 为最大强度基准
+  
+  return {
+    '--imbalance-intensity': intensity,
+    '--light-opacity': 0.3 + intensity * 0.7,
+    '--light-glow': `0 0 ${5 + intensity * 15}px rgba(255, 71, 87, ${intensity})`
+  };
 });
 
 // 计算天平旋转角度
@@ -285,7 +307,7 @@ watch(() => props.data, () => {
   color: #aaa;
   padding: 4px 12px;
   border-radius: 15px;
-  font-size: 12px;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.3s;
 }
@@ -328,8 +350,8 @@ watch(() => props.data, () => {
 }
 
 .dimension-summary p {
-  font-size: 13px;
-  color: #ccc;
+  font-size: 15px;
+  color: #c8ddfb;
   line-height: 1.6;
   margin: 0;
 }
@@ -414,8 +436,12 @@ watch(() => props.data, () => {
   transition: all 0.5s;
 }
 
-.settlement-indicator.active {
+.settlement-indicator.balanced {
   color: #2ed573;
+}
+
+.settlement-indicator.imbalanced {
+  color: #ff4757; /* 文本始终显示同一种红 */
 }
 
 .indicator-light {
@@ -423,12 +449,25 @@ watch(() => props.data, () => {
   height: 10px;
   border-radius: 50%;
   background: #333;
+  transition: all 0.5s;
 }
 
-.settlement-indicator.active .indicator-light {
+.settlement-indicator.balanced .indicator-light {
   background: #2ed573;
   box-shadow: 0 0 10px #2ed573;
   animation: pulse-light 1s infinite;
+}
+
+.settlement-indicator.imbalanced .indicator-light {
+  background: #ff4757;
+  opacity: var(--light-opacity);
+  box-shadow: var(--light-glow);
+  animation: pulse-imbalance 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-imbalance {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
 }
 
 @keyframes pulse-light {
@@ -487,24 +526,46 @@ watch(() => props.data, () => {
 .pan-platform {
   position: absolute;
   top: 75px; /* 缩短为 75px */
-  width: 140px;
+  width: 190px;
   transition: transform 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   transform-origin: center -75px; /* 同步调整旋转中心 */
 }
 
-.left-platform { left: 50px; }
-.right-platform { right: 50px; }
+.left-platform { left: 20px; }
+.right-platform { right: 20px; }
 
 .platform-base {
   background: rgba(0, 242, 255, 0.05);
   border-bottom: 2px solid #00f2ff;
   border-left: 1px solid rgba(0, 242, 255, 0.2);
   border-right: 1px solid rgba(0, 242, 255, 0.2);
-  min-height: 80px;
-  padding: 10px;
+  min-height: 120px;
+  max-height: 260px; /* 设置最大高度 */
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
   position: relative;
   backdrop-filter: blur(2px);
-  width: 140px;
+  width: 190px;
+}
+
+.weights-container {
+  flex: 1;
+  overflow-y: auto; /* 开启竖向滚动 */
+  overflow-x: hidden;
+  padding-right: 4px;
+}
+
+/* 内部滚动条美化 */
+.weights-container::-webkit-scrollbar {
+  width: 4px;
+}
+.weights-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 242, 255, 0.3);
+  border-radius: 10px;
+}
+.weights-container::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .platform-base::after {
@@ -523,7 +584,7 @@ watch(() => props.data, () => {
   top: -25px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 11px;
+  font-size: 14px;
   color: #00f2ff;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -581,34 +642,17 @@ watch(() => props.data, () => {
 }
 
 .weight-name {
-  font-size: 11px;
-  color: #888;
+  font-size: 14px;
+  color: #c8ddfb;
 }
 
 .weight-value {
-  font-size: 11px;
+  font-size: 13px;
   font-family: monospace;
   color: #00f2ff;
   font-weight: bold;
 }
 
-.weight-item-tech.floating {
-  animation: float 3s infinite ease-in-out;
-  border-style: dashed;
-  opacity: 0.8;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
-}
-
-/* 状态色映射 */
-.weight-item-tech.concession { border-left: 3px solid #2ed573; }
-.weight-item-tech.claim { border-left: 3px solid #ffa502; }
-.weight-item-tech.commitment { border-left: 3px solid #00f2ff; }
-.weight-item-tech.obsession { border-left: 3px solid #ff4757; opacity: 0.6; }
-.weight-item-tech.final_payment { border-left: 3px solid #00f2ff; background: rgba(0, 242, 255, 0.2); }
 
 .equilibrium-glow {
   box-shadow: 0 0 20px #2ed573 !important;
