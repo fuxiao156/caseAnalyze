@@ -127,20 +127,34 @@
         </div>
       </Transition>
 
-      <!-- 最终达成协议背景装饰 -->
-      <Transition name="pulse-gold">
-        <div v-if="currentState.id === 'final' && isEquilibrium" class="settlement-overlay">
-          <div class="protocol-preview">
+      <!-- 最终达成协议背景装饰 - 修改为可收缩组件 -->
+      <div v-if="currentState.id === 'final' && isEquilibrium" class="settlement-container">
+        <button 
+          class="protocol-toggle-btn" 
+          @click="showProtocol = !showProtocol"
+          :class="{ active: showProtocol }"
+        >
+          <span class="btn-icon">{{ showProtocol ? '✕' : '📜' }}</span>
+          <span class="btn-text">致因冲突焦点分析</span>
+        </button>
+
+        <Transition name="slide-fade">
+          <div v-if="showProtocol" class="protocol-preview">
             <div class="protocol-header">致因冲突焦点分析</div>
             <div class="protocol-body">
-              <p>1. 核心矛盾已通过外部变量（如政策/环境变迁）实现对冲；</p>
-              <p>2. 驱动力与约束力在当前节点达成动态平衡；</p>
-              <p>3. 行为动机被有效抑制，案件触发风险降低。</p>
+              <div v-if="currentState.analysis" class="dynamic-analysis">
+                <p v-for="(line, idx) in currentState.analysis" :key="idx">{{ line }}</p>
+              </div>
+              <div v-else class="default-analysis">
+                <p>1. 核心矛盾已通过外部变量实现对冲；</p>
+                <p>2. 驱动力与约束力在当前节点达成动态平衡；</p>
+                <p>3. 行为动机被有效抑制，案件触发风险降低。</p>
+              </div>
             </div>
             <div class="protocol-seal">已归因</div>
           </div>
-        </div>
-      </Transition>
+        </Transition>
+      </div>
     </div>
   </div>
 </template>
@@ -162,6 +176,7 @@ const emit = defineEmits(['open-eval', 'highlight-factor']);
 
 const activeStateId = ref('initial');
 const hoveredWeight = ref(null);
+const showProtocol = ref(false); // 控制协议预览的显示/隐藏
 
 const currentState = computed(() => {
   return props.data.states?.find(s => s.id === activeStateId.value) || props.data.states[0] || {};
@@ -702,28 +717,67 @@ watch(() => props.data, () => {
   border-radius: 4px;
 }
 
-/* 结算叠加层 */
-.settlement-overlay {
+/* 结算叠加层 - 修改为可收缩容器 */
+.settlement-container {
   position: absolute;
   top: 20px;
   left: 20px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
   z-index: 200;
-  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.protocol-toggle-btn {
+  background: rgba(0, 242, 255, 0.15);
+  border: 1px solid #00f2ff;
+  border-radius: 4px;
+  color: #00f2ff;
+  padding: 8px 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s;
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+}
+
+.protocol-toggle-btn:hover {
+  background: rgba(0, 242, 255, 0.25);
+  box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.protocol-toggle-btn.active {
+  background: #ff4757;
+  border-color: #ff4757;
+  color: #fff;
+  box-shadow: 0 0 15px rgba(255, 71, 87, 0.3);
 }
 
 .protocol-preview {
   background: #fff;
   color: #333;
-  width: 260px;
+  width: 280px;
   padding: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  transform: rotate(-1deg);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   border: 1px solid #ddd;
   position: relative;
-  pointer-events: auto;
+  transform-origin: top left;
+}
+
+/* 动画效果 */
+.slide-fade-enter-active {
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19);
+}
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
 }
 
 .protocol-header {
@@ -737,7 +791,7 @@ watch(() => props.data, () => {
 }
 
 .protocol-body p {
-  font-size: 12px;
+  font-size: 13px;
   margin: 10px 0;
   line-height: 1.6;
 }
@@ -768,16 +822,6 @@ watch(() => props.data, () => {
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
-
-.pulse-gold-enter-active {
-  animation: pulse-gold 1s ease-out;
-}
-
-@keyframes pulse-gold {
-  0% { transform: scale(0.8); opacity: 0; box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
-  50% { transform: scale(1.05); opacity: 1; box-shadow: 0 0 100px 50px rgba(255, 215, 0, 0.3); }
-  100% { transform: scale(1); opacity: 1; box-shadow: 0 0 50px rgba(255, 215, 0, 0.5); }
-}
 
 .eval-trigger-btn {
   background: rgba(0, 242, 255, 0.1);
