@@ -3,7 +3,7 @@
     <div class="dashboard-scale-wrapper" :style="scaleStyle">
       <!-- 头部：大屏标题与全局指标 -->
       <header class="dashboard-header">
-        <div class="header-title">案件全维度监测分析系统</div>
+        <div class="header-title">案件归因分析表盘</div>
         <div class="header-meta">
           <span class="meta-item">Acc: {{ metrics.accuracy }}</span>
           <span class="meta-item">F1: {{ metrics.f1_score }}</span>
@@ -224,6 +224,7 @@ const handleFactorSelect = (name) => {
 }
 
 .header-title {
+  color: #00f2ff;
   font-size: 20px;
   font-weight: 900;
   letter-spacing: 2px;
