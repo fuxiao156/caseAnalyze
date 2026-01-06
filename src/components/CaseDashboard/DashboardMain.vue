@@ -5,8 +5,11 @@
       <header class="dashboard-header">
         <div class="header-title">案件归因分析表盘</div>
         <div class="header-meta">
-          <span class="meta-item">Acc: {{ metrics.accuracy }}</span>
-          <span class="meta-item">F1: {{ metrics.f1_score }}</span>
+          <button class="accuracy-detail-btn" @click="accuracyModalVisible = true">
+            <span class="btn-icon">📈</span>
+            <span>准确度计算详情</span>
+          </button>
+          <span class="meta-item">准确度: {{ metrics.accuracy }}</span>
           <button class="close-btn" @click="$emit('close')">✕</button>
         </div>
       </header>
@@ -102,6 +105,13 @@
       @close="correctionModalVisible = false"
       @update-all="handleDataUpdate"
     />
+
+    <!-- 准确度详情 Modal -->
+    <AccuracyDetailModal
+      v-if="accuracyModalVisible"
+      :visible="accuracyModalVisible"
+      @close="accuracyModalVisible = false"
+    />
   </div>
 </template>
 
@@ -116,6 +126,7 @@ import InformationDimension from './InformationDimension.vue';
 import PersonDimension from './PersonDimension.vue';
 import AttributionDimension from './AttributionDimension.vue';
 import DataCorrectionModal from '../DataCorrectionModal.vue';
+import AccuracyDetailModal from '../AccuracyDetailModal.vue';
 
 const props = defineProps({
   visible: Boolean,
@@ -129,6 +140,7 @@ const emit = defineEmits(['close', 'update-data']);
 
 // 数据校正 Modal 状态
 const correctionModalVisible = ref(false);
+const accuracyModalVisible = ref(false);
 const activeSection = ref({ name: '', id: '' });
 
 const openCorrection = (name, id) => {
@@ -323,6 +335,37 @@ const handleFactorSelect = (name) => {
   padding: 5px;
 }
 .close-btn:hover { color: #fff; }
+
+.accuracy-detail-btn {
+  background: rgba(0, 242, 255, 0.15);
+  border: 1px solid rgba(0, 242, 255, 0.4);
+  color: #00f2ff;
+  padding: 6px 14px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
+}
+
+.accuracy-detail-btn:hover {
+  background: rgba(0, 242, 255, 0.25);
+  border-color: #00f2ff;
+  box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.accuracy-detail-btn:active {
+  transform: translateY(0);
+}
+
+.btn-icon {
+  font-size: 16px;
+}
 
 /* 切换动画 */
 .fade-content-enter-active, .fade-content-leave-active {

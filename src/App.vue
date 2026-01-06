@@ -240,10 +240,6 @@ onMounted(() => {
 
 <template>
   <div class="app-container">
-    <div class="controls">
-      <button class="switch-btn" @click="dataIndex = (dataIndex+1)%analysisData.length">切换数据</button>
-    </div>
-
     <!-- 新版全屏大屏 -->
     <DashboardMain 
       :visible="true" 
