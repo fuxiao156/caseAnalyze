@@ -219,6 +219,59 @@
           </div>
         </div>
 
+        <div v-else-if="sectionId === 'info-dimension'" class="correction-panel">
+          <div class="panel-group">
+            <div class="panel-label">认知差异总结</div>
+            <textarea 
+              v-model="localData.信息维度数据.summary" 
+              class="tech-textarea custom-scrollbar small-height" 
+              placeholder="请输入认知差异总结..."
+            ></textarea>
+          </div>
+          <div class="panel-group">
+            <div class="panel-label">认知比对列表 (Cognition Items)</div>
+            <div class="info-edit-list">
+              <div v-for="(item, index) in localData.信息维度数据.items" :key="'info-' + index" class="info-edit-card">
+                <div class="card-header">
+                  <input v-model="item.category" class="tech-input small" placeholder="对比范畴 (如: 补偿标准)" />
+                  <button class="remove-btn small" @click="localData.信息维度数据.items.splice(index, 1)">✕</button>
+                </div>
+                
+                <div class="card-body">
+                  <div class="cognition-edit-grid">
+                    <!-- 左侧：主观感知 -->
+                    <div class="sub-section subjective-area">
+                      <div class="sub-label">主观感知 (Subjective)</div>
+                      <textarea v-model="item.subjective.text" class="tech-textarea custom-scrollbar tiny-height" placeholder="主观认知描述..."></textarea>
+                      <div class="tags-edit">
+                        <div v-for="(tag, tIdx) in item.subjective.tags" :key="'st-' + tIdx" class="tag-row">
+                          <input v-model="item.subjective.tags[tIdx]" class="tech-input small" placeholder="标签" />
+                          <button class="remove-btn mini" @click="item.subjective.tags.splice(tIdx, 1)">✕</button>
+                        </div>
+                        <button class="add-btn mini" @click="item.subjective.tags.push('')">+ 添加标签</button>
+                      </div>
+                    </div>
+
+                    <!-- 右侧：客观事实 -->
+                    <div class="sub-section objective-area">
+                      <div class="sub-label">客观事实 (Objective)</div>
+                      <textarea v-model="item.objective.text" class="tech-textarea custom-scrollbar tiny-height" placeholder="客观事实描述..."></textarea>
+                      <div class="tags-edit">
+                        <div v-for="(tag, tIdx) in item.objective.tags" :key="'ot-' + tIdx" class="tag-row">
+                          <input v-model="item.objective.tags[tIdx]" class="tech-input small" placeholder="标签" />
+                          <button class="remove-btn mini" @click="item.objective.tags.splice(tIdx, 1)">✕</button>
+                        </div>
+                        <button class="add-btn mini" @click="item.objective.tags.push('')">+ 添加标签</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="add-btn" @click="localData.信息维度数据.items.push({ id: Date.now(), category: '', subjective: { text: '', tags: [] }, objective: { text: '', tags: [] } })">+ 添加认知比对项</button>
+            </div>
+          </div>
+        </div>
+
         <!-- 未来可以在这里添加其他模块的面板 -->
         <div v-else class="placeholder-text">
           {{ sectionName }} 的校正面板正在开发中...
@@ -608,6 +661,55 @@ const handleUpdate = async () => {
   width: 60px;
   flex-shrink: 0;
   text-align: center;
+}
+
+/* 信息维度编辑样式 */
+.info-edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.info-edit-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 242, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.info-edit-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 15px;
+}
+
+.cognition-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.subjective-area {
+  border-left: 3px solid rgba(162, 155, 254, 0.3);
+}
+
+.objective-area {
+  border-left: 3px solid rgba(46, 213, 115, 0.3);
+}
+
+.tags-edit {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tag-row {
+  display: flex;
+  gap: 5px;
+  align-items: center;
 }
 
 .sub-section {
