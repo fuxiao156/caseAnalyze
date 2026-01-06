@@ -30,6 +30,30 @@
           </div>
         </div>
 
+        <div v-else-if="sectionId === 'event-factor'" class="correction-panel">
+          <div class="panel-group">
+            <div class="panel-label">事件画像 (Profiling)</div>
+            <div class="factor-edit-list">
+              <div v-for="(item, index) in localData.事件画像" :key="'profile-' + index" class="factor-edit-item">
+                <input v-model="item.tag" class="tech-input small" placeholder="标签名称" />
+                <button class="remove-btn" @click="localData.事件画像.splice(index, 1)">✕</button>
+              </div>
+              <button class="add-btn" @click="localData.事件画像.push({ tag: '', percentage: 0 })">+ 添加画像标签</button>
+            </div>
+          </div>
+
+          <div class="panel-group">
+            <div class="panel-label">核心成因分析 (Causes)</div>
+            <div class="factor-edit-list">
+              <div v-for="(item, index) in localData.核心成因分析" :key="'cause-' + index" class="factor-edit-item">
+                <input v-model="item.tag" class="tech-input small" placeholder="成因标签" />
+                <button class="remove-btn" @click="localData.核心成因分析.splice(index, 1)">✕</button>
+              </div>
+              <button class="add-btn" @click="localData.核心成因分析.push({ tag: '', percentage: 0 })">+ 添加成因标签</button>
+            </div>
+          </div>
+        </div>
+
         <!-- 未来可以在这里添加其他模块的面板 -->
         <div v-else class="placeholder-text">
           {{ sectionName }} 的校正面板正在开发中...
@@ -211,6 +235,61 @@ const handleUpdate = async () => {
   height: 200px;
   resize: vertical;
   line-height: 1.6;
+  padding-right: 15px;
+}
+
+/* 要素编辑列表样式 */
+.factor-edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.factor-edit-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.tech-input.small {
+  padding: 8px 10px;
+  font-size: 13px;
+}
+
+.add-btn {
+  background: rgba(0, 242, 255, 0.05);
+  border: 1px dashed rgba(0, 242, 255, 0.3);
+  color: #00f2ff;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+
+.add-btn:hover {
+  background: rgba(0, 242, 255, 0.1);
+  border-color: #00f2ff;
+}
+
+.remove-btn {
+  background: rgba(255, 77, 79, 0.1);
+  border: 1px solid rgba(255, 77, 79, 0.2);
+  color: #ff4d4f;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.remove-btn:hover {
+  background: #ff4d4f;
+  color: #fff;
 }
 
 .modal-footer {
@@ -302,7 +381,7 @@ const handleUpdate = async () => {
 .scrollbar-tech::-webkit-scrollbar-thumb,
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(0, 242, 255, 0.2);
-  border-radius: 10px;
+  border-radius: 2px;
 }
 .scrollbar-tech::-webkit-scrollbar-track,
 .custom-scrollbar::-webkit-scrollbar-track {
