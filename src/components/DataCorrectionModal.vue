@@ -56,14 +56,6 @@
 
         <div v-else-if="sectionId === 'time-dimension'" class="correction-panel">
           <div class="panel-group">
-            <div class="panel-label">时间维度总结</div>
-            <textarea 
-              v-model="localData.时间维度数据.summary" 
-              class="tech-textarea custom-scrollbar small-height" 
-              placeholder="请输入时间维度总结..."
-            ></textarea>
-          </div>
-          <div class="panel-group">
             <div class="panel-label">事件时间轴 (Timeline)</div>
             <div class="timeline-edit-list">
               <div v-for="(node, index) in localData.时间维度数据.timeline" :key="'node-' + index" class="timeline-edit-card">
@@ -92,6 +84,69 @@
                 </div>
               </div>
               <button class="add-btn" @click="localData.时间维度数据.timeline.push({ date: '', event: '', nodeFactors: [] })">+ 添加时间节点</button>
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="sectionId === 'person-dimension'" class="correction-panel">
+          <div class="panel-group">
+            <div class="panel-label">人物维度总结</div>
+            <textarea 
+              v-model="localData.人物维度数据.summary" 
+              class="tech-textarea custom-scrollbar small-height" 
+              placeholder="请输入人物维度总结..."
+            ></textarea>
+          </div>
+          <div class="panel-group">
+            <div class="panel-label">人物角色列表 (Characters)</div>
+            <div class="person-edit-list">
+              <div v-for="(person, index) in localData.人物维度数据.characters" :key="'person-' + index" class="person-edit-card">
+                <div class="card-header">
+                  <div class="person-main-info">
+                    <select v-model="person.avatar" class="tech-input avatar-select">
+                      <option v-for="opt in avatarOptions" :key="opt" :value="opt">{{ opt }}</option>
+                    </select>
+                    <input v-model="person.name" class="tech-input small" placeholder="姓名" />
+                    <input v-model="person.type" class="tech-input small" placeholder="角色类型" />
+                  </div>
+                  <button class="remove-btn small" @click="localData.人物维度数据.characters.splice(index, 1)">✕</button>
+                </div>
+                
+                <div class="card-body">
+                  <!-- 利益原动力 -->
+                  <div class="sub-section">
+                    <div class="sub-label">利益原动力 (Drivers)</div>
+                    <div v-for="(driver, dIdx) in person.drivers" :key="'d-' + dIdx" class="factor-row">
+                      <div class="factor-header">
+                        <input v-model="driver.label" class="tech-input small" placeholder="动力标签" />
+                        <button class="remove-btn mini" @click="person.drivers.splice(dIdx, 1)">✕</button>
+                      </div>
+                      <textarea v-model="driver.desc" class="tech-textarea custom-scrollbar tiny-height" placeholder="动力详情描述..."></textarea>
+                    </div>
+                    <button class="add-btn mini" @click="person.drivers.push({ label: '', desc: '' })">+ 添加原动力</button>
+                  </div>
+
+                  <!-- 认知偏差 -->
+                  <div class="sub-section">
+                    <div class="sub-label">认知偏差 (Biases)</div>
+                    <div v-for="(bias, bIdx) in person.biases" :key="'b-' + bIdx" class="factor-row">
+                      <div class="factor-header">
+                        <input v-model="bias.title" class="tech-input small" placeholder="偏差标题" />
+                        <button class="remove-btn mini" @click="person.biases.splice(bIdx, 1)">✕</button>
+                      </div>
+                      <textarea v-model="bias.desc" class="tech-textarea custom-scrollbar tiny-height" placeholder="偏差详情描述..."></textarea>
+                    </div>
+                    <button class="add-btn mini" @click="person.biases.push({ title: '', desc: '' })">+ 添加认知偏差</button>
+                  </div>
+
+                  <!-- 核心归因结论 -->
+                  <div class="sub-section">
+                    <div class="sub-label">核心归因结论 (Attribution)</div>
+                    <textarea v-model="person.attribution" class="tech-textarea custom-scrollbar small-height" placeholder="请输入核心归因结论..."></textarea>
+                  </div>
+                </div>
+              </div>
+              <button class="add-btn" @click="localData.人物维度数据.characters.push({ id: Date.now(), avatar: '👤', name: '', type: '', drivers: [], biases: [], attribution: '' })">+ 添加人物角色</button>
             </div>
           </div>
         </div>
@@ -138,6 +193,8 @@ const emit = defineEmits(['close', 'update-all']);
 const submitting = ref(false);
 const message = reactive({ text: '', type: '' });
 const localData = ref({});
+
+const avatarOptions = ['👤', '👨‍💼', '👮', '👨‍⚖️', '👨‍🔧',  '👨‍⚕️', '🏢', '🏭'];
 
 // 监听 visible，打开时拷贝一份数据
 watch(() => props.visible, (newVal) => {
@@ -396,6 +453,55 @@ const handleUpdate = async () => {
   display: flex;
   gap: 10px;
   margin-bottom: 12px;
+}
+
+/* 人物维度编辑样式 */
+.person-edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.person-edit-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 242, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.person-edit-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 15px;
+}
+
+.person-main-info {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar-select {
+  width: 60px;
+  text-align: center;
+  flex-shrink: 0;
+  appearance: none;
+  cursor: pointer;
+}
+
+.avatar-select option {
+  background: #1a3a7a;
+  color: #fff;
+}
+
+.sub-section {
+  margin-top: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 12px;
+  border-radius: 6px;
 }
 
 .node-factors-edit {
