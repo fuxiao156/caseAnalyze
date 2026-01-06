@@ -31,24 +31,47 @@
       </div>
     </div>
 
-    <!-- 2.2.2 交互：显示关联要素 -->
-    <Transition name="fade-slide">
-      <div v-if="activeIndex !== null && data.timeline[activeIndex]" class="associated-factors">
-        <div class="factor-header">关联要素分析 ({{ data.timeline[activeIndex].date }})</div>
-        <div class="factor-tags">
-          <span 
-            v-for="factor in data.timeline[activeIndex].factors" 
-            :key="factor"
-            class="factor-tag"
-          >{{ factor }}</span>
+    <!-- 2.2.2 要素详细拆解融合 -->
+    <div class="factor-details-section">
+      <div class="section-header">
+        <span class="header-icon">🔍</span>
+        <span class="header-title">当前节点要素拆解 (Factor Dissection)</span>
+      </div>
+      
+      <div class="accordion-container">
+        <div class="accordion-wrapper">
+          <TransitionGroup name="list-complete">
+            <div 
+              v-for="factor in factors" 
+              :key="factor.id"
+              :class="['accordion-item', openIds.includes(factor.id) ? 'open' : '', activeFactorName === factor.name ? 'active-highlight' : '']"
+              @click="toggleId(factor.id)"
+            >
+              <!-- 侧边/头部标签 -->
+              <div class="item-tab">
+                <span class="tab-icon">📋</span>
+                <span class="tab-title">{{ factor.name }}</span>
+              </div>
+
+              <!-- 内容区域 -->
+              <div class="item-content-wrapper scrollbar-tech" v-show="openIds.includes(factor.id)">
+                <div class="block-header">
+                  <span class="block-title">{{ factor.name }} 详细分析</span>
+                </div>
+                <div class="block-content">
+                  <p class="generic-content">{{ factor.content }}</p>
+                </div>
+              </div>
+            </div>
+          </TransitionGroup>
         </div>
       </div>
-    </Transition>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 
 const props = defineProps({
   data: {
@@ -61,10 +84,24 @@ const props = defineProps({
   activeIndex: {
     type: Number,
     default: 0
-  }
+  },
+  factors: {
+    type: Array,
+    default: () => []
+  },
+  activeFactorName: String
 });
 
 const emit = defineEmits(['open-eval', 'update:activeIndex']);
+
+const openIds = ref([]);
+
+// 初始化展开第一个要素
+onMounted(() => {
+  if (props.factors && props.factors.length > 0) {
+    openIds.value = [props.factors[0].id];
+  }
+});
 
 // 监听数据变化，重置索引
 watch(() => props.data.timeline, (newTimeline) => {
@@ -72,6 +109,35 @@ watch(() => props.data.timeline, (newTimeline) => {
     emit('update:activeIndex', newTimeline.length > 0 ? 0 : null);
   }
 }, { deep: true });
+
+// 监听 factors 变化，自动展开所有要素
+watch(() => props.factors, (newFactors) => {
+  if (newFactors && newFactors.length > 0) {
+    openIds.value = newFactors.map(f => f.id);
+  }
+}, { immediate: true, deep: true });
+
+// 监听外部选中的要素
+watch(() => props.activeFactorName, (newName) => {
+  if (newName) {
+    const factor = props.factors.find(f => f.name === newName);
+    if (factor && !openIds.value.includes(factor.id)) {
+      toggleId(factor.id, true);
+    }
+  }
+});
+
+const toggleId = (id, forceOpen = false) => {
+  const index = openIds.value.indexOf(id);
+  if (index > -1 && !forceOpen) {
+    openIds.value.splice(index, 1);
+  } else if (index === -1) {
+    openIds.value.push(id);
+    if (openIds.value.length > 3) {
+      openIds.value.shift();
+    }
+  }
+};
 
 const selectNode = (idx) => {
   emit('update:activeIndex', idx);
@@ -135,7 +201,7 @@ const selectNode = (idx) => {
   background: rgba(255, 255, 255, 0.03);
   padding: 12px 15px;
   border-radius: 6px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   flex: 0 0 auto;
 }
@@ -149,12 +215,13 @@ const selectNode = (idx) => {
 
 .timeline-wrapper {
   overflow-x: auto;
-  padding: 15px 0;
-  margin-bottom: 15px;
-  flex: 1; /* 让时间轴区域自适应 */
+  padding: 10px 0;
+  margin-bottom: 20px;
+  flex: 0 0 150px; /* 固定时间轴高度 */
   display: flex;
   align-items: center;
   min-height: 0;
+  border-bottom: 1px solid rgba(0, 242, 255, 0.1);
 }
 
 .timeline-horizontal {
@@ -223,17 +290,6 @@ const selectNode = (idx) => {
   border-color: #00f2ff;
   transform: scale(1.2);
   box-shadow: 0 0 15px rgba(0, 242, 255, 0.5);
-  animation: hover-bounce 1s ease-in-out infinite;
-}
-
-@keyframes hover-bounce {
-  0%, 100% { transform: scale(1.2); }
-  50% { transform: scale(1.3); }
-}
-
-.timeline-node-box:hover .node-dot::after {
-  inset: -8px;
-  border-color: rgba(0, 242, 255, 0.3);
 }
 
 .timeline-node-box.active .node-dot {
@@ -241,19 +297,6 @@ const selectNode = (idx) => {
   border-color: #fff;
   box-shadow: 0 0 20px #00f2ff, 0 0 40px rgba(0, 242, 255, 0.4);
   transform: scale(1.4);
-  animation: node-pulse 2s infinite;
-}
-
-@keyframes node-pulse {
-  0% {
-    box-shadow: 0 0 20px #00f2ff, 0 0 0 0 rgba(0, 242, 255, 0.7);
-  }
-  70% {
-    box-shadow: 0 0 25px #00f2ff, 0 0 0 15px rgba(0, 242, 255, 0);
-  }
-  100% {
-    box-shadow: 0 0 20px #00f2ff, 0 0 0 0 rgba(0, 242, 255, 0);
-  }
 }
 
 .node-line {
@@ -279,24 +322,9 @@ const selectNode = (idx) => {
   border-radius: 2px;
 }
 
-.node-line::after {
-  content: "";
-  position: absolute;
-  right: -6px;
-  top: 50%;
-  transform: translateY(-50%);
-  border-left: 8px solid rgba(0, 242, 255, 0.6);
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-}
-
 @keyframes flow {
   from { background-position: 200% 0; }
   to { background-position: -200% 0; }
-}
-
-.timeline-node-box.active + .timeline-node-box .node-line {
-  opacity: 1;
 }
 
 .node-event {
@@ -310,61 +338,142 @@ const selectNode = (idx) => {
   line-height: 1.4;
 }
 
-.timeline-node-box:hover .node-event {
-  color: #fff;
-}
-
 .timeline-node-box.active .node-event {
   color: #fff;
   font-weight: bold;
-  transform: translateY(-2px);
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-/* 关联要素样式 */
-.associated-factors {
-  background: linear-gradient(135deg, rgba(0, 242, 255, 0.1) 0%, transparent 100%);
-  border: 1px solid rgba(0, 242, 255, 0.2);
-  border-radius: 8px;
-  padding: 12px 15px;
-  flex: 0 0 auto;
-  min-height: 80px; /* 固定最小高度，防止点击节点时高度抖动 */
+/* 要素拆解区域 */
+.factor-details-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
-.factor-header {
-  font-size: 13px;
-  color: #00f2ff;
-  font-weight: bold;
+.section-header {
   margin-bottom: 12px;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.factor-header::before {
-  content: "";
-  width: 4px;
-  height: 12px;
-  background: #00f2ff;
+.header-icon {
+  font-size: 16px;
 }
 
-.factor-tags {
+.header-title {
+  font-size: 14px;
+  color: #00f2ff;
+  font-weight: bold;
+}
+
+.accordion-container {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.accordion-wrapper {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  height: 100%;
+  gap: 12px;
+  position: relative;
+  align-items: flex-start; /* 确保子元素顶部对齐 */
 }
 
-.factor-tag {
+.accordion-item {
+  flex: 0 0 auto;
+  min-width: 50px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  display: flex;
+  position: relative;
+  will-change: flex, transform; /* 优化性能 */
+}
+
+.accordion-item.open {
+  flex: 1;
+  min-width: 260px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: default;
+}
+
+.accordion-item.active-highlight {
+  border-color: #00f2ff;
+  background: rgba(0, 242, 255, 0.08);
+}
+
+.item-tab {
+  width: 50px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.tab-icon {
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+
+.tab-title {
+  writing-mode: vertical-lr;
   color: #88b0ea;
-  padding: 4px 12px;
-  border-radius: 4px;
   font-size: 12px;
+  letter-spacing: 4px;
+  opacity: 0.7;
+}
+
+.open .tab-title {
+  color: #00f2ff;
+  opacity: 1;
+}
+
+.item-content-wrapper {
+  flex: 1;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  opacity: 0;
+  animation: fadeIn 0.3s forwards 0.3s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.block-header {
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 242, 255, 0.1);
+}
+
+.block-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #00f2ff;
+}
+
+.generic-content {
+  font-size: 13px;
+  color: #cfd9e5;
+  line-height: 1.6;
 }
 
 /* 滚动条美化 */
 .scrollbar-tech::-webkit-scrollbar {
+  width: 4px;
   height: 4px;
 }
 .scrollbar-tech::-webkit-scrollbar-thumb {
@@ -372,12 +481,25 @@ const selectNode = (idx) => {
   border-radius: 10px;
 }
 
-/* 动画 */
-.fade-slide-enter-active, .fade-slide-leave-active {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+/* 列表过渡动画 - 关键：使用与 FactorCarousel 一致的平滑逻辑 */
+.list-complete-enter-active {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.fade-slide-enter-from, .fade-slide-leave-to {
+
+.list-complete-leave-active {
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute; /* 离开时脱离文档流，防止挤压 */
+  width: calc(100% / 3); /* 给予离开元素合理的预期宽度 */
+  z-index: 0;
+}
+
+.list-complete-enter-from,
+.list-complete-leave-to {
   opacity: 0;
-  transform: translateY(10px);
+  transform: scale(0.9) translateY(20px);
+}
+
+.list-complete-move {
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>

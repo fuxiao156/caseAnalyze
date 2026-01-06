@@ -41,12 +41,14 @@
           </div>
 
           <!-- 维度详情 (中部分) -->
-          <div class="right-middle-content" :class="{ 'full-height': ['duty', 'info', 'person', 'attribution'].includes(activeDimensionId) }">
+          <div class="right-middle-content" :class="{ 'full-height': ['duty', 'info', 'person', 'attribution', 'time'].includes(activeDimensionId) }">
             <Transition name="fade-content" mode="out-in">
               <!-- 时间维度 -->
               <TimeDimensionCard 
                 v-if="activeDimensionId === 'time'"
                 :data="analysisData.时间维度数据"
+                :factors="currentFactors"
+                :active-factor-name="activeFactorName"
                 v-model:active-index="activeTimeNodeIndex"
                 @open-eval="openEval"
               />
@@ -85,15 +87,6 @@
                 {{ analysisData.维度配置?.find(d => d.id === activeDimensionId)?.name }} 维度详情分析中...
               </div>
             </Transition>
-          </div>
-
-          <!-- 要素模块横向轮播 (下部分) - 权责维度/信息维度/人物维度/归因图谱下隐藏 -->
-          <div v-if="!['duty', 'info', 'person', 'attribution'].includes(activeDimensionId)" class="right-bottom-carousel">
-            <FactorCarousel 
-              :factors="currentFactors"
-              :active-factor-name="activeFactorName"
-              @open-eval="openEval"
-            />
           </div>
         </main>
       </div>
