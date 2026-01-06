@@ -116,7 +116,7 @@
         <div v-if="hoveredWeight" class="hover-insight">
           <div class="insight-header">
             <span class="insight-icon">🔍</span>
-            <h4>致因要素: {{ hoveredWeight.name }}</h4>
+            <h4>{{ hoveredWeight.name }}</h4>
           </div>
           <div class="insight-content">
             <p>{{ getWeightDescription(hoveredWeight) }}</p>
@@ -698,12 +698,12 @@ watch(() => props.data, () => {
 
 .insight-header h4 {
   margin: 0;
-  font-size: 14px;
+  font-size: 16px;
   color: #00f2ff;
 }
 
 .insight-content p {
-  font-size: 12px;
+  font-size: 16px;
   color: #ccc;
   line-height: 1.5;
   margin: 0 0 10px 0;
