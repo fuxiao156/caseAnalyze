@@ -1,8 +1,8 @@
 <template>
   <div class="info-dimension dashboard-card">
     <div class="card-title-row">
-      <div class="card-title">信息维度分析 (Information Dimension)</div>
-      <button class="eval-trigger-btn" @click="$emit('open-eval', '信息维度分析', 'info-dimension')">
+      <div class="card-title">认知差异分析 (Cognition Analysis)</div>
+      <button class="eval-trigger-btn" @click="$emit('open-eval', '认知差异分析', 'info-dimension')">
         <span class="eval-icon">📊</span> 评测
       </button>
     </div>
@@ -29,7 +29,7 @@
 
         <!-- 左侧：主观认知 (Perception) -->
         <div class="column subjective-column">
-          <div class="column-header">主观认知 (Subjective Perception)</div>
+          <div class="column-header">主观感知 (Subjective Perception)</div>
           <div class="fragment-list">
             <div 
               v-for="item in data.items" 
@@ -57,8 +57,8 @@
           <div class="bridge-pillar">
             <div class="bridge-content obstacle-content">
               <div class="bridge-icon obstacle-icon">🚧</div>
-              <div class="bridge-label obstacle-label">信息差鸿沟</div>
-              <div class="bridge-text">认知碎片与客观事实间存在巨大鸿沟，阻碍双方信息的透明与信任转化</div>
+              <div class="bridge-label obstacle-label">认知断裂带</div>
+              <div class="bridge-text">主观预设与客观现实间的认知断层，是诱发非理性决策与案件升级的核心致因</div>
               <div class="obstacle-line"></div>
               <div class="bridge-pulse"></div>
             </div>
@@ -67,7 +67,7 @@
 
         <!-- 右侧：客观事实 (Objective Reality) -->
         <div class="column objective-column">
-          <div class="column-header">客观事实 (Objective Reality)</div>
+          <div class="column-header">客观环境 (Objective Environment)</div>
           <div class="fragment-list">
             <div 
               v-for="item in data.items" 
@@ -85,7 +85,7 @@
               </div>
               <div class="certainty-indicator">
                 <div class="certainty-dot" v-for="i in 5" :key="i" :class="{ filled: i <= (item.objective.certainty * 5) }"></div>
-                <span class="certainty-label">事实置信度</span>
+                <span class="certainty-label">事实/环境置信度</span>
               </div>
             </div>
           </div>
