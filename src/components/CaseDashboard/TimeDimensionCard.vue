@@ -44,15 +44,14 @@
               v-for="factor in factors" 
               :key="factor.id"
               :class="['accordion-item', openIds.includes(factor.id) ? 'open' : '', activeFactorName === factor.name ? 'active-highlight' : '']"
-              @click="toggleId(factor.id)"
             >
-              <!-- 侧边/头部标签 -->
-              <div class="item-tab">
+              <!-- 侧边/头部标签 - 仅此处点击可触发展开/收起 -->
+              <div class="item-tab" @click="toggleId(factor.id)">
                 <span class="tab-icon">📋</span>
                 <span class="tab-title">{{ factor.name }}</span>
               </div>
 
-              <!-- 内容区域 -->
+              <!-- 内容区域 - 点击此处不触发伸缩 -->
               <div class="item-content-wrapper scrollbar-tech" v-show="openIds.includes(factor.id)">
                 <div class="block-header">
                   <span class="block-title">{{ factor.name }} 详细分析</span>
@@ -414,7 +413,6 @@ const selectNode = (idx) => {
   border-radius: 8px;
   overflow: hidden;
   transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  cursor: pointer;
   display: flex;
   position: relative;
   will-change: flex, transform; /* 优化性能 */
@@ -424,7 +422,6 @@ const selectNode = (idx) => {
   flex: 1;
   min-width: 260px;
   background: rgba(255, 255, 255, 0.05);
-  cursor: default;
 }
 
 .accordion-item.active-highlight {
@@ -441,6 +438,7 @@ const selectNode = (idx) => {
   padding-top: 20px;
   background: rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
+  cursor: pointer; /* 仅此处可点击 */
 }
 
 .tab-icon {
