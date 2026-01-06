@@ -151,6 +151,74 @@
           </div>
         </div>
 
+        <div v-else-if="sectionId === 'responsibility-dimension'" class="correction-panel">
+          <div class="panel-group">
+            <div class="panel-label">动力维度总结</div>
+            <textarea 
+              v-model="localData.驱动力维度数据.summary" 
+              class="tech-textarea custom-scrollbar small-height" 
+              placeholder="请输入动力维度总结..."
+            ></textarea>
+          </div>
+          <div class="panel-group">
+            <div class="panel-label">博弈阶段列表 (States)</div>
+            <div class="state-edit-list">
+              <div v-for="(state, index) in localData.驱动力维度数据.states" :key="'state-' + index" class="state-edit-card">
+                <div class="card-header">
+                  <div class="state-main-info">
+                    <input v-model="state.name" class="tech-input small" placeholder="阶段名称" />
+                    <input v-model="state.status" class="tech-input small" placeholder="状态描述" />
+                  </div>
+                  <button class="remove-btn small" @click="localData.驱动力维度数据.states.splice(index, 1)">✕</button>
+                </div>
+                
+                <div class="card-body">
+                  <div class="weights-edit-grid">
+                    <!-- 左侧：驱动项 -->
+                    <div class="sub-section">
+                      <div class="sub-label">驱动项 (Driving Factors)</div>
+                      <div v-for="(w, wIdx) in state.leftWeights" :key="'lw-' + wIdx" class="factor-row">
+                        <div class="factor-header">
+                          <input v-model="w.name" class="tech-input small" placeholder="要素名称" />
+                          <input v-model.number="w.value" type="number" class="tech-input weight-val-input" placeholder="权重" />
+                          <button class="remove-btn mini" @click="state.leftWeights.splice(wIdx, 1)">✕</button>
+                        </div>
+                      </div>
+                      <button class="add-btn mini" @click="state.leftWeights.push({ id: Date.now(), name: '', value: 10, type: 'claim' })">+ 添加驱动项</button>
+                    </div>
+
+                    <!-- 右侧：约束项 -->
+                    <div class="sub-section">
+                      <div class="sub-label">约束项 (Restraining Factors)</div>
+                      <div v-for="(w, wIdx) in state.rightWeights" :key="'rw-' + wIdx" class="factor-row">
+                        <div class="factor-header">
+                          <input v-model="w.name" class="tech-input small" placeholder="要素名称" />
+                          <input v-model.number="w.value" type="number" class="tech-input weight-val-input" placeholder="权重" />
+                          <button class="remove-btn mini" @click="state.rightWeights.splice(wIdx, 1)">✕</button>
+                        </div>
+                      </div>
+                      <button class="add-btn mini" @click="state.rightWeights.push({ id: Date.now(), name: '', value: 10, type: 'responsibility' })">+ 添加约束项</button>
+                    </div>
+                  </div>
+
+                  <!-- 阶段冲突分析 -->
+                  <div class="sub-section full-width">
+                    <div class="sub-label">致因冲突焦点分析 (Analysis)</div>
+                    <div v-for="(line, lIdx) in state.analysis" :key="'line-' + lIdx" class="factor-row">
+                      <div class="factor-header">
+                        <input v-model="state.analysis[lIdx]" class="tech-input small" placeholder="分析条目内容" />
+                        <button class="remove-btn mini" @click="state.analysis.splice(lIdx, 1)">✕</button>
+                      </div>
+                    </div>
+                    <button class="add-btn mini" @click="state.analysis ? state.analysis.push('') : state.analysis = ['']">+ 添加分析条目</button>
+                  </div>
+                </div>
+              </div>
+              <button class="add-btn" @click="localData.驱动力维度数据.states.push({ id: 'new-state', name: '', status: '', leftWeights: [], rightWeights: [], analysis: [] })">+ 添加博弈阶段</button>
+            </div>
+          </div>
+        </div>
+
         <!-- 未来可以在这里添加其他模块的面板 -->
         <div v-else class="placeholder-text">
           {{ sectionName }} 的校正面板正在开发中...
@@ -495,6 +563,51 @@ const handleUpdate = async () => {
 .avatar-select option {
   background: #1a3a7a;
   color: #fff;
+}
+
+/* 动力维度编辑样式 */
+.state-edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.state-edit-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(0, 242, 255, 0.1);
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.state-edit-card .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 15px;
+}
+
+.state-main-info {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.weights-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.sub-section.full-width {
+  grid-column: 1 / -1;
+}
+
+.weight-val-input {
+  width: 60px;
+  flex-shrink: 0;
+  text-align: center;
 }
 
 .sub-section {
