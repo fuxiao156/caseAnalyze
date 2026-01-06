@@ -170,8 +170,8 @@ const activeBiasId = ref(null);
 }
 
 .dimension-summary p {
-  font-size: 13px;
-  color: #88b0ea;
+  font-size: 15px;
+  color: #c8ddfb;
   margin: 0;
   line-height: 1.5;
 }
@@ -200,8 +200,8 @@ const activeBiasId = ref(null);
 }
 
 .column-header {
-  font-size: 12px;
-  color: rgba(0, 242, 255, 0.5);
+  font-size: 15px;
+  color: rgb(0, 242, 255);
   text-transform: uppercase;
   letter-spacing: 1px;
   text-align: center;
@@ -242,15 +242,15 @@ const activeBiasId = ref(null);
 }
 
 .card-category {
-  font-size: 10px;
+  font-size: 16px;
   color: #00f2ff;
-  opacity: 0.6;
+  opacity: 0.9;
   margin-bottom: 8px;
   font-weight: bold;
 }
 
 .card-text {
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.6;
   color: #eee;
 }
@@ -263,7 +263,7 @@ const activeBiasId = ref(null);
 }
 
 .tag {
-  font-size: 10px;
+  font-size: 14px;
   padding: 2px 6px;
   border-radius: 2px;
 }
@@ -346,7 +346,7 @@ const activeBiasId = ref(null);
 }
 
 .bridge-label {
-  font-size: 11px;
+  font-size: 16px;
   color: #00f2ff;
   letter-spacing: 2px;
   margin-bottom: 8px;
@@ -359,13 +359,13 @@ const activeBiasId = ref(null);
 }
 
 .bridge-text {
-  font-size: 12px;
+  font-size: 15px;
   color: #fff;
   line-height: 1.6;
 }
 
 .obstacle-content .bridge-text {
-  color: #88b0ea;
+  color: #c8ddfb;
   font-style: italic;
 }
 
