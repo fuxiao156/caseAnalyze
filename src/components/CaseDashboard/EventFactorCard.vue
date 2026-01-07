@@ -20,38 +20,30 @@
       </div>
     </div>
 
-    <!-- 中部：双饼图 -->
-    <div class="charts-row">
-      <div class="chart-container">
-        <div class="chart-wrapper">
-          <div class="chart-bg-ring"></div>
-          <div class="chart-bg-ring-inner"></div>
-          <div class="chart-scan-beam"></div>
-          <div ref="profilePieRef" class="pie-chart"></div>
-        </div>
-        <div class="chart-label">画像全库占比</div>
-      </div>
-      <div class="chart-container">
-        <div class="chart-wrapper">
-          <div class="chart-bg-ring highlight"></div>
-          <div class="chart-bg-ring-inner highlight"></div>
-          <div class="chart-scan-beam highlight"></div>
-          <div ref="causePieRef" class="pie-chart"></div>
-        </div>
-        <div class="chart-label">成因全库占比</div>
-      </div>
-    </div>
-
-    <!-- 下部：事件成因分析标签 -->
-    <div class="tag-section bottom">
-      <div class="mini-label">核心成因 (Causes)</div>
+    <!-- 中部：事件成因分析标签 -->
+    <div class="tag-section middle">
+      <div class="mini-label">核心成因分析 (Causes)</div>
       <div class="tag-cloud">
         <span 
           v-for="(item, index) in causes" 
           :key="item.tag"
           :class="['tech-tag cause', activeCauseIdx === index ? 'active' : '']"
+          :style="getCauseTagStyle(index)"
           @click="selectCause(index)"
         >{{ item.tag }}</span>
+      </div>
+    </div>
+
+    <!-- 下部：成因占比饼图 -->
+    <div class="chart-section bottom">
+      <div class="chart-container">
+        <div class="chart-wrapper">
+          <div class="chart-bg-ring highlight large"></div>
+          <div class="chart-bg-ring-inner highlight large"></div>
+          <div class="chart-scan-beam highlight large"></div>
+          <div ref="causePieRef" class="pie-chart"></div>
+        </div>
+        <div class="chart-label">致因推动比例分布</div>
       </div>
     </div>
   </div>
@@ -74,131 +66,154 @@ const props = defineProps({
 
 const emit = defineEmits(['open-correction']);
 
-const profilePieRef = ref(null);
 const causePieRef = ref(null);
-let profileChart = null;
 let causeChart = null;
 
 const activeProfileIdx = ref(0);
 const activeCauseIdx = ref(0);
 
-const getPieOption = (title, data, activeIdx, isYellow = false) => {
-  const activeItem = data[activeIdx] || { tag: '未知', percentage: 0 };
-  const percent = activeItem.percentage || 0;
-  const themeColor = isYellow ? '#ffd700' : '#00f2ff';
-  const shadowColor = isYellow ? 'rgba(255, 215, 0, 0.6)' : 'rgba(0, 242, 255, 0.6)';
-  
+// 定义成因颜色调色盘
+const CAUSE_COLORS = [
+  { main: '#ffd700', grad: '#ffa500', glow: 'rgba(255, 215, 0, 0.3)' }, // 金黄
+  { main: '#00f2ff', grad: '#0066ff', glow: 'rgba(0, 242, 255, 0.3)' }, // 青蓝
+  { main: '#a29bfe', grad: '#6c5ce7', glow: 'rgba(162, 155, 254, 0.3)' }, // 浅紫
+  { main: '#55efc4', grad: '#00b894', glow: 'rgba(85, 239, 196, 0.3)' }, // 翠绿
+  { main: '#ff7675', grad: '#d63031', glow: 'rgba(255, 118, 117, 0.3)' }, // 珊瑚红
+  { main: '#ffeaa7', grad: '#fdcb6e', glow: 'rgba(255, 234, 167, 0.3)' }  // 浅黄
+];
+
+const getCausePieOption = (data) => {
+  const chartData = data.map((item, idx) => {
+    const colorCfg = CAUSE_COLORS[idx % CAUSE_COLORS.length];
+    return {
+      name: item.tag,
+      value: item.percentage,
+      itemStyle: {
+        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: colorCfg.main },
+          { offset: 1, color: colorCfg.grad }
+        ]),
+        shadowBlur: 10,
+        shadowColor: colorCfg.glow
+      }
+    };
+  });
+
   return {
     backgroundColor: 'transparent',
-    // 启用动画
     animation: true,
     animationDuration: 1200,
     animationEasing: 'cubicOut',
-    animationDurationUpdate: 800,
-    animationEasingUpdate: 'exponentialOut',
-    title: {
-      text: percent + '%',
-      left: 'center',
-      top: 'center',
-      textStyle: {
-        color: themeColor,
-        fontSize: 16,
-        fontWeight: 'bold',
-        fontFamily: 'monospace',
-        textShadowBlur: 10,
-        textShadowColor: shadowColor
-      }
-    },
     tooltip: { 
       trigger: 'item',
       backgroundColor: 'rgba(10, 27, 62, 0.9)',
-      borderColor: themeColor,
+      borderColor: '#00f2ff',
       textStyle: { color: '#fff' },
-      formatter: (params) => {
-        if (params.name === '全库其他案件') return null;
-        return `${params.name}<br/>全库占比: ${params.value}%`;
-      }
+      formatter: '{b}: {c}%'
     },
     series: [{
-      name: title,
+      name: '成因推动比例',
       type: 'pie',
-      radius: ['55%', '75%'],
-      avoidLabelOverlap: false,
-      // 科技感动画效果：展开进入
+      radius: ['45%', '70%'],
+      avoidLabelOverlap: true,
       animationType: 'expansion',
       animationDelay: 200,
       itemStyle: {
-        borderRadius: 2,
+        borderRadius: 4,
         borderColor: '#0a1b3e',
-        borderWidth: 1
+        borderWidth: 2
+      },
+      label: {
+        show: true,
+        position: 'outside',
+        color: '#88b0ea',
+        fontSize: 12,
+        formatter: '{b}\n{d}%'
+      },
+      labelLine: {
+        show: true,
+        length: 10,
+        length2: 15,
+        lineStyle: {
+          color: 'rgba(0, 242, 255, 0.3)'
+        }
       },
       emphasis: {
         scale: true,
-        scaleSize: 5
-      },
-      label: { show: false },
-      data: [
-        {
-          value: percent,
-          name: activeItem.tag,
-          itemStyle: {
-            color: isYellow 
-              ? new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  { offset: 0, color: '#ffd700' },
-                  { offset: 1, color: '#ffa500' }
-                ])
-              : new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  { offset: 0, color: '#00f2ff' },
-                  { offset: 1, color: '#0066ff' }
-                ]),
-            shadowBlur: 15,
-            shadowColor: shadowColor
-          }
-        },
-        {
-          value: 100 - percent,
-          name: '全库其他案件',
-          itemStyle: {
-            color: 'rgba(255, 255, 255, 0.05)'
-          },
-          tooltip: { show: false }
+        scaleSize: 8,
+        label: {
+          show: true,
+          fontSize: 14,
+          fontWeight: 'bold'
         }
-      ]
+      },
+      data: chartData
     }]
   };
 };
 
 const initCharts = () => {
-  if (profilePieRef.value) {
-    profileChart = echarts.init(profilePieRef.value);
-    updateProfileChart();
-  }
   if (causePieRef.value) {
     causeChart = echarts.init(causePieRef.value);
     updateCauseChart();
   }
 };
 
-const updateProfileChart = () => {
-  if (profileChart && props.profiling) {
-    profileChart.setOption(getPieOption('画像分布', props.profiling, activeProfileIdx.value, false));
-  }
-};
-
 const updateCauseChart = () => {
-  if (causeChart && props.causes) {
-    causeChart.setOption(getPieOption('成因分布', props.causes, activeCauseIdx.value, true));
+  if (causeChart && props.causes?.length > 0) {
+    causeChart.setOption(getCausePieOption(props.causes));
   }
 };
 
 const selectProfile = (idx) => {
   activeProfileIdx.value = idx;
-  updateProfileChart();
 };
 
 const selectCause = (idx) => {
   activeCauseIdx.value = idx;
-  updateCauseChart();
+  // 联动高亮饼图
+  if (causeChart) {
+    // 循环取消所有扇区的高亮状态，确保彻底回缩
+    props.causes.forEach((_, i) => {
+      causeChart.dispatchAction({
+        type: 'downplay',
+        seriesIndex: 0,
+        dataIndex: i
+      });
+    });
+    
+    // 高亮当前选中的扇区
+    causeChart.dispatchAction({
+      type: 'highlight',
+      seriesIndex: 0,
+      dataIndex: idx
+    });
+    // 自动显示对应的 tooltip
+    causeChart.dispatchAction({
+      type: 'showTip',
+      seriesIndex: 0,
+      dataIndex: idx
+    });
+  }
+};
+
+const getCauseTagStyle = (idx) => {
+  const colorCfg = CAUSE_COLORS[idx % CAUSE_COLORS.length];
+  const isActive = activeCauseIdx.value === idx;
+  
+  if (isActive) {
+    return {
+      background: colorCfg.main,
+      color: '#000',
+      borderColor: colorCfg.main,
+      boxShadow: `0 0 10px ${colorCfg.glow}`
+    };
+  }
+  return {
+    background: `${colorCfg.main}3a`, // 10% opacity
+    color: colorCfg.main,
+    borderColor: 'transparent'
+  };
 };
 
 onMounted(() => {
@@ -208,11 +223,9 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  profileChart?.dispose();
   causeChart?.dispose();
 });
 
-watch(() => props.profiling, updateProfileChart, { deep: true });
 watch(() => props.causes, updateCauseChart, { deep: true });
 </script>
 
@@ -301,21 +314,20 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
 }
 
-.tech-tag.cause {
-  background: rgba(255, 215, 0, 0.1);
-  color: #ffd700;
-}
-.tech-tag.cause.active, .tech-tag.cause:hover {
-  background: #ffd700;
-  color: #000;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+.tech-tag.cause:hover {
+  filter: brightness(1.2);
 }
 
-.charts-row {
+.tag-section {
+  flex: 0 0 auto;
+  margin-bottom: 15px;
+}
+
+.chart-section {
+  flex: 1;
+  min-height: 0;
   display: flex;
-  flex: 1; /* 让图表区域自适应填充 */
-  min-height: 120px;
-  margin: 15px 0;
+  flex-direction: column;
 }
 
 .chart-container {
@@ -334,22 +346,26 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: chart-float 6s ease-in-out infinite;
 }
 
 .chart-bg-ring {
   position: absolute;
-  width: 90px;
-  height: 90px;
+  width: 120px;
+  height: 120px;
   border: 1px dashed rgba(0, 242, 255, 0.2);
   border-radius: 50%;
   animation: ring-rotate 15s linear infinite;
 }
 
+.chart-bg-ring.large {
+  width: 160px;
+  height: 160px;
+}
+
 .chart-bg-ring::before {
   content: "";
   position: absolute;
-  inset: -10px;
+  inset: -15px;
   border: 1px solid rgba(0, 242, 255, 0.05);
   border-radius: 50%;
   animation: ring-pulse 4s ease-in-out infinite;
@@ -357,11 +373,16 @@ watch(() => props.causes, updateCauseChart, { deep: true });
 
 .chart-bg-ring-inner {
   position: absolute;
-  width: 65px;
-  height: 65px;
+  width: 80px;
+  height: 80px;
   border: 1px solid rgba(0, 242, 255, 0.1);
   border-radius: 50%;
   animation: ring-rotate-reverse 10s linear infinite;
+}
+
+.chart-bg-ring-inner.large {
+  width: 110px;
+  height: 110px;
 }
 
 .chart-bg-ring-inner::after {
@@ -369,22 +390,27 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   position: absolute;
   top: -2px;
   left: 50%;
-  width: 4px;
-  height: 4px;
+  width: 6px;
+  height: 6px;
   background: #00f2ff;
   border-radius: 50%;
-  box-shadow: 0 0 8px #00f2ff;
+  box-shadow: 0 0 10px #00f2ff;
 }
 
 .chart-scan-beam {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
   border-radius: 50%;
   background: conic-gradient(from 0deg, transparent 0%, rgba(0, 242, 255, 0.1) 10%, transparent 20%);
   animation: ring-rotate 4s linear infinite;
   pointer-events: none;
   z-index: 1;
+}
+
+.chart-scan-beam.large {
+  width: 180px;
+  height: 180px;
 }
 
 .chart-bg-ring.highlight {
@@ -416,12 +442,7 @@ watch(() => props.causes, updateCauseChart, { deep: true });
 
 @keyframes ring-pulse {
   0%, 100% { transform: scale(1); opacity: 0.3; }
-  50% { transform: scale(1.15); opacity: 0.6; }
-}
-
-@keyframes chart-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  50% { transform: scale(1.1); opacity: 0.5; }
 }
 
 .pie-chart {
@@ -431,13 +452,11 @@ watch(() => props.causes, updateCauseChart, { deep: true });
 }
 
 .chart-label {
-  font-size: 14px;
-  color: #88b0ea;
+  font-size: 15px;
+  color: #00f2ff;
   margin-top: 5px;
   flex: 0 0 auto;
-}
-
-.tag-section {
-  flex: 0 0 auto;
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 </style>

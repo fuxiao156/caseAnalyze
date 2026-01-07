@@ -25,10 +25,10 @@ onMounted(() => {
       { "tag": "历史遗留", "percentage": 8.7 }
     ],
     "核心成因分析": [
-      { "tag": "伤残待遇未兑现", "percentage": 42.1 },
-      { "tag": "政策执行难度大", "percentage": 31.5 },
-      { "tag": "双方预期偏差", "percentage": 55.8 },
-      { "tag": "沟通渠道不畅", "percentage": 28.4 }
+      { "tag": "伤残待遇未兑现", "percentage": 35.0 },
+      { "tag": "政策执行难度大", "percentage": 25.0 },
+      { "tag": "双方预期偏差", "percentage": 25.0 },
+      { "tag": "沟通渠道不畅", "percentage": 15.0 }
     ],
     "要素雷达数据": [
       { "name": "经济要素", "value": 0.85 },
