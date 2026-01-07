@@ -7,9 +7,8 @@
         <div class="header-meta">
           <button class="accuracy-detail-btn" @click="accuracyModalVisible = true">
             <span class="btn-icon">📈</span>
-            <span>准确度计算详情</span>
+            <span>归因分析数据概览</span>
           </button>
-          <span class="meta-item">准确度: {{ metrics.accuracy }}</span>
           <button class="close-btn" @click="$emit('close')">✕</button>
         </div>
       </header>
@@ -106,7 +105,7 @@
       @update-all="handleDataUpdate"
     />
 
-    <!-- 准确度详情 Modal -->
+    <!-- 归因分析数据概览 Modal -->
     <AccuracyDetailModal
       v-if="accuracyModalVisible"
       :visible="accuracyModalVisible"
@@ -248,12 +247,6 @@ const handleFactorSelect = (name) => {
   display: flex;
   align-items: center;
   gap: 25px;
-}
-
-.meta-item {
-  color: #00f2ff;
-  font-family: monospace;
-  font-size: 18px;
 }
 
 .dashboard-body {
