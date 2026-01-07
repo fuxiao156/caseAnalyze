@@ -17,26 +17,7 @@
         </div>
 
         <!-- 动态渲染不同的校正面板 -->
-        <div v-if="sectionId === 'event-description'" class="correction-panel">
-          <div class="panel-group">
-            <div class="panel-label">事件标题</div>
-            <input 
-              v-model="localData.title" 
-              class="tech-input" 
-              placeholder="请输入事件标题..."
-            />
-          </div>
-          <div class="panel-group">
-            <div class="panel-label">事件详情描述</div>
-            <textarea 
-              v-model="localData.detail" 
-              class="tech-textarea custom-scrollbar" 
-              placeholder="请输入详细的事件描述..."
-            ></textarea>
-          </div>
-        </div>
-
-        <div v-else-if="sectionId === 'event-factor'" class="correction-panel">
+        <div v-if="sectionId === 'event-factor'" class="correction-panel">
           <div class="panel-group">
             <div class="panel-label">事件画像 (Profiling)</div>
             <div class="factor-edit-list">

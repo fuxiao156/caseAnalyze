@@ -21,7 +21,6 @@
             class="event-description-section"
             :title="analysisData.title"
             :detail="analysisData.detail"
-            @open-correction="openCorrection"
           />
           
           <!-- 1.2 事件画像与成因分析 -->
