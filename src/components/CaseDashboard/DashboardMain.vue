@@ -42,7 +42,7 @@
           </div>
 
           <!-- 维度详情 (中部分) -->
-          <div class="right-middle-content" :class="{ 'full-height': ['duty', 'info', 'person', 'attribution', 'time'].includes(activeDimensionId) }">
+          <div class="right-middle-content" :class="{ 'full-height': ['duty', 'info', 'person', 'time'].includes(activeDimensionId) }">
             <Transition name="fade-content" mode="out-in">
               <!-- 时间维度 -->
               <TimeDimensionCard 
@@ -73,13 +73,6 @@
               <InformationDimension
                 v-else-if="activeDimensionId === 'info'"
                 :data="analysisData.信息维度数据"
-                @open-correction="openCorrection"
-              />
-              
-              <!-- 归因图谱 (占据右侧全部) -->
-              <AttributionDimension
-                v-else-if="activeDimensionId === 'attribution'"
-                :case-title="analysisData.title"
                 @open-correction="openCorrection"
               />
 
@@ -122,7 +115,6 @@ import TimeDimensionCard from './TimeDimensionCard.vue';
 import ResponsibilityDimension from './ResponsibilityDimension.vue';
 import InformationDimension from './InformationDimension.vue';
 import PersonDimension from './PersonDimension.vue';
-import AttributionDimension from './AttributionDimension.vue';
 import DataCorrectionModal from '../DataCorrectionModal.vue';
 import AccuracyDetailModal from '../AccuracyDetailModal.vue';
 

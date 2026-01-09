@@ -34,8 +34,7 @@ onMounted(() => {
       { "id": "time", "name": "时间维度", "enabled": true },
       { "id": "person", "name": "人物维度", "enabled": true },
       { "id": "duty", "name": "驱动力维度", "enabled": true },
-      { "id": "info", "name": "信息维度", "enabled": true },
-      { "id": "attribution", "name": "归因图谱", "enabled": true }
+      { "id": "info", "name": "信息维度", "enabled": true }
     ],
     "人物维度数据": {
       "summary": "人物变量深度解码：识别关键当事人的动机、认知偏差及致因特征。",
