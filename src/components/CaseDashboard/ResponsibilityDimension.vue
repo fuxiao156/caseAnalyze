@@ -4,10 +4,10 @@
       <div class="card-title">动力平衡分析 (Dynamics Analysis)</div>
       <div class="state-selector">
         <button 
-          v-for="state in data.states" 
-          :key="state.id"
-          :class="['state-btn', { active: activeStateId === state.id }]"
-          @click="activeStateId = state.id"
+          v-for="(state, index) in data.states" 
+          :key="index"
+          :class="['state-btn', { active: activeStateIndex === index }]"
+          @click="activeStateIndex = index"
         >
           {{ state.name }}
         </button>
@@ -63,7 +63,7 @@
                 <TransitionGroup name="weight-list">
                   <div 
                     v-for="w in currentState.leftWeights" 
-                    :key="w.id"
+                    :key="w.name"
                     class="weight-item-tech"
                     @mouseenter="handleWeightHover(w)"
                     @mouseleave="hoveredWeight = null"
@@ -89,7 +89,7 @@
                 <TransitionGroup name="weight-list">
                   <div 
                     v-for="w in currentState.rightWeights" 
-                    :key="w.id"
+                    :key="w.name"
                     class="weight-item-tech"
                     @mouseenter="handleWeightHover(w)"
                     @mouseleave="hoveredWeight = null"
@@ -172,12 +172,12 @@ const props = defineProps({
 
 const emit = defineEmits(['open-correction', 'highlight-factor']);
 
-const activeStateId = ref('initial');
+const activeStateIndex = ref(0);
 const hoveredWeight = ref(null);
 const showProtocol = ref(false); // 控制协议预览的显示/隐藏
 
 const currentState = computed(() => {
-  return props.data.states?.find(s => s.id === activeStateId.value) || props.data.states[0] || {};
+  return props.data.states?.[activeStateIndex.value] || {};
 });
 
 const leftTotal = computed(() => {
@@ -271,7 +271,7 @@ const getWeightDescription = (w) => {
 
 watch(() => props.data, () => {
   if (props.data.states?.length > 0) {
-    activeStateId.value = props.data.states[0].id;
+    activeStateIndex.value = 0;
   }
 }, { immediate: true });
 
