@@ -30,13 +30,6 @@ onMounted(() => {
       { "tag": "双方预期偏差", "percentage": 25.0 },
       { "tag": "沟通渠道不畅", "percentage": 15.0 }
     ],
-    "要素雷达数据": [
-      { "name": "经济要素", "value": 0.85 },
-      { "name": "心理要素", "value": 0.70 },
-      { "name": "政策要素", "value": 0.90 },
-      { "name": "法律要素", "value": 0.60 },
-      { "name": "社会要素", "value": 0.50 }
-    ],
     "维度配置": [
       { "id": "time", "name": "时间维度", "enabled": true },
       { "id": "person", "name": "人物维度", "enabled": true },
