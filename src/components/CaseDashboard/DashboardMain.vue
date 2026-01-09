@@ -190,13 +190,13 @@ const activeFactorName = ref('');
 const activeTimeNodeIndex = ref(0); // 当前选中的时间节点索引
 
 const currentFactors = computed(() => {
-  // 如果当前是时间维度，且选中了某个节点，且该节点有特定要素详情
+  // 如果当前是时间维度，且选中了某个节点，且该节点有特定要素拆解
   if (activeDimensionId.value === 'time' && 
       props.analysisData.时间维度数据?.timeline?.[activeTimeNodeIndex.value]?.nodeFactors) {
     return props.analysisData.时间维度数据.timeline[activeTimeNodeIndex.value].nodeFactors;
   }
-  // 否则显示全局要素详情
-  return props.analysisData.要素详情 || [];
+  // 否则返回空数组
+  return [];
 });
 
 const handleFactorSelect = (name) => {
