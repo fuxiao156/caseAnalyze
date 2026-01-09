@@ -36,7 +36,7 @@
           <!-- 2.1 维度选择 (上部分) -->
           <div class="right-top-nav">
             <DimensionSwitch 
-              :dimensions="analysisData.维度配置" 
+              :dimensions="dimensions" 
               v-model:active-id="activeDimensionId"
             />
           </div>
@@ -78,7 +78,7 @@
 
               <!-- 其他维度占位 -->
               <div v-else class="placeholder-card-large">
-                {{ analysisData.维度配置?.find(d => d.id === activeDimensionId)?.name }} 维度详情分析中...
+                {{ dimensions.find(d => d.id === activeDimensionId)?.name }} 维度详情分析中...
               </div>
             </Transition>
           </div>
@@ -127,6 +127,13 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'update-data']);
+
+const dimensions = [
+  { id: 'time', name: '时间维度' },
+  { id: 'person', name: '人物维度' },
+  { id: 'duty', name: '驱动力维度' },
+  { id: 'info', name: '信息维度' }
+];
 
 // 数据校正 Modal 状态
 const correctionModalVisible = ref(false);

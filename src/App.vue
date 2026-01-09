@@ -28,12 +28,6 @@ onMounted(() => {
       { "tag": "双方预期偏差", "percentage": 25.0 },
       { "tag": "沟通渠道不畅", "percentage": 15.0 }
     ],
-    "维度配置": [
-      { "id": "time", "name": "时间维度" },
-      { "id": "person", "name": "人物维度" },
-      { "id": "duty", "name": "驱动力维度" },
-      { "id": "info", "name": "信息维度" }
-    ],
     "人物维度数据": {
       "summary": "人物变量深度解码：识别关键当事人的动机、认知偏差及致因特征。",
       "characters": [
