@@ -17,9 +17,9 @@
       <div class="person-selector">
         <div 
           v-for="person in data.characters" 
-          :key="person.id"
-          :class="['person-card', activePersonId === person.id ? 'active' : '']"
-          @click="activePersonId = person.id"
+          :key="person.name"
+          :class="['person-card', activePersonName === person.name ? 'active' : '']"
+          @click="activePersonName = person.name"
         >
           <div class="person-avatar">{{ person.avatar }}</div>
           <div class="person-basic-info">
@@ -91,15 +91,15 @@ const props = defineProps({
 
 const emit = defineEmits(['open-correction']);
 
-const activePersonId = ref(null);
+const activePersonName = ref(null);
 
 const activePerson = computed(() => {
-  return props.data.characters?.find(p => p.id === activePersonId.value) || null;
+  return props.data.characters?.find(p => p.name === activePersonName.value) || null;
 });
 
 watch(() => props.data.characters, (newChars) => {
-  if (newChars && newChars.length > 0 && !activePersonId.value) {
-    activePersonId.value = newChars[0].id;
+  if (newChars && newChars.length > 0 && !activePersonName.value) {
+    activePersonName.value = newChars[0].name;
   }
 }, { immediate: true });
 </script>
