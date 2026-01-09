@@ -42,17 +42,17 @@
           <TransitionGroup name="list-complete">
             <div 
               v-for="factor in factors" 
-              :key="factor.id"
-              :class="['accordion-item', openIds.includes(factor.id) ? 'open' : '', activeFactorName === factor.name ? 'active-highlight' : '']"
+              :key="factor.content"
+              :class="['accordion-item', openIds.includes(factor.content) ? 'open' : '', activeFactorName === factor.name ? 'active-highlight' : '']"
             >
               <!-- 侧边/头部标签 - 仅此处点击可触发展开/收起 -->
-              <div class="item-tab" @click="toggleId(factor.id)">
+              <div class="item-tab" @click="toggleId(factor.content)">
                 <span class="tab-icon">📋</span>
                 <span class="tab-title">{{ factor.name }}</span>
               </div>
 
               <!-- 内容区域 - 点击此处不触发伸缩 -->
-              <div class="item-content-wrapper scrollbar-tech" v-show="openIds.includes(factor.id)">
+              <div class="item-content-wrapper scrollbar-tech" v-show="openIds.includes(factor.content)">
                 <div class="block-header">
                   <span class="block-title">{{ factor.name }} 详细分析</span>
                 </div>
@@ -97,7 +97,7 @@ const openIds = ref([]);
 // 初始化展开第一个要素
 onMounted(() => {
   if (props.factors && props.factors.length > 0) {
-    openIds.value = [props.factors[0].id];
+    openIds.value = [props.factors[0].content];
   }
 });
 
@@ -111,7 +111,7 @@ watch(() => props.data.timeline, (newTimeline) => {
 // 监听 factors 变化，自动展开所有要素
 watch(() => props.factors, (newFactors) => {
   if (newFactors && newFactors.length > 0) {
-    openIds.value = newFactors.map(f => f.id);
+    openIds.value = newFactors.map(f => f.content);
   }
 }, { immediate: true, deep: true });
 
@@ -119,18 +119,18 @@ watch(() => props.factors, (newFactors) => {
 watch(() => props.activeFactorName, (newName) => {
   if (newName) {
     const factor = props.factors.find(f => f.name === newName);
-    if (factor && !openIds.value.includes(factor.id)) {
-      toggleId(factor.id, true);
+    if (factor && !openIds.value.includes(factor.content)) {
+      toggleId(factor.content, true);
     }
   }
 });
 
-const toggleId = (id, forceOpen = false) => {
-  const index = openIds.value.indexOf(id);
+const toggleId = (content, forceOpen = false) => {
+  const index = openIds.value.indexOf(content);
   if (index > -1 && !forceOpen) {
     openIds.value.splice(index, 1);
   } else if (index === -1) {
-    openIds.value.push(id);
+    openIds.value.push(content);
     if (openIds.value.length > 3) {
       openIds.value.shift();
     }
