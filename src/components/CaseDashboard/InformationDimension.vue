@@ -33,10 +33,10 @@
           <div class="fragment-list">
             <div 
               v-for="item in data.items" 
-              :key="'sub-' + item.id"
+              :key="'sub-' + item.category"
               class="fragment-card subjective-card"
-              :class="{ active: activeBiasId === item.id, 'other-active': activeBiasId && activeBiasId !== item.id }"
-              @mouseenter="activeBiasId = item.id"
+              :class="{ active: activeBiasId === item.category, 'other-active': activeBiasId && activeBiasId !== item.category }"
+              @mouseenter="activeBiasId = item.category"
               @mouseleave="activeBiasId = null"
             >
               <div class="glitch-overlay"></div>
@@ -68,10 +68,10 @@
           <div class="fragment-list">
             <div 
               v-for="item in data.items" 
-              :key="'obj-' + item.id"
+              :key="'obj-' + item.category"
               class="fragment-card objective-card"
-              :class="{ active: activeBiasId === item.id, 'other-active': activeBiasId && activeBiasId !== item.id }"
-              @mouseenter="activeBiasId = item.id"
+              :class="{ active: activeBiasId === item.category, 'other-active': activeBiasId && activeBiasId !== item.category }"
+              @mouseenter="activeBiasId = item.category"
               @mouseleave="activeBiasId = null"
             >
               <div class="grid-overlay"></div>
