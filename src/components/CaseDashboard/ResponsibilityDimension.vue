@@ -18,7 +18,7 @@
     </div>
 
     <div class="dimension-summary">
-      <div class="status-badge" :class="currentState.id">
+      <div class="status-badge" :class="statusColorClass">
         <span class="status-dot"></span>
         {{ currentState.status }}
       </div>
@@ -126,7 +126,7 @@
       </Transition>
 
       <!-- 最终达成协议背景装饰 - 修改为可收缩组件 -->
-      <div v-if="currentState.id === 'final' && isEquilibrium" class="settlement-container">
+      <div v-if="isEquilibrium" class="settlement-container">
         <button 
           class="protocol-toggle-btn" 
           @click="showProtocol = !showProtocol"
@@ -196,6 +196,26 @@ const diffPercentage = computed(() => {
 
 const isEquilibrium = computed(() => {
   return rightTotal.value >= leftTotal.value;
+});
+
+// 计算所有状态中最大的重量差（左 - 右）
+const maxWeightDiff = computed(() => {
+  if (!props.data.states || props.data.states.length === 0) return 0;
+  const diffs = props.data.states.map(s => {
+    const left = s.leftWeights?.reduce((sum, w) => sum + w.value, 0) || 0;
+    const right = s.rightWeights?.reduce((sum, w) => sum + w.value, 0) || 0;
+    return left - right;
+  });
+  return Math.max(...diffs, 0);
+});
+
+// 根据重量差动态计算颜色类名
+const statusColorClass = computed(() => {
+  const diff = leftTotal.value - rightTotal.value;
+  if (diff <= 0) return 'status-green';
+  if (diff >= maxWeightDiff.value) return 'status-red';
+  if (diff <= maxWeightDiff.value * 0.5) return 'status-yellow';
+  return 'status-red';
 });
 
 const imbalanceStatus = computed(() => {
@@ -340,9 +360,9 @@ watch(() => props.data, () => {
   margin-bottom: 8px;
 }
 
-.status-badge.initial { background: rgba(255, 71, 87, 0.2); color: #ff4757; }
-.status-badge.mediating { background: rgba(255, 165, 2, 0.2); color: #ffa502; }
-.status-badge.final { background: rgba(46, 213, 115, 0.2); color: #2ed573; }
+.status-badge.status-red { background: rgba(255, 71, 87, 0.2); color: #ff4757; }
+.status-badge.status-yellow { background: rgba(255, 165, 2, 0.2); color: #ffa502; }
+.status-badge.status-green { background: rgba(46, 213, 115, 0.2); color: #2ed573; }
 
 .status-dot {
   width: 8px;
