@@ -17,12 +17,12 @@
             <div class="metric-value">12,480</div>
           </div>
           <div class="metric-card highlight">
-            <div class="metric-label">综合介入率</div>
-            <div class="metric-value">8.2%</div>
+            <div class="metric-label">介入案件数</div>
+            <div class="metric-value">480</div>
           </div>
           <div class="metric-card highlight">
-            <div class="metric-label">分析覆盖率</div>
-            <div class="metric-value">99.4%</div>
+            <div class="metric-label">综合介入率</div>
+            <div class="metric-value">8.2%</div>
           </div>
         </div>
 
