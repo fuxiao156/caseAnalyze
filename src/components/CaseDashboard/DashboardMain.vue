@@ -16,9 +16,39 @@
       <div class="dashboard-body">
         <!-- 加载蒙层 -->
         <div v-if="loading" class="loading-overlay">
-          <div class="loading-spinner"></div>
-          <div class="loading-text">归因分析中...</div>
-          <div class="loading-subtext">预计需要 1-2 分钟，请耐心等待</div>
+          <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">
+              <span class="main-text">归因分析中...</span>
+              <span class="percent-text">{{ analysisData?.progress || 0 }}%</span>
+            </div>
+            
+            <!-- 进度条 -->
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" :style="{ width: `${analysisData?.progress || 0}%` }"></div>
+            </div>
+
+            <!-- 步骤详情列表 -->
+            <div class="steps-container">
+              <div v-for="(step, index) in analysisData?.steps_log" :key="index" class="step-item" :class="step.status">
+                <div class="step-icon">
+                  <span v-if="step.status === 'done'">✓</span>
+                  <span v-else-if="step.status === 'running'" class="step-spinner"></span>
+                  <span v-else-if="step.status === 'skipped'">○</span>
+                  <span v-else-if="step.status === 'error'">✕</span>
+                  <span v-else>●</span>
+                </div>
+                <div class="step-info">
+                  <div class="step-name">{{ step.name }}</div>
+                  <div class="step-status-text" v-if="step.status === 'running'">{{ step.error || '正在处理...' }}</div>
+                  <div class="step-status-text" v-else-if="step.status === 'done'">已完成 (耗时 {{ step.cost }}s)</div>
+                  <div class="step-status-text" v-else-if="step.status === 'skipped'">已跳过</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="loading-subtext">预计需要 1-2 分钟，当前：{{ analysisData?.message }}</div>
+          </div>
         </div>
 
         <!-- 左侧：多要素 (1/3 宽度) -->
@@ -373,24 +403,30 @@ const handleFactorSelect = (name) => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(5, 10, 25, 0.85);
-  backdrop-filter: blur(8px);
+  background: rgba(5, 10, 25, 0.9);
+  backdrop-filter: blur(12px);
   z-index: 2100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-content {
+  width: 500px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 20px;
+  gap: 24px;
 }
 
 .loading-spinner {
-  width: 60px;
-  height: 60px;
-  border: 4px solid rgba(0, 242, 255, 0.1);
-  border-top: 4px solid #00f2ff;
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(0, 242, 255, 0.1);
+  border-top: 3px solid #00f2ff;
   border-radius: 50%;
   animation: spin 1.5s linear infinite;
-  box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
 }
 
 @keyframes spin {
@@ -399,16 +435,110 @@ const handleFactorSelect = (name) => {
 }
 
 .loading-text {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
   color: #00f2ff;
-  font-size: 24px;
-  font-weight: bold;
-  letter-spacing: 4px;
   text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
 }
 
-.loading-subtext {
-  color: rgba(255, 255, 255, 0.5);
+.main-text {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.percent-text {
+  font-size: 18px;
+  font-family: 'DIN Alternate', sans-serif;
+  opacity: 0.8;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0072ff, #00f2ff);
+  box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+  transition: width 0.5s ease;
+}
+
+.steps-container {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.step-item.running {
+  opacity: 1;
+  color: #00f2ff;
+}
+
+.step-item.done {
+  opacity: 0.8;
+  color: #4ade80;
+}
+
+.step-item.skipped {
+  opacity: 0.4;
+}
+
+.step-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 14px;
+}
+
+.step-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(0, 242, 255, 0.2);
+  border-top-color: #00f2ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.step-info {
+  flex: 1;
+}
+
+.step-name {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.step-status-text {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+.loading-subtext {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  text-align: center;
 }
 
 /* 切换动画 */

@@ -240,11 +240,12 @@ const handleAnalyze = async () => {
       } else {
         // 还在进行中 (processing/waiting)
         console.log(`分析进度: ${taskData.total_progress}% - ${taskData.current_message}`);
-        // 更新部分数据以便前端感知进度（如果 DashboardMain 支持）
+        // 更新部分数据以便前端感知进度
         analysisData.value = { 
           polling: true, 
           progress: taskData.total_progress, 
-          message: taskData.current_message 
+          message: taskData.current_message,
+          steps_log: taskData.steps_log // 传递步骤日志
         };
       }
     }
