@@ -1,6 +1,7 @@
 <script setup>
 import DashboardMain from './components/CaseDashboard/DashboardMain.vue'
 import { ref } from 'vue';
+import { analyzeCase, queryTaskProgress } from './api';
 
 const isDashboardVisible = ref(false);
 const isAnalyzing = ref(false);
@@ -198,22 +199,62 @@ const mockResult = {
   }
 };
 
-const handleAnalyze = () => {
+const handleAnalyze = async () => {
   if (!inputText.value.trim()) return;
   
   isDashboardVisible.value = true;
   isAnalyzing.value = true;
-  analysisData.value = {}; // 先给个空对象防止子组件报错
+  analysisData.value = null; // 清空旧数据
 
-  // 模拟发送数据到后台并等待分析结果
-  // 实际项目中这里应该是 axios.post(...)
-  console.log('Sending data to backend:', inputText.value);
+  console.log('Starting analysis task...');
   
-  // 模拟分析耗时
-  setTimeout(() => {
-    analysisData.value = mockResult;
+  try {
+    // 1. 提交任务获取 task_id
+    const startResult = await analyzeCase({ content: inputText.value });
+    const taskId = startResult.data?.task_id;
+
+    if (!taskId) {
+      throw new Error('服务器未返回任务ID');
+    }
+
+    // 2. 轮询进度，每10秒一次
+    let isFinished = false;
+    while (!isFinished) {
+      // 按照用户要求，每10秒查询一次
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      
+      const queryResult = await queryTaskProgress(taskId);
+      const taskData = queryResult.data;
+
+      if (!taskData) {
+        throw new Error('查询结果异常');
+      }
+
+      if (taskData.status === 'success') {
+        // 任务成功完成
+        analysisData.value = taskData.result;
+        isFinished = true;
+      } else if (taskData.status === 'failed' || taskData.status === 'error') {
+        // 任务失败
+        throw new Error(taskData.current_message || '分析任务执行失败');
+      } else {
+        // 还在进行中 (processing/waiting)
+        console.log(`分析进度: ${taskData.total_progress}% - ${taskData.current_message}`);
+        // 更新部分数据以便前端感知进度（如果 DashboardMain 支持）
+        analysisData.value = { 
+          polling: true, 
+          progress: taskData.total_progress, 
+          message: taskData.current_message 
+        };
+      }
+    }
+  } catch (error) {
+    console.error('Analysis failed:', error);
+    alert(error.message || '分析请求失败，请稍后重试');
+    handleClose();
+  } finally {
     isAnalyzing.value = false;
-  }, 3000); // 暂时设为 5 秒方便演示，用户要求 1 分多钟
+  }
 };
 
 const handleClose = () => {
