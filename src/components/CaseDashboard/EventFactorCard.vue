@@ -7,45 +7,51 @@
       </button>
     </div>
     
-    <!-- 上部：事件画像标签 -->
-    <div class="tag-section top">
-      <div class="mini-label">事件画像 (Profiling)</div>
-      <div class="tag-cloud">
-        <span 
-          v-for="(item) in profiling" 
-          :key="item"
-          :class="['tech-tag profile']"
-          @click="selectProfile(index)"
-        >{{ item }}</span>
-      </div>
+    <div v-if="!profiling?.length && !causes?.length" class="empty-state-container">
+      <div class="empty-state-text">案例内容所包含信息无法支撑该维度的分析</div>
     </div>
 
-    <!-- 中部：事件成因分析标签 -->
-    <div class="tag-section middle">
-      <div class="mini-label">核心成因分析 (Causes)</div>
-      <div class="tag-cloud">
-        <span 
-          v-for="(item, index) in causes" 
-          :key="item.tag"
-          :class="['tech-tag cause', activeCauseIdx === index ? 'active' : '']"
-          :style="getCauseTagStyle(index)"
-          @click="selectCause(index)"
-        >{{ item.tag }}</span>
-      </div>
-    </div>
-
-    <!-- 下部：成因占比饼图 -->
-    <div class="chart-section bottom">
-      <div class="chart-container">
-        <div class="chart-wrapper">
-          <div class="chart-bg-ring highlight large"></div>
-          <div class="chart-bg-ring-inner highlight large"></div>
-          <div class="chart-scan-beam highlight large"></div>
-          <div ref="causePieRef" class="pie-chart"></div>
+    <template v-else>
+      <!-- 上部：事件画像标签 -->
+      <div class="tag-section top">
+        <div class="mini-label">事件画像 (Profiling)</div>
+        <div class="tag-cloud">
+          <span 
+            v-for="(item) in profiling" 
+            :key="item"
+            :class="['tech-tag profile']"
+            @click="selectProfile(index)"
+          >{{ item }}</span>
         </div>
-        <div class="chart-label">致因推动比例分布</div>
       </div>
-    </div>
+
+      <!-- 中部：事件成因分析标签 -->
+      <div class="tag-section middle">
+        <div class="mini-label">核心成因分析 (Causes)</div>
+        <div class="tag-cloud">
+          <span 
+            v-for="(item, index) in causes" 
+            :key="item.tag"
+            :class="['tech-tag cause', activeCauseIdx === index ? 'active' : '']"
+            :style="getCauseTagStyle(index)"
+            @click="selectCause(index)"
+          >{{ item.tag }}</span>
+        </div>
+      </div>
+
+      <!-- 下部：成因占比饼图 -->
+      <div class="chart-section bottom">
+        <div class="chart-container">
+          <div class="chart-wrapper">
+            <div class="chart-bg-ring highlight large"></div>
+            <div class="chart-bg-ring-inner highlight large"></div>
+            <div class="chart-scan-beam highlight large"></div>
+            <div ref="causePieRef" class="pie-chart"></div>
+          </div>
+          <div class="chart-label">致因推动比例分布</div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -252,6 +258,25 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
   margin-bottom: 0;
+}
+
+.empty-state-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(0, 242, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 242, 255, 0.02);
+  margin: 10px 0;
+}
+
+.empty-state-text {
+  color: rgba(200, 221, 251, 0.6);
+  font-size: 14px;
+  text-align: center;
+  padding: 0 20px;
+  line-height: 1.6;
 }
 
 .eval-trigger-btn {

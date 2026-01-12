@@ -2,7 +2,7 @@
   <div class="responsibility-dimension dashboard-card">
     <div class="card-title-row">
       <div class="card-title">动力平衡分析 (Dynamics Analysis)</div>
-      <div class="state-selector">
+      <div v-if="data.states?.length" class="state-selector">
         <button 
           v-for="(state, index) in data.states" 
           :key="index"
@@ -17,143 +17,149 @@
       </button>
     </div>
 
-    <div class="dimension-summary">
-      <div class="status-badge" :class="statusColorClass">
-        <span class="status-dot"></span>
-        {{ currentState.status }}
-      </div>
-      <p>{{ data.summary }}</p>
+    <div v-if="!data.states?.length" class="empty-state-container">
+      <div class="empty-state-text">案例内容所包含信息无法支撑该维度的分析</div>
     </div>
 
-    <div class="scale-container">
-      <!-- 科技感背景网格 -->
-      <div class="tech-grid"></div>
-
-      <!-- 科技天平主体 -->
-      <div class="scale-tech-wrapper">
-        <!-- 横梁支架 (固定) -->
-        <div class="scale-base-tech">
-          <div class="pillar-tech"></div>
-          <div class="foundation-tech">
-            <div 
-              class="settlement-indicator" 
-              :class="imbalanceStatus"
-              :style="imbalanceIndicatorStyle"
-            >
-              <div class="indicator-light"></div>
-              <span>动力失衡检测</span>
-            </div>
-          </div>
+    <template v-else>
+      <div class="dimension-summary">
+        <div class="status-badge" :class="statusColorClass">
+          <span class="status-dot"></span>
+          {{ currentState.status }}
         </div>
-
-        <!-- 动态旋转部分 (横梁与托盘) -->
-        <div class="scale-dynamic-part" :style="scaleRotationStyle">
-          <!-- 科技横梁 -->
-          <div class="beam-tech" :class="{ 'equilibrium-glow': isEquilibrium }">
-            <div class="beam-center-tech">
-              <div class="core-energy"></div>
-            </div>
-          </div>
-
-          <!-- 左托盘平台 -->
-          <div class="pan-platform left-platform" :style="reverseRotationStyle">
-            <div class="platform-base">
-              <div class="platform-label">驱动项 (Driving Factors)</div>
-              <div class="weights-container">
-                <TransitionGroup name="weight-list">
-                  <div 
-                    v-for="w in currentState.leftWeights" 
-                    :key="w.name"
-                    class="weight-item-tech"
-                    @mouseenter="handleWeightHover(w)"
-                    @mouseleave="hoveredWeight = null"
-                  >
-                    <div class="weight-glow"></div>
-                    <div class="weight-info">
-                      <div class="weight-name">{{ w.name }}</div>
-                      <div class="weight-value">+{{ w.value }}</div>
-                    </div>
-                  </div>
-                </TransitionGroup>
-              </div>
-            </div>
-            <!-- 连接细线 -->
-            <div class="connection-line"></div>
-          </div>
-
-          <!-- 右托盘平台 -->
-          <div class="pan-platform right-platform" :style="reverseRotationStyle">
-            <div class="platform-base">
-              <div class="platform-label">约束项 (Restraining Factors)</div>
-              <div class="weights-container">
-                <TransitionGroup name="weight-list">
-                  <div 
-                    v-for="w in currentState.rightWeights" 
-                    :key="w.name"
-                    class="weight-item-tech"
-                    @mouseenter="handleWeightHover(w)"
-                    @mouseleave="hoveredWeight = null"
-                  >
-                    <div class="weight-glow"></div>
-                    <div class="weight-info">
-                      <div class="weight-name">{{ w.name }}</div>
-                      <div class="weight-value">+{{ w.value }}</div>
-                    </div>
-                  </div>
-                </TransitionGroup>
-              </div>
-            </div>
-            <!-- 连接细线 -->
-            <div class="connection-line"></div>
-          </div>
-        </div>
+        <p>{{ data.summary }}</p>
       </div>
 
-      <!-- Hover Insight 浮层 -->
-      <Transition name="fade">
-        <div v-if="hoveredWeight" class="hover-insight">
-          <div class="insight-header">
-            <span class="insight-icon">🔍</span>
-            <h4>{{ hoveredWeight.name }}</h4>
+      <div class="scale-container">
+        <!-- 科技感背景网格 -->
+        <div class="tech-grid"></div>
+
+        <!-- 科技天平主体 -->
+        <div class="scale-tech-wrapper">
+          <!-- 横梁支架 (固定) -->
+          <div class="scale-base-tech">
+            <div class="pillar-tech"></div>
+            <div class="foundation-tech">
+              <div 
+                class="settlement-indicator" 
+                :class="imbalanceStatus"
+                :style="imbalanceIndicatorStyle"
+              >
+                <div class="indicator-light"></div>
+                <span>动力失衡检测</span>
+              </div>
+            </div>
           </div>
-          <div class="insight-content">
-            <p>{{ getWeightDescription(hoveredWeight) }}</p>
-            <div v-if="hoveredWeight.linkedFactor" class="link-notice">
-              🔗 关联要素: <strong>{{ hoveredWeight.linkedFactor }}</strong> 已在左侧高亮
+
+          <!-- 动态旋转部分 (横梁与托盘) -->
+          <div class="scale-dynamic-part" :style="scaleRotationStyle">
+            <!-- 科技横梁 -->
+            <div class="beam-tech" :class="{ 'equilibrium-glow': isEquilibrium }">
+              <div class="beam-center-tech">
+                <div class="core-energy"></div>
+              </div>
+            </div>
+
+            <!-- 左托盘平台 -->
+            <div class="pan-platform left-platform" :style="reverseRotationStyle">
+              <div class="platform-base">
+                <div class="platform-label">驱动项 (Driving Factors)</div>
+                <div class="weights-container">
+                  <TransitionGroup name="weight-list">
+                    <div 
+                      v-for="w in currentState.leftWeights" 
+                      :key="w.name"
+                      class="weight-item-tech"
+                      @mouseenter="handleWeightHover(w)"
+                      @mouseleave="hoveredWeight = null"
+                    >
+                      <div class="weight-glow"></div>
+                      <div class="weight-info">
+                        <div class="weight-name">{{ w.name }}</div>
+                        <div class="weight-value">+{{ w.value }}</div>
+                      </div>
+                    </div>
+                  </TransitionGroup>
+                </div>
+              </div>
+              <!-- 连接细线 -->
+              <div class="connection-line"></div>
+            </div>
+
+            <!-- 右托盘平台 -->
+            <div class="pan-platform right-platform" :style="reverseRotationStyle">
+              <div class="platform-base">
+                <div class="platform-label">约束项 (Restraining Factors)</div>
+                <div class="weights-container">
+                  <TransitionGroup name="weight-list">
+                    <div 
+                      v-for="w in currentState.rightWeights" 
+                      :key="w.name"
+                      class="weight-item-tech"
+                      @mouseenter="handleWeightHover(w)"
+                      @mouseleave="hoveredWeight = null"
+                    >
+                      <div class="weight-glow"></div>
+                      <div class="weight-info">
+                        <div class="weight-name">{{ w.name }}</div>
+                        <div class="weight-value">+{{ w.value }}</div>
+                      </div>
+                    </div>
+                  </TransitionGroup>
+                </div>
+              </div>
+              <!-- 连接细线 -->
+              <div class="connection-line"></div>
             </div>
           </div>
         </div>
-      </Transition>
 
-      <!-- 最终达成协议背景装饰 - 修改为可收缩组件 -->
-      <div v-if="isEquilibrium" class="settlement-container">
-        <button 
-          class="protocol-toggle-btn" 
-          @click="showProtocol = !showProtocol"
-          :class="{ active: showProtocol }"
-        >
-          <span class="btn-icon">{{ showProtocol ? '✕' : '📜' }}</span>
-          <span class="btn-text">致因冲突焦点分析</span>
-        </button>
-
-        <Transition name="slide-fade">
-          <div v-if="showProtocol" class="protocol-preview">
-            <div class="protocol-header">致因冲突焦点分析</div>
-            <div class="protocol-body">
-              <div v-if="currentState.analysis" class="dynamic-analysis">
-                <p v-for="(line, idx) in currentState.analysis" :key="idx">{{ line }}</p>
-              </div>
-              <div v-else class="default-analysis">
-                <p>1. 核心矛盾已通过外部变量实现对冲；</p>
-                <p>2. 驱动力与约束力在当前节点达成动态平衡；</p>
-                <p>3. 行为动机被有效抑制，案件触发风险降低。</p>
+        <!-- Hover Insight 浮层 -->
+        <Transition name="fade">
+          <div v-if="hoveredWeight" class="hover-insight">
+            <div class="insight-header">
+              <span class="insight-icon">🔍</span>
+              <h4>{{ hoveredWeight.name }}</h4>
+            </div>
+            <div class="insight-content">
+              <p>{{ getWeightDescription(hoveredWeight) }}</p>
+              <div v-if="hoveredWeight.linkedFactor" class="link-notice">
+                🔗 关联要素: <strong>{{ hoveredWeight.linkedFactor }}</strong> 已在左侧高亮
               </div>
             </div>
-            <div class="protocol-seal">已归因</div>
           </div>
         </Transition>
+
+        <!-- 最终达成协议背景装饰 - 修改为可收缩组件 -->
+        <div v-if="isEquilibrium" class="settlement-container">
+          <button 
+            class="protocol-toggle-btn" 
+            @click="showProtocol = !showProtocol"
+            :class="{ active: showProtocol }"
+          >
+            <span class="btn-icon">{{ showProtocol ? '✕' : '📜' }}</span>
+            <span class="btn-text">致因冲突焦点分析</span>
+          </button>
+
+          <Transition name="slide-fade">
+            <div v-if="showProtocol" class="protocol-preview">
+              <div class="protocol-header">致因冲突焦点分析</div>
+              <div class="protocol-body">
+                <div v-if="currentState.analysis" class="dynamic-analysis">
+                  <p v-for="(line, idx) in currentState.analysis" :key="idx">{{ line }}</p>
+                </div>
+                <div v-else class="default-analysis">
+                  <p>1. 核心矛盾已通过外部变量实现对冲；</p>
+                  <p>2. 驱动力与约束力在当前节点达成动态平衡；</p>
+                  <p>3. 行为动机被有效抑制，案件触发风险降低。</p>
+                </div>
+              </div>
+              <div class="protocol-seal">已归因</div>
+            </div>
+          </Transition>
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -314,6 +320,25 @@ watch(() => props.data, () => {
   font-weight: bold;
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
+}
+
+.empty-state-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(0, 242, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 242, 255, 0.02);
+  margin: 10px 0;
+}
+
+.empty-state-text {
+  color: rgba(200, 221, 251, 0.6);
+  font-size: 14px;
+  text-align: center;
+  padding: 0 20px;
+  line-height: 1.6;
 }
 
 .state-selector {

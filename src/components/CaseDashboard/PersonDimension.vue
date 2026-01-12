@@ -7,72 +7,78 @@
       </button>
     </div>
 
-    <!-- 上部：人物选择与概览 -->
-    <div class="dimension-summary">
-      <p>{{ data.summary }}</p>
+    <div v-if="!data.characters?.length" class="empty-state-container">
+      <div class="empty-state-text">案例内容所包含信息无法支撑该维度的分析</div>
     </div>
 
-    <div class="person-container">
-      <!-- 上半部分：人物卡片横向排列 -->
-      <div class="person-selector">
-        <div 
-          v-for="person in data.characters" 
-          :key="person.name"
-          :class="['person-card', activePersonName === person.name ? 'active' : '']"
-          @click="activePersonName = person.name"
-        >
-          <div class="person-avatar">{{ person.avatar }}</div>
-          <div class="person-basic-info">
-            <div class="person-name">{{ person.name }}</div>
-            <div class="person-type-tag">{{ person.type }}</div>
+    <template v-else>
+      <!-- 上部：人物选择与概览 -->
+      <div class="dimension-summary">
+        <p>{{ data.summary }}</p>
+      </div>
+
+      <div class="person-container">
+        <!-- 上半部分：人物卡片横向排列 -->
+        <div class="person-selector">
+          <div 
+            v-for="person in data.characters" 
+            :key="person.name"
+            :class="['person-card', activePersonName === person.name ? 'active' : '']"
+            @click="activePersonName = person.name"
+          >
+            <div class="person-avatar">{{ person.avatar }}</div>
+            <div class="person-basic-info">
+              <div class="person-name">{{ person.name }}</div>
+              <div class="person-type-tag">{{ person.type }}</div>
+            </div>
+            <div class="selection-indicator"></div>
           </div>
-          <div class="selection-indicator"></div>
+        </div>
+
+        <!-- 下半部分：深度致因分析面板 -->
+        <div class="attribution-panel" v-if="activePerson">
+          <Transition name="fade-slide" mode="out-in">
+            <div :key="activePerson.id" class="attribution-grid">
+              <!-- 左侧：动机与偏差 -->
+              <div class="attr-left">
+                <div class="attr-section">
+                  <div class="attr-label">利益原动力 (Core Drivers)</div>
+                  <div class="driver-list">
+                    <div v-for="driver in activePerson.drivers" :key="driver.label" class="driver-item">
+                      <span class="d-title">【{{ driver.label }}】</span>
+                      <span class="d-desc">{{ driver.desc }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="attr-section">
+                  <div class="attr-label">认知偏差 (Cognitive Biases)</div>
+                  <div class="bias-list">
+                    <div v-for="bias in activePerson.biases" :key="bias.label" class="bias-item">
+                      <span class="b-title">【{{ bias.label }}】</span>
+                      <span class="b-desc">{{ bias.desc }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 右侧：核心归因结论 -->
+              <div class="attr-right">
+                <div class="attribution-conclusion">
+                  <div class="conclusion-header">
+                    <span class="c-icon">🔍</span>
+                    核心致因归因 (Case Attribution)
+                  </div>
+                  <div class="conclusion-text">
+                    {{ activePerson.attribution }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Transition>
         </div>
       </div>
-
-      <!-- 下半部分：深度致因分析面板 -->
-      <div class="attribution-panel" v-if="activePerson">
-        <Transition name="fade-slide" mode="out-in">
-          <div :key="activePerson.id" class="attribution-grid">
-            <!-- 左侧：动机与偏差 -->
-            <div class="attr-left">
-              <div class="attr-section">
-                <div class="attr-label">利益原动力 (Core Drivers)</div>
-                <div class="driver-list">
-                  <div v-for="driver in activePerson.drivers" :key="driver.label" class="driver-item">
-                    <span class="d-title">【{{ driver.label }}】</span>
-                    <span class="d-desc">{{ driver.desc }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="attr-section">
-                <div class="attr-label">认知偏差 (Cognitive Biases)</div>
-                <div class="bias-list">
-                  <div v-for="bias in activePerson.biases" :key="bias.label" class="bias-item">
-                    <span class="b-title">【{{ bias.label }}】</span>
-                    <span class="b-desc">{{ bias.desc }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 右侧：核心归因结论 -->
-            <div class="attr-right">
-              <div class="attribution-conclusion">
-                <div class="conclusion-header">
-                  <span class="c-icon">🔍</span>
-                  核心致因归因 (Case Attribution)
-                </div>
-                <div class="conclusion-text">
-                  {{ activePerson.attribution }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </Transition>
-      </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -129,6 +135,25 @@ watch(() => props.data.characters, (newChars) => {
   font-weight: bold;
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
+}
+
+.empty-state-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(0, 242, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 242, 255, 0.02);
+  margin: 10px 0;
+}
+
+.empty-state-text {
+  color: rgba(200, 221, 251, 0.6);
+  font-size: 14px;
+  text-align: center;
+  padding: 0 20px;
+  line-height: 1.6;
 }
 
 .dimension-summary {

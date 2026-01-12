@@ -7,84 +7,90 @@
       </button>
     </div>
 
-    <div class="dimension-summary">
-      <p>{{ data.summary }}</p>
+    <div v-if="!data.items?.length" class="empty-state-container">
+      <div class="empty-state-text">案例内容所包含信息无法支撑该维度的分析</div>
     </div>
 
-    <div class="cognitive-container">
-      <div class="bias-comparison-grid">
-        <!-- 科技背景：流动的数据流，置于 grid 中间列 -->
-        <div class="data-stream-bg">
-          <div 
-            v-for="i in 3" 
-            :key="i" 
-            class="stream-ray" 
-            :style="{ 
-              '--delay': (i * 1.2) + 's', 
-              '--top': (i * 25) + '%',
-              '--duration': (3 + Math.random() * 1) + 's'
-            }"
-          ></div>
-        </div>
+    <template v-else>
+      <div class="dimension-summary">
+        <p>{{ data.summary }}</p>
+      </div>
 
-        <!-- 左侧：主观认知 (Perception) -->
-        <div class="column subjective-column">
-          <div class="column-header">主观感知 (Subjective Perception)</div>
-          <div class="fragment-list">
+      <div class="cognitive-container">
+        <div class="bias-comparison-grid">
+          <!-- 科技背景：流动的数据流，置于 grid 中间列 -->
+          <div class="data-stream-bg">
             <div 
-              v-for="item in data.items" 
-              :key="'sub-' + item.category"
-              class="fragment-card subjective-card"
-              :class="{ active: activeBiasId === item.category, 'other-active': activeBiasId && activeBiasId !== item.category }"
-              @mouseenter="activeBiasId = item.category"
-              @mouseleave="activeBiasId = null"
-            >
-              <div class="glitch-overlay"></div>
-              <div class="card-category">{{ item.category }}</div>
-              <div class="card-text">{{ item.subjective.text }}</div>
-              <div class="card-tags">
-                <span v-for="tag in item.subjective.tags" :key="tag" class="tag subjective-tag">{{ tag }}</span>
+              v-for="i in 3" 
+              :key="i" 
+              class="stream-ray" 
+              :style="{ 
+                '--delay': (i * 1.2) + 's', 
+                '--top': (i * 25) + '%',
+                '--duration': (3 + Math.random() * 1) + 's'
+              }"
+            ></div>
+          </div>
+
+          <!-- 左侧：主观认知 (Perception) -->
+          <div class="column subjective-column">
+            <div class="column-header">主观感知 (Subjective Perception)</div>
+            <div class="fragment-list">
+              <div 
+                v-for="item in data.items" 
+                :key="'sub-' + item.category"
+                class="fragment-card subjective-card"
+                :class="{ active: activeBiasId === item.category, 'other-active': activeBiasId && activeBiasId !== item.category }"
+                @mouseenter="activeBiasId = item.category"
+                @mouseleave="activeBiasId = null"
+              >
+                <div class="glitch-overlay"></div>
+                <div class="card-category">{{ item.category }}</div>
+                <div class="card-text">{{ item.subjective.text }}</div>
+                <div class="card-tags">
+                  <span v-for="tag in item.subjective.tags" :key="tag" class="tag subjective-tag">{{ tag }}</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- 中间：逻辑桥梁 (Logic Bridge) / 信息差障碍 -->
-        <div class="column bridge-column">
-          <div class="bridge-pillar">
-            <div class="bridge-content obstacle-content">
-              <div class="bridge-icon obstacle-icon">🚧</div>
-              <div class="bridge-label obstacle-label">认知断裂带</div>
-              <div class="bridge-text">主观预设与客观现实间的认知断层，是诱发非理性决策与案件升级的核心致因</div>
-              <div class="obstacle-line"></div>
-              <div class="bridge-pulse"></div>
+          <!-- 中间：逻辑桥梁 (Logic Bridge) / 信息差障碍 -->
+          <div class="column bridge-column">
+            <div class="bridge-pillar">
+              <div class="bridge-content obstacle-content">
+                <div class="bridge-icon obstacle-icon">🚧</div>
+                <div class="bridge-label obstacle-label">认知断裂带</div>
+                <div class="bridge-text">主观预设与客观现实间的认知断层，是诱发非理性决策与案件升级的核心致因</div>
+                <div class="obstacle-line"></div>
+                <div class="bridge-pulse"></div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- 右侧：客观事实 (Objective Reality) -->
-        <div class="column objective-column">
-          <div class="column-header">客观环境 (Objective Environment)</div>
-          <div class="fragment-list">
-            <div 
-              v-for="item in data.items" 
-              :key="'obj-' + item.category"
-              class="fragment-card objective-card"
-              :class="{ active: activeBiasId === item.category, 'other-active': activeBiasId && activeBiasId !== item.category }"
-              @mouseenter="activeBiasId = item.category"
-              @mouseleave="activeBiasId = null"
-            >
-              <div class="grid-overlay"></div>
-              <div class="card-category">{{ item.category }}</div>
-              <div class="card-text">{{ item.objective.text }}</div>
-              <div class="card-tags">
-                <span v-for="tag in item.objective.tags" :key="tag" class="tag objective-tag">{{ tag }}</span>
+          <!-- 右侧：客观事实 (Objective Reality) -->
+          <div class="column objective-column">
+            <div class="column-header">客观环境 (Objective Environment)</div>
+            <div class="fragment-list">
+              <div 
+                v-for="item in data.items" 
+                :key="'obj-' + item.category"
+                class="fragment-card objective-card"
+                :class="{ active: activeBiasId === item.category, 'other-active': activeBiasId && activeBiasId !== item.category }"
+                @mouseenter="activeBiasId = item.category"
+                @mouseleave="activeBiasId = null"
+              >
+                <div class="grid-overlay"></div>
+                <div class="card-category">{{ item.category }}</div>
+                <div class="card-text">{{ item.objective.text }}</div>
+                <div class="card-tags">
+                  <span v-for="tag in item.objective.tags" :key="tag" class="tag objective-tag">{{ tag }}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -146,6 +152,25 @@ const activeBiasId = ref(null);
   font-weight: bold;
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
+}
+
+.empty-state-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(0, 242, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 242, 255, 0.02);
+  margin: 10px 0;
+}
+
+.empty-state-text {
+  color: rgba(200, 221, 251, 0.6);
+  font-size: 14px;
+  text-align: center;
+  padding: 0 20px;
+  line-height: 1.6;
 }
 
 .eval-trigger-btn {

@@ -7,64 +7,70 @@
       </button>
     </div>
     
-    <!-- 2.2.1 上部分：整体陈述 -->
-    <div class="dimension-summary">
-      <p>{{ data.summary }}</p>
+    <div v-if="!data.timeline?.length" class="empty-state-container">
+      <div class="empty-state-text">案例内容所包含信息无法支撑该维度的分析</div>
     </div>
 
-    <!-- 2.2.1 下部分：时间线 -->
-    <div class="timeline-wrapper scrollbar-tech">
-      <div class="timeline-horizontal">
-        <div 
-          v-for="(node, index) in data.timeline" 
-          :key="index"
-          :class="['timeline-node-box', activeIndex === index ? 'active' : '']"
-          @click="selectNode(index)"
-        >
-          <div class="node-time">{{ node.date || '' }}</div>
-          <div class="node-marker">
-            <div class="node-dot"></div>
-            <div class="node-line" v-if="index !== data.timeline.length - 1"></div>
-          </div>
-          <div class="node-event">{{ node.event }}</div>
-        </div>
+    <template v-else>
+      <!-- 2.2.1 上部分：整体陈述 -->
+      <div class="dimension-summary">
+        <p>{{ data.summary }}</p>
       </div>
-    </div>
 
-    <!-- 2.2.2 要素详细拆解融合 -->
-    <div class="factor-details-section">
-      <div class="card-title-row">
-        <div class="card-title">当前节点要素拆解 (Factor Dissection)</div>
-      </div>
-      
-      <div class="accordion-container">
-        <div class="accordion-wrapper">
-          <TransitionGroup name="list-complete">
-            <div 
-              v-for="factor in factors" 
-              :key="factor.content"
-              :class="['accordion-item', openIds.includes(factor.content) ? 'open' : '', activeFactorName === factor.name ? 'active-highlight' : '']"
-            >
-              <!-- 侧边/头部标签 - 仅此处点击可触发展开/收起 -->
-              <div class="item-tab" @click="toggleId(factor.content)">
-                <span class="tab-icon">📋</span>
-                <span class="tab-title">{{ factor.name }}</span>
-              </div>
-
-              <!-- 内容区域 - 点击此处不触发伸缩 -->
-              <div class="item-content-wrapper scrollbar-tech" v-show="openIds.includes(factor.content)">
-                <div class="block-header">
-                  <span class="block-title">{{ factor.name }} 详细分析</span>
-                </div>
-                <div class="block-content">
-                  <p class="generic-content">{{ factor.content }}</p>
-                </div>
-              </div>
+      <!-- 2.2.1 下部分：时间线 -->
+      <div class="timeline-wrapper scrollbar-tech">
+        <div class="timeline-horizontal">
+          <div 
+            v-for="(node, index) in data.timeline" 
+            :key="index"
+            :class="['timeline-node-box', activeIndex === index ? 'active' : '']"
+            @click="selectNode(index)"
+          >
+            <div class="node-time">{{ node.date || '' }}</div>
+            <div class="node-marker">
+              <div class="node-dot"></div>
+              <div class="node-line" v-if="index !== data.timeline.length - 1"></div>
             </div>
-          </TransitionGroup>
+            <div class="node-event">{{ node.event }}</div>
+          </div>
         </div>
       </div>
-    </div>
+
+      <!-- 2.2.2 要素详细拆解融合 -->
+      <div class="factor-details-section">
+        <div class="card-title-row">
+          <div class="card-title">当前节点要素拆解 (Factor Dissection)</div>
+        </div>
+        
+        <div class="accordion-container">
+          <div class="accordion-wrapper">
+            <TransitionGroup name="list-complete">
+              <div 
+                v-for="factor in factors" 
+                :key="factor.content"
+                :class="['accordion-item', openIds.includes(factor.content) ? 'open' : '', activeFactorName === factor.name ? 'active-highlight' : '']"
+              >
+                <!-- 侧边/头部标签 - 仅此处点击可触发展开/收起 -->
+                <div class="item-tab" @click="toggleId(factor.content)">
+                  <span class="tab-icon">📋</span>
+                  <span class="tab-title">{{ factor.name }}</span>
+                </div>
+
+                <!-- 内容区域 - 点击此处不触发伸缩 -->
+                <div class="item-content-wrapper scrollbar-tech" v-show="openIds.includes(factor.content)">
+                  <div class="block-header">
+                    <span class="block-title">{{ factor.name }} 详细分析</span>
+                  </div>
+                  <div class="block-content">
+                    <p class="generic-content">{{ factor.content }}</p>
+                  </div>
+                </div>
+              </div>
+            </TransitionGroup>
+          </div>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -170,6 +176,25 @@ const selectNode = (idx) => {
   border-left: 4px solid #00f2ff;
   padding-left: 12px;
   margin-bottom: 0;
+}
+
+.empty-state-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed rgba(0, 242, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(0, 242, 255, 0.02);
+  margin: 10px 0;
+}
+
+.empty-state-text {
+  color: rgba(200, 221, 251, 0.6);
+  font-size: 14px;
+  text-align: center;
+  padding: 0 20px;
+  line-height: 1.6;
 }
 
 .eval-trigger-btn {
