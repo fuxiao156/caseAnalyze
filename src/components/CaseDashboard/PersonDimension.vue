@@ -49,8 +49,8 @@
               <div class="attr-section">
                 <div class="attr-label">认知偏差 (Cognitive Biases)</div>
                 <div class="bias-list">
-                  <div v-for="bias in activePerson.biases" :key="bias.title" class="bias-item">
-                    <span class="b-title">【{{ bias.title }}】</span>
+                  <div v-for="bias in activePerson.biases" :key="bias.label" class="bias-item">
+                    <span class="b-title">【{{ bias.label }}】</span>
                     <span class="b-desc">{{ bias.desc }}</span>
                   </div>
                 </div>
