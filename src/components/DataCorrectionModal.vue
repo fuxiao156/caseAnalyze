@@ -310,7 +310,15 @@ const avatarOptions = ['👤', '👨‍💼', '👮', '👨‍⚖️', '👨‍�
 // 监听 visible，打开时拷贝一份数据
 watch(() => props.visible, (newVal) => {
   if (newVal) {
-    localData.value = JSON.parse(JSON.stringify(props.allData));
+    const defaultData = {
+      事件画像: [],
+      核心成因分析: [],
+      时间维度数据: { timeline: [] },
+      人物维度数据: { summary: '', characters: [] },
+      驱动力维度数据: { summary: '', states: [] },
+      信息维度数据: { summary: '', items: [] }
+    };
+    localData.value = props.allData ? JSON.parse(JSON.stringify(props.allData)) : defaultData;
   }
 }, { immediate: true });
 

@@ -26,14 +26,14 @@
           <!-- 1.1 事件描述 -->
           <EventDescriptionCard 
             class="event-description-section"
-            :title="analysisData.title"
-            :detail="analysisData.detail"
+            :title="analysisData?.title"
+            :detail="analysisData?.detail"
           />
           
           <!-- 1.2 事件画像与成因分析 -->
           <EventFactorCard 
-            :profiling="analysisData.事件画像" 
-            :causes="analysisData.核心成因分析" 
+            :profiling="analysisData?.事件画像" 
+            :causes="analysisData?.核心成因分析" 
             @open-correction="openCorrection"
           />
         </aside>
@@ -54,7 +54,7 @@
               <!-- 时间维度 -->
               <TimeDimensionCard 
                 v-if="activeDimensionId === 'time'"
-                :data="analysisData.时间维度数据"
+                :data="analysisData?.时间维度数据"
                 :factors="currentFactors"
                 :active-factor-name="activeFactorName"
                 v-model:active-index="activeTimeNodeIndex"
@@ -64,14 +64,14 @@
               <!-- 人物维度 (占据右侧全部) -->
               <PersonDimension
                 v-else-if="activeDimensionId === 'person'"
-                :data="analysisData.人物维度数据"
+                :data="analysisData?.人物维度数据"
                 @open-correction="openCorrection"
               />
 
               <!-- 权责维度 (占据右侧全部) -->
               <ResponsibilityDimension
                 v-else-if="activeDimensionId === 'duty'"
-                :data="analysisData.驱动力维度数据"
+                :data="analysisData?.驱动力维度数据"
                 @open-correction="openCorrection"
                 @highlight-factor="handleFactorSelect"
               />
@@ -79,7 +79,7 @@
               <!-- 信息维度 (占据右侧全部) -->
               <InformationDimension
                 v-else-if="activeDimensionId === 'info'"
-                :data="analysisData.信息维度数据"
+                :data="analysisData?.信息维度数据"
                 @open-correction="openCorrection"
               />
 
@@ -200,8 +200,8 @@ const activeTimeNodeIndex = ref(0); // 当前选中的时间节点索引
 const currentFactors = computed(() => {
   // 如果当前是时间维度，且选中了某个节点，且该节点有特定要素拆解
   if (activeDimensionId.value === 'time' && 
-      props.analysisData.时间维度数据?.timeline?.[activeTimeNodeIndex.value]?.nodeFactors) {
-    return props.analysisData.时间维度数据.timeline[activeTimeNodeIndex.value].nodeFactors;
+      props.analysisData?.时间维度数据?.timeline?.[activeTimeNodeIndex.value]?.nodeFactors) {
+    return props.analysisData?.时间维度数据?.timeline?.[activeTimeNodeIndex.value]?.nodeFactors || [];
   }
   // 否则返回空数组
   return [];
