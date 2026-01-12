@@ -293,6 +293,7 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  min-height: 28px; /* 确保无数据时至少占据一行标签的高度 */
 }
 
 .tech-tag {
@@ -302,6 +303,7 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   cursor: pointer;
   transition: all 0.3s;
   border: 1px solid transparent;
+  line-height: 1.4;
 }
 
 .tech-tag.profile {
@@ -321,6 +323,7 @@ watch(() => props.causes, updateCauseChart, { deep: true });
 .tag-section {
   flex: 0 0 auto;
   margin-bottom: 15px;
+  min-height: 55px; /* 统一设置最小高度，防止数据加载前后图表区域挤压变形 */
 }
 
 .chart-section {

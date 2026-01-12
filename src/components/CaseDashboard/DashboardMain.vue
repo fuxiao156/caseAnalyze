@@ -14,6 +14,13 @@
       </header>
 
       <div class="dashboard-body">
+        <!-- 加载蒙层 -->
+        <div v-if="loading" class="loading-overlay">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">归因分析中...</div>
+          <div class="loading-subtext">预计需要 1-2 分钟，请耐心等待</div>
+        </div>
+
         <!-- 左侧：多要素 (1/3 宽度) -->
         <aside class="dashboard-left">
           <!-- 1.1 事件描述 -->
@@ -120,6 +127,7 @@ import AccuracyDetailModal from '../AccuracyDetailModal.vue';
 
 const props = defineProps({
   visible: Boolean,
+  loading: Boolean,
   analysisData: {
     type: Object,
     default: () => ({})
@@ -356,6 +364,51 @@ const handleFactorSelect = (name) => {
 
 .btn-icon {
   font-size: 16px;
+}
+
+/* 加载蒙层 */
+.loading-overlay {
+  position: absolute;
+  top: 70px; /* header height */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(5, 10, 25, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 2100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.loading-spinner {
+  width: 60px;
+  height: 60px;
+  border: 4px solid rgba(0, 242, 255, 0.1);
+  border-top: 4px solid #00f2ff;
+  border-radius: 50%;
+  animation: spin 1.5s linear infinite;
+  box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: #00f2ff;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+}
+
+.loading-subtext {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
 }
 
 /* 切换动画 */
