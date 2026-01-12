@@ -21,7 +21,7 @@
           :class="['timeline-node-box', activeIndex === index ? 'active' : '']"
           @click="selectNode(index)"
         >
-          <div v-if="node.date" class="node-time">{{ node.date }}</div>
+          <div class="node-time">{{ node.date || '' }}</div>
           <div class="node-marker">
             <div class="node-dot"></div>
             <div class="node-line" v-if="index !== data.timeline.length - 1"></div>
@@ -226,7 +226,7 @@ const selectNode = (idx) => {
   display: flex;
   min-width: max-content;
   padding: 0 40px;
-  align-items: center;
+  align-items: flex-start; /* 改为 flex-start 使所有节点顶部对齐，防止高度不一导致 marker 偏移 */
 }
 
 .timeline-node-box {
@@ -243,8 +243,13 @@ const selectNode = (idx) => {
   font-family: monospace;
   font-size: 14px;
   color: #88b0ea;
+  height: 20px; /* 固定时间标签高度 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 12px;
   transition: all 0.3s;
+  flex-shrink: 0;
 }
 
 .timeline-node-box:hover .node-time,
@@ -315,6 +320,8 @@ const selectNode = (idx) => {
   left: calc(50% + 20px);
   width: calc(100% - 40px);
   height: 4px;
+  top: 50%;
+  transform: translateY(-50%);
   background: rgba(0, 242, 255, 0.15);
   z-index: 1;
   border-radius: 2px;
