@@ -577,6 +577,7 @@ watch(() => props.data, () => {
   overflow-y: auto; /* 开启竖向滚动 */
   overflow-x: hidden;
   padding-right: 4px;
+  position: relative; /* 为离开的绝对定位元素提供参考 */
 }
 
 /* 内部滚动条美化 */
@@ -823,10 +824,25 @@ watch(() => props.data, () => {
 
 /* 动画 */
 .weight-list-enter-active, .weight-list-leave-active {
-  transition: all 0.5s;
+  transition: all 0.5s ease;
 }
-.weight-list-enter-from { opacity: 0; transform: translateY(-20px); }
-.weight-list-leave-to { opacity: 0; transform: translateY(20px); }
+.weight-list-enter-from { 
+  opacity: 0; 
+  transform: translateY(-20px); 
+}
+.weight-list-leave-to { 
+  opacity: 0; 
+  transform: translateY(20px); 
+}
+.weight-list-leave-active {
+  position: absolute;
+  left: 0;
+  right: 4px; /* 留出滚动条空间 */
+  z-index: 0;
+}
+.weight-list-move {
+  transition: transform 0.5s ease;
+}
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
