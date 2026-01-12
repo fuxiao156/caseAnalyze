@@ -32,12 +32,12 @@
           <div class="panel-group">
             <div class="panel-label">核心成因分析 (Causes)</div>
             <div class="factor-edit-list">
-              <div v-for="(item, index) in localData.核心成因分析" :key="'cause-' + index" class="factor-edit-item">
+              <div v-for="(item, index) in localData.成因分析" :key="'cause-' + index" class="factor-edit-item">
                 <input v-model="item.tag" class="tech-input small" placeholder="成因标签" />
                 <input v-model.number="item.percentage" type="number" class="tech-input weight-val-input" placeholder="权重%" />
-                <button class="remove-btn" @click="localData.核心成因分析.splice(index, 1)">✕</button>
+                <button class="remove-btn" @click="localData.成因分析.splice(index, 1)">✕</button>
               </div>
-              <button class="add-btn" @click="localData.核心成因分析.push({ tag: '', percentage: 0 })">+ 添加成因标签</button>
+              <button class="add-btn" @click="localData.成因分析.push({ tag: '', percentage: 0 })">+ 添加成因标签</button>
             </div>
           </div>
         </div>
@@ -312,7 +312,7 @@ watch(() => props.visible, (newVal) => {
   if (newVal) {
     const defaultData = {
       事件画像: [],
-      核心成因分析: [],
+      成因分析: [],
       时间维度数据: { timeline: [] },
       人物维度数据: { summary: '', characters: [] },
       驱动力维度数据: { summary: '', states: [] },

@@ -63,7 +63,7 @@
           <!-- 1.2 事件画像与成因分析 -->
           <EventFactorCard 
             :profiling="analysisData?.事件画像" 
-            :causes="analysisData?.核心成因分析" 
+            :causes="analysisData?.成因分析" 
             @open-correction="openCorrection"
           />
         </aside>

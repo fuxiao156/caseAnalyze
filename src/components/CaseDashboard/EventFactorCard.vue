@@ -12,11 +12,11 @@
       <div class="mini-label">事件画像 (Profiling)</div>
       <div class="tag-cloud">
         <span 
-          v-for="(item, index) in profiling" 
-          :key="item.tag"
-          :class="['tech-tag profile', activeProfileIdx === index ? 'active' : '']"
+          v-for="(item) in profiling" 
+          :key="item"
+          :class="['tech-tag profile']"
           @click="selectProfile(index)"
-        >{{ item.tag }}</span>
+        >{{ item }}</span>
       </div>
     </div>
 
@@ -69,7 +69,6 @@ const emit = defineEmits(['open-correction']);
 const causePieRef = ref(null);
 let causeChart = null;
 
-const activeProfileIdx = ref(0);
 const activeCauseIdx = ref(0);
 
 // 定义成因颜色调色盘
@@ -163,10 +162,6 @@ const updateCauseChart = () => {
   if (causeChart && props.causes?.length > 0) {
     causeChart.setOption(getCausePieOption(props.causes));
   }
-};
-
-const selectProfile = (idx) => {
-  activeProfileIdx.value = idx;
 };
 
 const selectCause = (idx) => {
