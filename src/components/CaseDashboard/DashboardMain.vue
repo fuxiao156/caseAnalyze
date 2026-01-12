@@ -56,8 +56,7 @@
           <!-- 1.1 事件描述 -->
           <EventDescriptionCard 
             class="event-description-section"
-            :title="analysisData?.title"
-            :detail="analysisData?.detail"
+            :detail="analysisData?.事件详情"
           />
           
           <!-- 1.2 事件画像与成因分析 -->

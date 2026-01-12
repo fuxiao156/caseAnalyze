@@ -4,7 +4,6 @@
       <div class="card-title">事件描述 (Description)</div>
     </div>
     <div class="description-content custom-scrollbar">
-      <div class="event-title">{{ title }}</div>
       <div class="event-detail">{{ detail }}</div>
     </div>
   </div>
@@ -12,7 +11,6 @@
 
 <script setup>
 defineProps({
-  title: String,
   detail: String
 });
 </script>
