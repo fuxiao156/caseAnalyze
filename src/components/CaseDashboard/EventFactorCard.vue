@@ -158,16 +158,21 @@ const getCausePieOption = (data) => {
 };
 
 const initCharts = () => {
-  if (causePieRef.value) {
+  if (causePieRef.value && !causeChart) {
     causeChart = echarts.init(causePieRef.value);
     updateCauseChart();
   }
 };
 
 const updateCauseChart = () => {
-  if (causeChart && props.causes?.length > 0) {
-    causeChart.setOption(getCausePieOption(props.causes));
-  }
+  nextTick(() => {
+    if (causePieRef.value && !causeChart) {
+      causeChart = echarts.init(causePieRef.value);
+    }
+    if (causeChart && props.causes?.length > 0) {
+      causeChart.setOption(getCausePieOption(props.causes));
+    }
+  });
 };
 
 const selectCause = (idx) => {
@@ -221,11 +226,17 @@ onMounted(() => {
   nextTick(() => {
     initCharts();
   });
+  window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
   causeChart?.dispose();
+  window.removeEventListener('resize', handleResize);
 });
+
+const handleResize = () => {
+  causeChart?.resize();
+};
 
 watch(() => props.causes, updateCauseChart, { deep: true });
 </script>
