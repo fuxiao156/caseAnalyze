@@ -137,12 +137,12 @@
                     <div class="sub-label">认知偏差 (Biases)</div>
                     <div v-for="(bias, bIdx) in person.biases" :key="'b-' + bIdx" class="factor-row">
                       <div class="factor-header">
-                        <input v-model="bias.title" class="tech-input small" placeholder="偏差标题" />
+                        <input v-model="bias.label" class="tech-input small" placeholder="偏差标题" />
                         <button class="remove-btn mini" @click="person.biases.splice(bIdx, 1)">✕</button>
                       </div>
                       <textarea v-model="bias.desc" class="tech-textarea custom-scrollbar tiny-height" placeholder="偏差详情描述..."></textarea>
                     </div>
-                    <button class="add-btn mini" @click="person.biases.push({ title: '', desc: '' })">+ 添加认知偏差</button>
+                    <button class="add-btn mini" @click="person.biases.push({ label: '', desc: '' })">+ 添加认知偏差</button>
                   </div>
 
                   <!-- 核心归因结论 -->
