@@ -134,6 +134,7 @@
       :sectionId="activeSection.id"
       :id="id"
       :allData="analysisData"
+      :originData="originData"
       @close="correctionModalVisible = false"
       @update-all="handleDataUpdate"
     />
@@ -356,6 +357,8 @@ const emit = defineEmits(['close', 'update-data']);
 
 const analysisData = ref(null);
 const loading = ref(false);
+const originData = ref(null);
+const dataChanged = ref(false);
 
 const dimensions = [
   { id: 'time', name: '时间维度' },
@@ -390,6 +393,8 @@ const fetchDetailOrAnalyze = async (id) => {
     // 根据接口3返回结构：{ origin: {}, new: {} }
     if (res.data && (res.data.new || res.data.origin)) {
       analysisData.value = res.data.new || res.data.origin;
+      originData.value = res.data.origin;
+      dataChanged.value = res.data.new ? true : false;
       loading.value = false;
     } else {
       // 详情不存在，启动分析

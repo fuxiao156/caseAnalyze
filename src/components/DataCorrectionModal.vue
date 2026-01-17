@@ -22,10 +22,10 @@
             <div class="panel-label">事件画像 (Profiling)</div>
             <div class="factor-edit-list">
               <div v-for="(item, index) in localData.事件画像" :key="'profile-' + index" class="factor-edit-item">
-                <input v-model="item.tag" class="tech-input small" placeholder="标签名称" />
+                <input v-model="localData.事件画像[index]" class="tech-input small" placeholder="标签名称" />
                 <button class="remove-btn" @click="localData.事件画像.splice(index, 1)">✕</button>
               </div>
-              <button class="add-btn" @click="localData.事件画像.push({ tag: '', percentage: 0 })">+ 添加画像标签</button>
+              <button class="add-btn" @click="localData.事件画像.push('')">+ 添加画像标签</button>
             </div>
           </div>
 
@@ -297,6 +297,10 @@ const props = defineProps({
   allData: {
     type: Object,
     default: () => ({})
+  },
+  originData: {
+    type: Object,
+    default: () => ({})
   }
 });
 
@@ -322,6 +326,7 @@ watch(() => props.visible, (newVal) => {
       信息维度数据: { summary: '', items: [] }
     };
     localData.value = props.allData ? JSON.parse(JSON.stringify(props.allData)) : defaultData;
+    console.log('localData', localData.value);
   }
 }, { immediate: true });
 
@@ -337,12 +342,12 @@ const handleUpdate = async () => {
   submitting.value = true;
   try {
     // 根据接口4的要求构造参数
+    const isReasonChange = props.sectionId === 'event-factor' &&  judeIfReasonChange();
     const params = {
       id: props.id,
-      content: props.allData?.事件详情, // 接口要求id与content必存其一
-      isReasonChange: props.sectionId === 'event-factor',
-      originReason: props.allData?.成因分析?.map(c => c.tag) || [],
-      newReason: localData.value.成因分析?.map(c => c.tag) || [],
+      isReasonChange: isReasonChange,
+      originReason: props.originData?.成因分析?.map(c => c.tag),
+      newReason: localData.value.成因分析?.map(c => c.tag),
       new_result: localData.value // 传入完整的修改后数据
     };
     
@@ -366,6 +371,13 @@ const handleUpdate = async () => {
   } finally {
     submitting.value = false;
   }
+};
+
+const judeIfReasonChange = () => {
+  // 判断核心成因标签是否修改, 忽略顺序修改
+  const originReason = props.allData?.成因分析?.map(c => c.tag);
+  const newReason = localData.value.成因分析?.map(c => c.tag);
+  return originReason.sort().join(',') !== newReason.sort().join(',');
 };
 </script>
 
