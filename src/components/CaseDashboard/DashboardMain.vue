@@ -435,9 +435,6 @@ const startAnalysis = async (id) => {
 
     let isFinished = false;
     while (!isFinished) {
-      // 轮询进度，每5秒一次
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      
       const queryResult = await queryTaskProgress(taskId, id);
       const taskData = queryResult.data;
 
@@ -458,6 +455,8 @@ const startAnalysis = async (id) => {
           message: taskData.current_message,
           steps_log: taskData.steps_log
         };
+        // 轮询进度，每5秒一次
+        await new Promise(resolve => setTimeout(resolve, 5000));
       }
     }
   } catch (error) {

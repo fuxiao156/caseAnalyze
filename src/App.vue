@@ -27,7 +27,7 @@ const handleClose = () => {
         <p class="subtitle">输入案件详情，利用大模型技术进行多维度归因分析</p>
         
         <div class="input-group">
-          <input type="text" v-model="currentAnalysisId" placeholder="请输入案件ID（可选）" class="id-input" />
+          <input type="text" v-model="currentAnalysisId" placeholder="请输入案件ID（数据库目前有111与222）" class="id-input" />
         </div>
         
         <textarea 
