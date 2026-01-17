@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://10.100.5.251:16663';
+const BASE_URL = 'http://10.100.5.251:16666';
 
 /**
  * 启动分析任务
@@ -10,7 +10,7 @@ const BASE_URL = 'http://10.100.5.251:16663';
 export const analyzeCase = (params) => {
   return axios({
     method: 'post',
-    url: `${BASE_URL}/api/analyze`,
+    url: `${BASE_URL}/api/model_infer/analyze`,
     data: params,
   }).then(res => res.data);
 };
@@ -23,6 +23,9 @@ export const analyzeCase = (params) => {
 export const queryTaskProgress = (taskId) => {
   return axios({
     method: 'get',
-    url: `${BASE_URL}/api/query/${taskId}`,
+    url: `${BASE_URL}/api/model_infer/query`,
+    params: {
+      task_id: taskId
+    }
   }).then(res => res.data);
 };

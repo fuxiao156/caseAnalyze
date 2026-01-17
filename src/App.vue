@@ -195,20 +195,22 @@ const mockResult = {
 
 
 const handleAnalyze = async () => {
-  // isDashboardVisible.value = true;
-  // isAnalyzing.value = false;
-  // analysisData.value = mockResult2; // 清空旧数据
-  // return 
-  
   if (!inputText.value.trim()) return;
   
   isDashboardVisible.value = true;
   isAnalyzing.value = true;
   analysisData.value = null; // 清空旧数据
+  let isFinished = false;
 
   console.log('Starting analysis task...');
   
   try {
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    isDashboardVisible.value = true;
+    isAnalyzing.value = false;
+    analysisData.value = mockResult; // 清空旧数据
+    return 
+  
     // 1. 提交任务获取 task_id
     const startResult = await analyzeCase({ content: inputText.value });
     const taskId = startResult.data?.task_id;
@@ -218,10 +220,9 @@ const handleAnalyze = async () => {
     }
 
     // 2. 轮询进度，每10秒一次
-    let isFinished = false;
     while (!isFinished) {
       // 按照用户要求，每10秒查询一次
-      await new Promise(resolve => setTimeout(resolve, 10000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
       const queryResult = await queryTaskProgress(taskId);
       const taskData = queryResult.data;
