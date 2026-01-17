@@ -136,7 +136,7 @@
         </Transition>
 
         <!-- 最终达成协议背景装饰 - 修改为可收缩组件 -->
-        <div v-if="isEquilibrium" class="settlement-container">
+        <div v-if="currentState.analysis" class="settlement-container">
           <button 
             class="protocol-toggle-btn" 
             @click="showProtocol = !showProtocol"
