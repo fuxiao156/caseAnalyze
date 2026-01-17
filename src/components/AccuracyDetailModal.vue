@@ -14,15 +14,15 @@
         <div class="metrics-grid">
           <div class="metric-card highlight">
             <div class="metric-label">总案件数</div>
-            <div class="metric-value">12,480</div>
+            <div class="metric-value">{{ statData.total?.toLocaleString() || 0 }}</div>
           </div>
           <div class="metric-card highlight">
             <div class="metric-label">介入案件数</div>
-            <div class="metric-value">480</div>
+            <div class="metric-value">{{ statData.changeNum?.toLocaleString() || 0 }}</div>
           </div>
           <div class="metric-card highlight">
             <div class="metric-label">综合介入率</div>
-            <div class="metric-value">8.2%</div>
+            <div class="metric-value">{{ (statData.changeRate || 0).toFixed(2) }}%</div>
           </div>
         </div>
 
@@ -35,6 +35,8 @@
                 <tr>
                   <th>事件画像</th>
                   <th>案件数</th>
+                  <th>涉及成因数</th>
+                  <th>介入成因数</th>
                   <th>介入率</th>
                 </tr>
               </thead>
@@ -42,6 +44,8 @@
                 <tr v-for="item in tableData" :key="item.type">
                   <td>{{ item.type }}</td>
                   <td>{{ item.count }}</td>
+                  <td>{{ item.causes }}</td>
+                  <td>{{ item.causes_modified }}</td>
                   <td class="rate-cell">
                     <span class="rate-text">{{ item.rate }}%</span>
                     <div class="rate-bar-bg">
@@ -71,24 +75,53 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+import { getStatistics } from '../api';
 
-defineProps({
+const props = defineProps({
   visible: Boolean
 });
 
 defineEmits(['close']);
 
-const tableData = ref([
-  { type: '矛盾纠纷', count: 3240, rate: 12.5 },
-  { type: '劳动纠纷', count: 2150, rate: 8.2 },
-  { type: '家庭纠纷', count: 1860, rate: 5.4 },
-  { type: '医疗纠纷', count: 420, rate: 25.8 },
-  { type: '合同纠纷', count: 1580, rate: 6.1 },
-  { type: '物业纠纷', count: 920, rate: 10.3 },
-  { type: '赔偿纠纷', count: 1100, rate: 14.2 },
-  { type: '损害公共安全', count: 210, rate: 38.5 }
-]);
+const statData = ref({
+  total: 0,
+  changeNum: 0,
+  changeRate: 0,
+  detail: []
+});
+
+const tableData = ref([]);
+
+const fetchData = async () => {
+  try {
+    const res = await getStatistics();
+    if (res?.data) {
+      statData.value = res.data;
+      tableData.value = (res.data.detail || []).map(item => ({
+        type: item.name,
+        count: item.total,
+        rate: (item.rate * 100).toFixed(2),
+        causes: item.causes,
+        causes_modified: item.causes_modified
+      }));
+    }
+  } catch (error) {
+    console.error('获取统计数据失败:', error);
+  }
+};
+
+watch(() => props.visible, (newVal) => {
+  if (newVal) {
+    fetchData();
+  }
+});
+
+onMounted(() => {
+  if (props.visible) {
+    fetchData();
+  }
+});
 </script>
 
 <style scoped>

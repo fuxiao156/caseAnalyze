@@ -56,3 +56,14 @@ export const correctAnalysis = (params) => {
     data: params
   }).then(res => res.data);
 };
+
+/**
+ * 获取统计数据
+ * @returns {Promise}
+ */
+export const getStatistics = () => {
+  return axios({
+    method: 'get',
+    url: `${BASE_URL}/api/model_infer/stat`,
+  }).then(res => res.data);
+};
