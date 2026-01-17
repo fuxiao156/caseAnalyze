@@ -20,12 +20,13 @@ export const analyzeCase = (params) => {
  * @param {string} taskId 任务ID
  * @returns {Promise}
  */
-export const queryTaskProgress = (taskId) => {
+export const queryTaskProgress = (taskId, id) => {
   return axios({
     method: 'get',
     url: `${BASE_URL}/api/model_infer/query`,
     params: {
-      task_id: taskId
+      task_id: taskId,
+      id: id
     }
   }).then(res => res.data);
 };
