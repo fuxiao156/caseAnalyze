@@ -2,12 +2,17 @@
   <div class="factor-card dashboard-card">
     <div class="card-title-row">
       <div class="card-title">事件画像与成因分析</div>
-      <button class="eval-trigger-btn" @click="$emit('open-correction', '事件画像与成因分析', 'event-factor')">
-        <span class="eval-icon">📝</span> 数据校正
-      </button>
+      <div class="btn-group">
+        <button v-if="showToggleBtn" class="toggle-data-btn" @click="isOriginShowing = !isOriginShowing">
+          <span class="btn-icon">🔄</span> {{ isOriginShowing ? '切换校正数据' : '切换原始数据' }}
+        </button>
+        <button class="eval-trigger-btn" @click="$emit('open-correction', '事件画像与成因分析', 'event-factor')">
+          <span class="eval-icon">📝</span> 数据校正
+        </button>
+      </div>
     </div>
     
-    <div v-if="!profiling?.length && !causes?.length" class="empty-state-container">
+    <div v-if="!displayedProfiling?.length && !displayedCauses?.length" class="empty-state-container">
       <div class="empty-state-text">案例内容所包含信息无法支撑该维度的分析</div>
     </div>
 
@@ -17,10 +22,9 @@
         <div class="mini-label">事件画像 (Profiling)</div>
         <div class="tag-cloud">
           <span 
-            v-for="(item) in profiling" 
+            v-for="(item) in displayedProfiling" 
             :key="item"
             :class="['tech-tag profile']"
-            @click="selectProfile(index)"
           >{{ item }}</span>
         </div>
       </div>
@@ -30,7 +34,7 @@
         <div class="mini-label">核心成因分析 (Causes)</div>
         <div class="tag-cloud">
           <span 
-            v-for="(item, index) in causes" 
+            v-for="(item, index) in displayedCauses" 
             :key="item.tag"
             :class="['tech-tag cause', activeCauseIdx === index ? 'active' : '']"
             :style="getCauseTagStyle(index)"
@@ -56,7 +60,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
+import { ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue';
 import * as echarts from 'echarts';
 
 const props = defineProps({
@@ -67,10 +71,30 @@ const props = defineProps({
   causes: {
     type: Array,
     default: () => []
+  },
+  originProfiling: {
+    type: Array,
+    default: () => []
+  },
+  originCauses: {
+    type: Array,
+    default: () => []
   }
 });
 
 const emit = defineEmits(['open-correction']);
+
+const isOriginShowing = ref(false);
+const showToggleBtn = computed(() => {
+  if (!props.originProfiling?.length && !props.originCauses?.length) return false;
+  // 如果 new 数据不存在（即 props.profiling 和 props.causes 为空或与 origin 相同），则不展示
+  const profilingChanged = JSON.stringify(props.profiling) !== JSON.stringify(props.originProfiling);
+  const causesChanged = JSON.stringify(props.causes) !== JSON.stringify(props.originCauses);
+  return profilingChanged || causesChanged;
+});
+
+const displayedProfiling = computed(() => isOriginShowing.value ? props.originProfiling : props.profiling);
+const displayedCauses = computed(() => isOriginShowing.value ? props.originCauses : props.causes);
 
 const causePieRef = ref(null);
 let causeChart = null;
@@ -88,7 +112,7 @@ const CAUSE_COLORS = [
 ];
 
 const getCausePieOption = (data) => {
-  const chartData = data.map((item, idx) => {
+  const chartData = (data || []).map((item, idx) => {
     const colorCfg = CAUSE_COLORS[idx % CAUSE_COLORS.length];
     return {
       name: item.tag,
@@ -169,8 +193,8 @@ const updateCauseChart = () => {
     if (causePieRef.value && !causeChart) {
       causeChart = echarts.init(causePieRef.value);
     }
-    if (causeChart && props.causes?.length > 0) {
-      causeChart.setOption(getCausePieOption(props.causes));
+    if (causeChart && displayedCauses.value?.length > 0) {
+      causeChart.setOption(getCausePieOption(displayedCauses.value));
     }
   });
 };
@@ -180,7 +204,7 @@ const selectCause = (idx) => {
   // 联动高亮饼图
   if (causeChart) {
     // 循环取消所有扇区的高亮状态，确保彻底回缩
-    props.causes.forEach((_, i) => {
+    displayedCauses.value.forEach((_, i) => {
       causeChart.dispatchAction({
         type: 'downplay',
         seriesIndex: 0,
@@ -238,7 +262,7 @@ const handleResize = () => {
   causeChart?.resize();
 };
 
-watch(() => props.causes, updateCauseChart, { deep: true });
+watch(() => displayedCauses.value, updateCauseChart, { deep: true });
 </script>
 
 <style scoped>
@@ -260,6 +284,31 @@ watch(() => props.causes, updateCauseChart, { deep: true });
   align-items: center;
   margin-bottom: 15px;
   flex: 0 0 auto;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.toggle-data-btn {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+}
+
+.toggle-data-btn:hover {
+  background: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
 .card-title {

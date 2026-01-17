@@ -2,26 +2,31 @@
   <div class="time-dimension dashboard-card">
     <div class="card-title-row">
       <div class="card-title">时间维度分析 (Time Dimension)</div>
-      <button class="eval-trigger-btn" @click="$emit('open-correction', '时间维度分析', 'time-dimension')">
-        <span class="eval-icon">📝</span> 数据校正
-      </button>
+      <div class="btn-group">
+        <button v-if="showToggleBtn" class="toggle-data-btn" @click="isOriginShowing = !isOriginShowing">
+          <span class="btn-icon">🔄</span> {{ isOriginShowing ? '切换校正数据' : '切换原始数据' }}
+        </button>
+        <button class="eval-trigger-btn" @click="$emit('open-correction', '时间维度分析', 'time-dimension')">
+          <span class="eval-icon">📝</span> 数据校正
+        </button>
+      </div>
     </div>
     
-    <div v-if="!data.timeline?.length" class="empty-state-container">
+    <div v-if="!displayedData.timeline?.length" class="empty-state-container">
       <div class="empty-state-text">案例内容所包含信息无法支撑该维度的分析</div>
     </div>
 
     <template v-else>
       <!-- 2.2.1 上部分：整体陈述 -->
       <div class="dimension-summary">
-        <p>{{ data.summary }}</p>
+        <p>{{ displayedData.summary }}</p>
       </div>
 
       <!-- 2.2.1 下部分：时间线 -->
       <div class="timeline-wrapper scrollbar-tech">
         <div class="timeline-horizontal">
           <div 
-            v-for="(node, index) in data.timeline" 
+            v-for="(node, index) in displayedData.timeline" 
             :key="index"
             :class="['timeline-node-box', activeIndex === index ? 'active' : '']"
             @click="selectNode(index)"
@@ -29,7 +34,7 @@
             <div class="node-time">{{ node.date || '' }}</div>
             <div class="node-marker">
               <div class="node-dot"></div>
-              <div class="node-line" v-if="index !== data.timeline.length - 1"></div>
+              <div class="node-line" v-if="index !== displayedData.timeline.length - 1"></div>
             </div>
             <div class="node-event">{{ node.event }}</div>
           </div>
@@ -46,7 +51,7 @@
           <div class="accordion-wrapper">
             <TransitionGroup name="list-complete">
               <div 
-                v-for="factor in factors" 
+                v-for="factor in displayedFactors" 
                 :key="factor.content"
                 :class="['accordion-item', openIds.includes(factor.content) ? 'open' : '', activeFactorName === factor.name ? 'active-highlight' : '']"
               >
@@ -75,10 +80,17 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 
 const props = defineProps({
   data: {
+    type: Object,
+    default: () => ({
+      summary: '',
+      timeline: []
+    })
+  },
+  originData: {
     type: Object,
     default: () => ({
       summary: '',
@@ -98,24 +110,38 @@ const props = defineProps({
 
 const emit = defineEmits(['open-correction', 'update:activeIndex']);
 
+const isOriginShowing = ref(false);
+const showToggleBtn = computed(() => {
+  if (!props.originData?.timeline?.length) return false;
+  return JSON.stringify(props.data) !== JSON.stringify(props.originData);
+});
+
+const displayedData = computed(() => isOriginShowing.value ? props.originData : props.data);
+const displayedFactors = computed(() => {
+  if (isOriginShowing.value) {
+    return displayedData.value?.timeline?.[props.activeIndex]?.nodeFactors || [];
+  }
+  return props.factors;
+});
+
 const openIds = ref([]);
 
 // 初始化展开第一个要素
 onMounted(() => {
-  if (props.factors && props.factors.length > 0) {
-    openIds.value = [props.factors[0].content];
+  if (displayedFactors.value && displayedFactors.value.length > 0) {
+    openIds.value = [displayedFactors.value[0].content];
   }
 });
 
 // 监听数据变化，重置索引
-watch(() => props.data.timeline, (newTimeline) => {
-  if (props.activeIndex >= newTimeline.length) {
-    emit('update:activeIndex', newTimeline.length > 0 ? 0 : null);
+watch(() => displayedData.value.timeline, (newTimeline) => {
+  if (props.activeIndex >= (newTimeline?.length || 0)) {
+    emit('update:activeIndex', newTimeline?.length > 0 ? 0 : null);
   }
 }, { deep: true });
 
 // 监听 factors 变化，自动展开所有要素
-watch(() => props.factors, (newFactors) => {
+watch(() => displayedFactors.value, (newFactors) => {
   if (newFactors && newFactors.length > 0) {
     openIds.value = newFactors.map(f => f.content);
   }
@@ -124,7 +150,7 @@ watch(() => props.factors, (newFactors) => {
 // 监听外部选中的要素
 watch(() => props.activeFactorName, (newName) => {
   if (newName) {
-    const factor = props.factors.find(f => f.name === newName);
+    const factor = displayedFactors.value.find(f => f.name === newName);
     if (factor && !openIds.value.includes(factor.content)) {
       toggleId(factor.content, true);
     }
@@ -167,6 +193,31 @@ const selectNode = (idx) => {
   align-items: center;
   margin-bottom: 15px;
   flex: 0 0 auto;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.toggle-data-btn {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+}
+
+.toggle-data-btn:hover {
+  background: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
 .card-title {

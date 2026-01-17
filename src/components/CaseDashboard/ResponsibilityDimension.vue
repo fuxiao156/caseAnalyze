@@ -2,9 +2,9 @@
   <div class="responsibility-dimension dashboard-card">
     <div class="card-title-row">
       <div class="card-title">动力平衡分析 (Dynamics Analysis)</div>
-      <div v-if="data.states?.length" class="state-selector">
+      <div v-if="displayedData.states?.length" class="state-selector">
         <button 
-          v-for="(state, index) in data.states" 
+          v-for="(state, index) in displayedData.states" 
           :key="index"
           :class="['state-btn', { active: activeStateIndex === index }]"
           @click="activeStateIndex = index"
@@ -12,12 +12,17 @@
           {{ state.name }}
         </button>
       </div>
-      <button class="eval-trigger-btn" @click="$emit('open-correction', '动力平衡分析', 'responsibility-dimension')">
-        <span class="eval-icon">📝</span> 数据校正
-      </button>
+      <div class="btn-group">
+        <button v-if="showToggleBtn" class="toggle-data-btn" @click="isOriginShowing = !isOriginShowing">
+          <span class="btn-icon">🔄</span> {{ isOriginShowing ? '切换校正数据' : '切换原始数据' }}
+        </button>
+        <button class="eval-trigger-btn" @click="$emit('open-correction', '动力平衡分析', 'responsibility-dimension')">
+          <span class="eval-icon">📝</span> 数据校正
+        </button>
+      </div>
     </div>
 
-    <div v-if="!data.states?.length" class="empty-state-container">
+    <div v-if="!displayedData.states?.length" class="empty-state-container">
       <div class="empty-state-text">案例内容所包含信息无法支撑该维度的分析</div>
     </div>
 
@@ -27,7 +32,7 @@
           <span class="status-dot"></span>
           {{ currentState.status }}
         </div>
-        <p>{{ data.summary }}</p>
+        <p>{{ displayedData.summary }}</p>
       </div>
 
       <div class="scale-container">
@@ -173,17 +178,32 @@ const props = defineProps({
       summary: '',
       states: []
     })
+  },
+  originData: {
+    type: Object,
+    default: () => ({
+      summary: '',
+      states: []
+    })
   }
 });
 
 const emit = defineEmits(['open-correction', 'highlight-factor']);
+
+const isOriginShowing = ref(false);
+const showToggleBtn = computed(() => {
+  if (!props.originData?.states?.length) return false;
+  return JSON.stringify(props.data) !== JSON.stringify(props.originData);
+});
+
+const displayedData = computed(() => isOriginShowing.value ? props.originData : props.data);
 
 const activeStateIndex = ref(0);
 const hoveredWeight = ref(null);
 const showProtocol = ref(false); // 控制协议预览的显示/隐藏
 
 const currentState = computed(() => {
-  return props.data.states?.[activeStateIndex.value] || {};
+  return displayedData.value.states?.[activeStateIndex.value] || {};
 });
 
 const leftTotal = computed(() => {
@@ -206,8 +226,8 @@ const isEquilibrium = computed(() => {
 
 // 计算所有状态中最大的重量差（左 - 右）
 const maxWeightDiff = computed(() => {
-  if (!props.data.states || props.data.states.length === 0) return 0;
-  const diffs = props.data.states.map(s => {
+  if (!displayedData.value.states || displayedData.value.states.length === 0) return 0;
+  const diffs = displayedData.value.states.map(s => {
     const left = s.leftWeights?.reduce((sum, w) => sum + w.value, 0) || 0;
     const right = s.rightWeights?.reduce((sum, w) => sum + w.value, 0) || 0;
     return left - right;
@@ -275,8 +295,8 @@ const getWeightDescription = (w) => {
   return w.describe || '动力平衡博弈要素。';
 };
 
-watch(() => props.data, () => {
-  if (props.data.states?.length > 0) {
+watch(() => displayedData.value, () => {
+  if (displayedData.value.states?.length > 0) {
     activeStateIndex.value = 0;
   }
 }, { immediate: true });
@@ -871,6 +891,31 @@ watch(() => props.data, () => {
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.toggle-data-btn {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+}
+
+.toggle-data-btn:hover {
+  background: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+}
 
 .eval-trigger-btn {
   background: rgba(0, 242, 255, 0.1);

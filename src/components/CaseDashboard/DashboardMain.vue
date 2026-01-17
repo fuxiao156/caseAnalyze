@@ -5,10 +5,6 @@
       <header class="dashboard-header">
         <div class="header-title">案件归因分析表盘</div>
         <div class="header-meta">
-          <button v-if="id" class="re-analyze-btn" @click="startAnalysis(id)" :disabled="loading">
-            <span class="btn-icon">🔄</span>
-            <span>重新分析</span>
-          </button>
           <button class="accuracy-detail-btn" @click="accuracyModalVisible = true">
             <span class="btn-icon">📈</span>
             <span>归因分析数据概览</span>
@@ -67,6 +63,8 @@
           <EventFactorCard 
             :profiling="analysisData?.事件画像" 
             :causes="analysisData?.成因分析" 
+            :originProfiling="originData?.事件画像"
+            :originCauses="originData?.成因分析"
             @open-correction="openCorrection"
           />
         </aside>
@@ -88,6 +86,7 @@
               <TimeDimensionCard 
                 v-if="activeDimensionId === 'time'"
                 :data="analysisData?.时间维度数据"
+                :originData="originData?.时间维度数据"
                 :factors="currentFactors"
                 :active-factor-name="activeFactorName"
                 v-model:active-index="activeTimeNodeIndex"
@@ -98,6 +97,7 @@
               <PersonDimension
                 v-else-if="activeDimensionId === 'person'"
                 :data="analysisData?.人物维度数据"
+                :originData="originData?.人物维度数据"
                 @open-correction="openCorrection"
               />
 
@@ -105,6 +105,7 @@
               <ResponsibilityDimension
                 v-else-if="activeDimensionId === 'duty'"
                 :data="analysisData?.驱动力维度数据"
+                :originData="originData?.驱动力维度数据"
                 @open-correction="openCorrection"
                 @highlight-factor="handleFactorSelect"
               />
@@ -113,6 +114,7 @@
               <InformationDimension
                 v-else-if="activeDimensionId === 'info'"
                 :data="analysisData?.信息维度数据"
+                :originData="originData?.信息维度数据"
                 @open-correction="openCorrection"
               />
 

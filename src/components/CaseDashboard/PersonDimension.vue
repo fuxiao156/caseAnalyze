@@ -2,26 +2,31 @@
   <div class="person-dimension dashboard-card">
     <div class="card-title-row">
       <div class="card-title">人物维度分析 (Character Attribution)</div>
-      <button class="eval-trigger-btn" @click="$emit('open-correction', '人物维度分析', 'person-dimension')">
-        <span class="eval-icon">📝</span> 数据校正
-      </button>
+      <div class="btn-group">
+        <button v-if="showToggleBtn" class="toggle-data-btn" @click="isOriginShowing = !isOriginShowing">
+          <span class="btn-icon">🔄</span> {{ isOriginShowing ? '切换校正数据' : '切换原始数据' }}
+        </button>
+        <button class="eval-trigger-btn" @click="$emit('open-correction', '人物维度分析', 'person-dimension')">
+          <span class="eval-icon">📝</span> 数据校正
+        </button>
+      </div>
     </div>
 
-    <div v-if="!data.characters?.length" class="empty-state-container">
+    <div v-if="!displayedData.characters?.length" class="empty-state-container">
       <div class="empty-state-text">案例内容所包含信息无法支撑该维度的分析</div>
     </div>
 
     <template v-else>
       <!-- 上部：人物选择与概览 -->
       <div class="dimension-summary">
-        <p>{{ data.summary }}</p>
+        <p>{{ displayedData.summary }}</p>
       </div>
 
       <div class="person-container">
         <!-- 上半部分：人物卡片横向排列 -->
         <div class="person-selector">
           <div 
-            v-for="person in data.characters" 
+            v-for="person in displayedData.characters" 
             :key="person.name"
             :class="['person-card', activePersonName === person.name ? 'active' : '']"
             @click="activePersonName = person.name"
@@ -38,7 +43,7 @@
         <!-- 下半部分：深度致因分析面板 -->
         <div class="attribution-panel" v-if="activePerson">
           <Transition name="fade-slide" mode="out-in">
-            <div :key="activePerson.id" class="attribution-grid">
+            <div :key="activePersonName" class="attribution-grid">
               <!-- 左侧：动机与偏差 -->
               <div class="attr-left">
                 <div class="attr-section">
@@ -92,20 +97,37 @@ const props = defineProps({
       summary: '',
       characters: []
     })
+  },
+  originData: {
+    type: Object,
+    default: () => ({
+      summary: '',
+      characters: []
+    })
   }
 });
 
 const emit = defineEmits(['open-correction']);
 
+const isOriginShowing = ref(false);
+const showToggleBtn = computed(() => {
+  if (!props.originData?.characters?.length) return false;
+  return JSON.stringify(props.data) !== JSON.stringify(props.originData);
+});
+
+const displayedData = computed(() => isOriginShowing.value ? props.originData : props.data);
+
 const activePersonName = ref(null);
 
 const activePerson = computed(() => {
-  return props.data.characters?.find(p => p.name === activePersonName.value) || null;
+  return displayedData.value.characters?.find(p => p.name === activePersonName.value) || null;
 });
 
-watch(() => props.data.characters, (newChars) => {
-  if (newChars && newChars.length > 0 && !activePersonName.value) {
-    activePersonName.value = newChars[0].name;
+watch(() => displayedData.value.characters, (newChars) => {
+  if (newChars && newChars.length > 0) {
+    if (!activePersonName.value || !newChars.find(p => p.name === activePersonName.value)) {
+      activePersonName.value = newChars[0].name;
+    }
   }
 }, { immediate: true });
 </script>
@@ -127,6 +149,31 @@ watch(() => props.data.characters, (newChars) => {
   align-items: center;
   margin-bottom: 15px;
   flex: 0 0 auto;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.toggle-data-btn {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+}
+
+.toggle-data-btn:hover {
+  background: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
 .card-title {

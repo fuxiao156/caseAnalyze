@@ -2,18 +2,23 @@
   <div class="info-dimension dashboard-card">
     <div class="card-title-row">
       <div class="card-title">认知差异分析 (Cognition Analysis)</div>
-      <button class="eval-trigger-btn" @click="$emit('open-correction', '认知差异分析', 'info-dimension')">
-        <span class="eval-icon">📝</span> 数据校正
-      </button>
+      <div class="btn-group">
+        <button v-if="showToggleBtn" class="toggle-data-btn" @click="isOriginShowing = !isOriginShowing">
+          <span class="btn-icon">🔄</span> {{ isOriginShowing ? '切换校正数据' : '切换原始数据' }}
+        </button>
+        <button class="eval-trigger-btn" @click="$emit('open-correction', '认知差异分析', 'info-dimension')">
+          <span class="eval-icon">📝</span> 数据校正
+        </button>
+      </div>
     </div>
 
-    <div v-if="!data.items?.length" class="empty-state-container">
+    <div v-if="!displayedData.items?.length" class="empty-state-container">
       <div class="empty-state-text">案例内容所包含信息无法支撑该维度的分析</div>
     </div>
 
     <template v-else>
       <div class="dimension-summary">
-        <p>{{ data.summary }}</p>
+        <p>{{ displayedData.summary }}</p>
       </div>
 
       <div class="cognitive-container">
@@ -37,7 +42,7 @@
             <div class="column-header">主观感知 (Subjective Perception)</div>
             <div class="fragment-list">
               <div 
-                v-for="item in data.items" 
+                v-for="item in displayedData.items" 
                 :key="'sub-' + item.category"
                 class="fragment-card subjective-card"
                 :class="{ active: activeBiasId === item.category, 'other-active': activeBiasId && activeBiasId !== item.category }"
@@ -72,7 +77,7 @@
             <div class="column-header">客观环境 (Objective Environment)</div>
             <div class="fragment-list">
               <div 
-                v-for="item in data.items" 
+                v-for="item in displayedData.items" 
                 :key="'obj-' + item.category"
                 class="fragment-card objective-card"
                 :class="{ active: activeBiasId === item.category, 'other-active': activeBiasId && activeBiasId !== item.category }"
@@ -104,10 +109,25 @@ const props = defineProps({
       summary: '',
       items: []
     })
+  },
+  originData: {
+    type: Object,
+    default: () => ({
+      summary: '',
+      items: []
+    })
   }
 });
 
 const emit = defineEmits(['open-correction']);
+
+const isOriginShowing = ref(false);
+const showToggleBtn = computed(() => {
+  if (!props.originData?.items?.length) return false;
+  return JSON.stringify(props.data) !== JSON.stringify(props.originData);
+});
+
+const displayedData = computed(() => isOriginShowing.value ? props.originData : props.data);
 
 const activeBiasId = ref(null);
 
@@ -144,6 +164,31 @@ const activeBiasId = ref(null);
   align-items: center;
   margin-bottom: 15px;
   flex: 0 0 auto;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.toggle-data-btn {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+}
+
+.toggle-data-btn:hover {
+  background: rgba(255, 215, 0, 0.2);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
 }
 
 .card-title {
