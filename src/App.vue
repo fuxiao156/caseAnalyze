@@ -7,6 +7,7 @@ const isDashboardVisible = ref(false);
 const isAnalyzing = ref(false);
 const inputText = ref('');
 const analysisData = ref(null);
+const currentAnalysisId = ref(null);
 
 const mockResult = {
   "事件详情": `平江县刘某曾在某矿石选厂从事碎石工作，2014年6月刘某因病经平江县某医院诊断为肺结核。2015年12月29日，经岳阳市劳动能力鉴定委员会职工工伤与职业病致残程度鉴定伤残等级为肆级。2016年2月3日，矿石选厂与刘某签订工伤事故赔偿协议书。2016年3月16日，矿石选厂、平江县工伤保险基金管理服务中心与刘某签订有关伤残待遇协议，因其中部分条款没有兑现，刘某向平江县某镇人民调解委员会提出调解申请，要求解决工伤认定前误工工资、医疗费以及按国家规定缴纳基本养老保险费等问题，否则将上访。, 调解过程: 调委会征得刘某和矿石选厂同意后，开始实地走访与调查，发现双方的矛盾主要集中在以下几点：一是刘某工伤认定前的误工和医疗费用补偿问题；二是刘某工伤认定后养老保险投缴问题。
@@ -194,35 +195,40 @@ const mockResult = {
 };
 
 
-const handleAnalyze = async () => {
-  if (!inputText.value.trim()) return;
+const handleAnalyze = async (id = null) => {
+  if (!id && !inputText.value.trim()) return;
   
   isDashboardVisible.value = true;
   isAnalyzing.value = true;
   analysisData.value = null; // 清空旧数据
   let isFinished = false;
 
-  console.log('Starting analysis task...');
+  console.log('Starting analysis task...', id ? `with id: ${id}` : 'with content');
   
   try {
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    isDashboardVisible.value = true;
-    isAnalyzing.value = false;
-    analysisData.value = mockResult; // 清空旧数据
-    return 
+    // mock数据
+    // await new Promise(resolve => setTimeout(resolve, 3000));
+    // isDashboardVisible.value = true;
+    // isAnalyzing.value = false;
+    // analysisData.value = mockResult; // 清空旧数据
+    // return 
   
+
     // 1. 提交任务获取 task_id
-    const startResult = await analyzeCase({ content: inputText.value });
+    const startResult = await analyzeCase({ 
+      content: inputText.value,
+      id: id || undefined
+    });
     const taskId = startResult.data?.task_id;
 
     if (!taskId) {
       throw new Error('服务器未返回任务ID');
     }
 
-    // 2. 轮询进度，每10秒一次
+    // 2. 轮询进度，每5秒一次
     while (!isFinished) {
-      // 按照用户要求，每10秒查询一次
-      await new Promise(resolve => setTimeout(resolve, 3000));
+      // 按照用户要求，每5秒查询一次
+      await new Promise(resolve => setTimeout(resolve, 5000));
       
       const queryResult = await queryTaskProgress(taskId);
       const taskData = queryResult.data;
@@ -259,9 +265,14 @@ const handleAnalyze = async () => {
   }
 };
 
+const handleDataUpdate = (newData) => {
+  analysisData.value = newData;
+};
+
 const handleClose = () => {
   isDashboardVisible.value = false;
   isAnalyzing.value = false;
+  currentAnalysisId.value = null;
 };
 </script>
 
@@ -272,6 +283,7 @@ const handleClose = () => {
       <div class="input-card">
         <h1 class="title">案件归因深度分析系统</h1>
         <p class="subtitle">输入案件详情，利用大模型技术进行多维度归因分析</p>
+        <input type="text" v-model="currentAnalysisId" placeholder="请输入案件ID" />
         
         <textarea 
           v-model="inputText" 
@@ -280,7 +292,7 @@ const handleClose = () => {
         ></textarea>
         
         <button 
-          @click="handleAnalyze" 
+          @click="handleAnalyze(currentAnalysisId)" 
           class="analyze-btn"
           :disabled="!inputText.trim()"
         >
@@ -295,8 +307,11 @@ const handleClose = () => {
       v-if="isDashboardVisible"
       :visible="isDashboardVisible" 
       :loading="isAnalyzing"
+      :id="currentAnalysisId"
       :analysisData="analysisData" 
       @close="handleClose"
+      @update-data="handleDataUpdate"
+      @re-analyze="handleAnalyze(currentAnalysisId)"
     />
   </div>
 </template>

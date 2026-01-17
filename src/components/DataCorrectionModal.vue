@@ -293,6 +293,7 @@ const props = defineProps({
   visible: Boolean,
   sectionName: String,
   sectionId: String,
+  id: [Number, String],
   allData: {
     type: Object,
     default: () => ({})
@@ -300,6 +301,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['close', 'update-all']);
+
+import { correctAnalysis } from '../api';
 
 const submitting = ref(false);
 const message = reactive({ text: '', type: '' });
@@ -330,36 +333,36 @@ const showMessage = (text, type = 'success') => {
   }, 3000);
 };
 
-// 模拟 API 接口
-const mockUpdateApi = (data) => {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      // 模拟成功或失败
-      const isSuccess = Math.random() > 0.1; 
-      if (isSuccess) {
-        resolve({ code: 200, message: '数据同步成功' });
-      } else {
-        reject(new Error('网络传输异常，请稍后重试'));
-      }
-    }, 1500);
-  });
-};
-
 const handleUpdate = async () => {
   submitting.value = true;
   try {
-    const response = await mockUpdateApi(localData.value);
-    showMessage(response.message, 'success');
+    // 根据接口4的要求构造参数
+    const params = {
+      id: props.id,
+      content: props.allData?.事件详情, // 接口要求id与content必存其一
+      isReasonChange: props.sectionId === 'event-factor',
+      originReason: props.allData?.成因分析?.map(c => c.tag) || [],
+      newReason: localData.value.成因分析?.map(c => c.tag) || [],
+      new_result: localData.value // 传入完整的修改后数据
+    };
     
-    // 通知父组件更新全局数据
-    emit('update-all', localData.value);
+    const response = await correctAnalysis(params);
     
-    // 延迟关闭，让用户看到成功提示
-    setTimeout(() => {
-      emit('close');
-    }, 1000);
+    if (response.status) {
+      showMessage(response.msg || '数据同步成功', 'success');
+      
+      // 通知父组件更新全局数据，优先使用服务器返回的 new_result
+      emit('update-all', response.data?.new_result || localData.value);
+      
+      // 延迟关闭，让用户看到成功提示
+      setTimeout(() => {
+        emit('close');
+      }, 1000);
+    } else {
+      throw new Error(response.msg || '提交失败');
+    }
   } catch (error) {
-    showMessage(error.message, 'error');
+    showMessage(error.message || '网络传输异常，请稍后重试', 'error');
   } finally {
     submitting.value = false;
   }

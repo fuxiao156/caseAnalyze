@@ -5,6 +5,10 @@
       <header class="dashboard-header">
         <div class="header-title">案件归因分析表盘</div>
         <div class="header-meta">
+          <button v-if="id" class="re-analyze-btn" @click="$emit('re-analyze', id)" :disabled="loading">
+            <span class="btn-icon">🔄</span>
+            <span>重新分析</span>
+          </button>
           <button class="accuracy-detail-btn" @click="accuracyModalVisible = true">
             <span class="btn-icon">📈</span>
             <span>归因分析数据概览</span>
@@ -128,6 +132,7 @@
       :visible="correctionModalVisible"
       :sectionName="activeSection.name"
       :sectionId="activeSection.id"
+      :id="id"
       :allData="analysisData"
       @close="correctionModalVisible = false"
       @update-all="handleDataUpdate"
@@ -157,13 +162,14 @@ import AccuracyDetailModal from '../AccuracyDetailModal.vue';
 const props = defineProps({
   visible: Boolean,
   loading: Boolean,
+  id: [Number, String],
   analysisData: {
     type: Object,
     default: () => ({})
   }
 });
 
-const emit = defineEmits(['close', 'update-data']);
+const emit = defineEmits(['close', 'update-data', 're-analyze']);
 
 const dimensions = [
   { id: 'time', name: '时间维度' },
@@ -185,7 +191,6 @@ const openCorrection = (name, id) => {
 const handleDataUpdate = (newData) => {
   console.log('收到全量校正数据:', newData);
   emit('update-data', newData);
-  // 这里可以根据需要进行本地状态更新或重新请求
 };
 
 // 设计稿尺寸
@@ -364,7 +369,7 @@ const handleFactorSelect = (name) => {
 }
 .close-btn:hover { color: #fff; }
 
-.accuracy-detail-btn {
+.accuracy-detail-btn, .re-analyze-btn {
   background: rgba(0, 242, 255, 0.15);
   border: 1px solid rgba(0, 242, 255, 0.4);
   color: #00f2ff;
@@ -380,14 +385,21 @@ const handleFactorSelect = (name) => {
   box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
 }
 
-.accuracy-detail-btn:hover {
+.accuracy-detail-btn:hover, .re-analyze-btn:hover {
   background: rgba(0, 242, 255, 0.25);
   border-color: #00f2ff;
   box-shadow: 0 0 20px rgba(0, 242, 255, 0.3);
   transform: translateY(-1px);
 }
 
-.accuracy-detail-btn:active {
+.re-analyze-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.accuracy-detail-btn:active, .re-analyze-btn:active {
   transform: translateY(0);
 }
 
