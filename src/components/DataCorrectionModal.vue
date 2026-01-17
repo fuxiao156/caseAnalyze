@@ -22,10 +22,12 @@
             <div class="panel-label">事件画像 (Profiling)</div>
             <div class="factor-edit-list">
               <div v-for="(item, index) in localData.事件画像" :key="'profile-' + index" class="factor-edit-item">
-                <input v-model="localData.事件画像[index]" class="tech-input small" placeholder="标签名称" />
+                <select v-model="localData.事件画像[index]" class="tech-input small profile-select">
+                  <option v-for="opt in profileOptions" :key="opt" :value="opt">{{ opt }}</option>
+                </select>
                 <button class="remove-btn" @click="localData.事件画像.splice(index, 1)">✕</button>
               </div>
-              <button class="add-btn" @click="localData.事件画像.push('')">+ 添加画像标签</button>
+              <button class="add-btn" @click="localData.事件画像.push(profileOptions[0])">+ 添加画像标签</button>
             </div>
           </div>
 
@@ -313,6 +315,7 @@ const message = reactive({ text: '', type: '' });
 const localData = ref({});
 
 const avatarOptions = ['👤', '👨‍💼', '👮', '👨‍⚖️', '👨‍🔧',  '👨‍⚕️', '🏢', '🏭'];
+const profileOptions = ['矛盾纠纷', '劳动纠纷', '家庭纠纷', '医疗纠纷', '合同纠纷', '物业纠纷', '赔偿纠纷', '损害公共安全'];
 
 // 监听 visible，打开时拷贝一份数据
 watch(() => props.visible, (newVal) => {
@@ -650,9 +653,13 @@ const judeIfReasonChange = () => {
   cursor: pointer;
 }
 
-.avatar-select option {
+.avatar-select option, .profile-select option {
   background: #1a3a7a;
   color: #fff;
+}
+
+.profile-select {
+  cursor: pointer;
 }
 
 /* 动力维度编辑样式 */
