@@ -412,11 +412,15 @@ const handleUpdate = async () => {
   try {
     // 根据接口4的要求构造参数
     const isReasonChange = props.sectionId === 'event-factor' &&  judeIfReasonChange();
+    const isGraghChange = props.sectionId === 'event-factor' &&  judeIfProfileChange();
     const params = {
       id: props.id,
       isReasonChange: isReasonChange,
       originReason: props.originData?.成因分析?.map(c => c.tag),
       newReason: localData.value.成因分析?.map(c => c.tag),
+      isGraghChange: isGraghChange,
+      originGragh: props.allData?.事件画像,
+      newGragh: localData.value.事件画像,
       result: localData.value // 传入完整的修改后数据
     };
     
@@ -447,6 +451,13 @@ const judeIfReasonChange = () => {
   const originReason = props.allData?.成因分析?.map(c => c.tag);
   const newReason = localData.value.成因分析?.map(c => c.tag);
   return originReason.sort().join(',') !== newReason.sort().join(',');
+};
+
+const judeIfProfileChange = () => {
+  // 判断事件画像是否修改, 忽略顺序修改
+  const originProfile = props.allData?.事件画像;
+  const newProfile = localData.value.事件画像;
+  return originProfile.sort().join(',') !== newProfile.sort().join(',');
 };
 </script>
 
