@@ -14,6 +14,9 @@
         <div class="correction-info-tip">
           <span class="tip-icon">ℹ️</span>
           <span class="tip-text">您手动校正的数据将作为高质量语料用于模型微调（Fine-tuning），帮助系统在后续案件中提供更精准的分析效果。</span>
+          <button v-if="canWithdraw" class="withdraw-btn" @click="handleWithdrawCorrection" :disabled="submitting">
+            <span class="btn-icon">↩️</span> 撤回本模块校正
+          </button>
         </div>
 
         <!-- 动态渲染不同的校正面板 -->
@@ -302,7 +305,7 @@
 </template>
 
 <script setup>
-import { ref, watch, reactive } from 'vue';
+import { ref, watch, reactive, computed } from 'vue';
 
 const props = defineProps({
   visible: Boolean,
@@ -355,6 +358,47 @@ watch(() => props.visible, (newVal) => {
   }
 }, { immediate: true });
 
+const canWithdraw = computed(() => {
+  if (!props.originData || !localData.value) return false;
+  
+  if (props.sectionId === 'event-factor') {
+    const pChanged = JSON.stringify(localData.value.事件画像) !== JSON.stringify(props.originData.事件画像);
+    const cChanged = JSON.stringify(localData.value.成因分析) !== JSON.stringify(props.originData.成因分析);
+    return pChanged || cChanged;
+  } else if (props.sectionId === 'time-dimension') {
+    return JSON.stringify(localData.value.时间维度数据) !== JSON.stringify(props.originData.时间维度数据);
+  } else if (props.sectionId === 'person-dimension') {
+    return JSON.stringify(localData.value.人物维度数据) !== JSON.stringify(props.originData.人物维度数据);
+  } else if (props.sectionId === 'responsibility-dimension') {
+    return JSON.stringify(localData.value.驱动力维度数据) !== JSON.stringify(props.originData.驱动力维度数据);
+  } else if (props.sectionId === 'info-dimension') {
+    return JSON.stringify(localData.value.信息维度数据) !== JSON.stringify(props.originData.信息维度数据);
+  }
+  return false;
+});
+
+const handleWithdrawCorrection = async () => {
+  if (!props.originData) return;
+  
+  if (confirm('确定要撤回该模块的校正信息，恢复到原始生成数据吗？')) {
+    if (props.sectionId === 'event-factor') {
+      localData.value.事件画像 = JSON.parse(JSON.stringify(props.originData.事件画像 || []));
+      localData.value.成因分析 = JSON.parse(JSON.stringify(props.originData.成因分析 || []));
+    } else if (props.sectionId === 'time-dimension') {
+      localData.value.时间维度数据 = JSON.parse(JSON.stringify(props.originData.时间维度数据 || { timeline: [] }));
+    } else if (props.sectionId === 'person-dimension') {
+      localData.value.人物维度数据 = JSON.parse(JSON.stringify(props.originData.人物维度数据 || { summary: '', characters: [] }));
+    } else if (props.sectionId === 'responsibility-dimension') {
+      localData.value.驱动力维度数据 = JSON.parse(JSON.stringify(props.originData.驱动力维度数据 || { summary: '', states: [] }));
+    } else if (props.sectionId === 'info-dimension') {
+      localData.value.信息维度数据 = JSON.parse(JSON.stringify(props.originData.信息维度数据 || { summary: '', items: [] }));
+    }
+    
+    // 执行更新逻辑
+    await handleUpdate();
+  }
+};
+
 const showMessage = (text, type = 'success') => {
   message.text = text;
   message.type = type;
@@ -373,7 +417,7 @@ const handleUpdate = async () => {
       isReasonChange: isReasonChange,
       originReason: props.originData?.成因分析?.map(c => c.tag),
       newReason: localData.value.成因分析?.map(c => c.tag),
-      new_result: localData.value // 传入完整的修改后数据
+      result: localData.value // 传入完整的修改后数据
     };
     
     const response = await correctAnalysis(params);
@@ -474,6 +518,7 @@ const judeIfReasonChange = () => {
 
 /* 顶部提示信息 */
 .correction-info-tip {
+  position: relative;
   background: rgba(0, 242, 255, 0.05);
   border: 1px solid rgba(0, 242, 255, 0.2);
   border-radius: 6px;
@@ -494,6 +539,36 @@ const judeIfReasonChange = () => {
   color: #c8ddfb;
   line-height: 1.6;
   text-align: justify;
+}
+
+.withdraw-btn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 165, 2, 0.1);
+  border: 1px solid rgba(255, 165, 2, 0.4);
+  color: #ffa502;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.3s;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.withdraw-btn:hover {
+  background: rgba(255, 165, 2, 0.2);
+  border-color: #ffa502;
+  box-shadow: 0 0 10px rgba(255, 165, 2, 0.2);
+}
+
+.withdraw-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .tech-input, .tech-textarea {
