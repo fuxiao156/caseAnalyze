@@ -23,11 +23,24 @@
             <div class="factor-edit-list">
               <div v-for="(item, index) in localData.事件画像" :key="'profile-' + index" class="factor-edit-item">
                 <select v-model="localData.事件画像[index]" class="tech-input small profile-select">
-                  <option v-for="opt in profileOptions" :key="opt" :value="opt">{{ opt }}</option>
+                  <option 
+                    v-for="opt in profileOptions" 
+                    :key="opt" 
+                    :value="opt"
+                    :disabled="localData.事件画像.includes(opt) && localData.事件画像[index] !== opt"
+                  >
+                    {{ opt }}
+                  </option>
                 </select>
                 <button class="remove-btn" @click="localData.事件画像.splice(index, 1)">✕</button>
               </div>
-              <button class="add-btn" @click="localData.事件画像.push(profileOptions[0])">+ 添加画像标签</button>
+              <button 
+                v-if="localData.事件画像.length < 4" 
+                class="add-btn" 
+                @click="handleAddProfile"
+              >
+                + 添加画像标签 (最多4个)
+              </button>
             </div>
           </div>
 
@@ -316,6 +329,15 @@ const localData = ref({});
 
 const avatarOptions = ['👤', '👨‍💼', '👮', '👨‍⚖️', '👨‍🔧',  '👨‍⚕️', '🏢', '🏭'];
 const profileOptions = ['矛盾纠纷', '劳动纠纷', '家庭纠纷', '医疗纠纷', '合同纠纷', '物业纠纷', '赔偿纠纷', '损害公共安全'];
+
+const handleAddProfile = () => {
+  if (localData.value.事件画像.length >= 4) return;
+  // 寻找第一个未被使用的选项
+  const nextAvailable = profileOptions.find(opt => !localData.value.事件画像.includes(opt));
+  if (nextAvailable) {
+    localData.value.事件画像.push(nextAvailable);
+  }
+};
 
 // 监听 visible，打开时拷贝一份数据
 watch(() => props.visible, (newVal) => {
