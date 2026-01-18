@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://10.100.5.251:16666';
+const BASE_URL = import.meta.env.VITE_API_URL;
 
 /**
  * 启动分析任务
