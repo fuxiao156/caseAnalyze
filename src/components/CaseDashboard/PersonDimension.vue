@@ -4,10 +4,10 @@
       <div class="card-title">人物维度分析 (Character Attribution)</div>
       <div class="btn-group">
         <button v-if="showToggleBtn" class="toggle-data-btn" @click="isOriginShowing = !isOriginShowing">
-          <span class="btn-icon">🔄</span> {{ isOriginShowing ? '切换校正数据' : '切换原始数据' }}
+          <span class="btn-icon">🔄</span> {{ isOriginShowing ? '切换校正分析' : '切换原始分析' }}
         </button>
         <button class="eval-trigger-btn" @click="$emit('open-correction', '人物维度分析', 'person-dimension')">
-          <span class="eval-icon">📝</span> 数据校正
+          <span class="eval-icon">📝</span> 分析校正
         </button>
       </div>
     </div>

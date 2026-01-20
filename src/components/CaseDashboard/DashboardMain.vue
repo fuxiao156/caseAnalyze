@@ -128,7 +128,7 @@
       </div>
     </div>
 
-    <!-- 数据校正 Modal -->
+    <!-- 分析校正 Modal -->
     <DataCorrectionModal
       v-if="correctionModalVisible"
       :visible="correctionModalVisible"
@@ -369,7 +369,7 @@ const dimensions = [
   { id: 'info', name: '信息维度' }
 ];
 
-// 数据校正 Modal 状态
+// 分析校正 Modal 状态
 const correctionModalVisible = ref(false);
 const accuracyModalVisible = ref(false);
 const activeSection = ref({ name: '', id: '' });

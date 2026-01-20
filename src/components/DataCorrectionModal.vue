@@ -4,7 +4,7 @@
       <div class="modal-header">
         <div class="header-title">
           <span class="icon-pulse"></span>
-          <span class="title-text">数据校正 - {{ sectionName }}</span>
+          <span class="title-text">分析校正 - {{ sectionName }}</span>
         </div>
         <button class="close-btn" @click="$emit('close')">✕</button>
       </div>
@@ -290,7 +290,7 @@
         <button class="cancel-btn" @click="$emit('close')">取消</button>
         <button class="submit-btn" @click="handleUpdate" :disabled="submitting">
           <span v-if="submitting" class="loading-icon">⏳</span>
-          {{ submitting ? '正在保存修改...' : '提交数据校正' }}
+          {{ submitting ? '正在保存修改...' : '提交分析校正' }}
         </button>
       </div>
 

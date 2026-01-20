@@ -45,7 +45,7 @@ export const getAnalysisDetail = (id) => {
 };
 
 /**
- * 提交数据校正
+ * 提交分析校正
  * @param {Object} params
  * @returns {Promise}
  */
