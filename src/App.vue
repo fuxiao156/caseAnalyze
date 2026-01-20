@@ -1,5 +1,5 @@
 <script setup>
-import DashboardMain from './components/CaseDashboard/DashboardMain.vue'
+import DashboardMain from './components/DashboardMain.vue'
 import { ref } from 'vue';
 
 const isDashboardVisible = ref(false);

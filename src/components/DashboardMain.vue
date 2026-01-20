@@ -152,16 +152,16 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue';
-import { analyzeCase, queryTaskProgress, getAnalysisDetail } from '../../api';
-import EventFactorCard from './EventFactorCard.vue';
-import EventDescriptionCard from './EventDescriptionCard.vue';
-import DimensionSwitch from './DimensionSwitch.vue';
-import TimeDimensionCard from './TimeDimensionCard.vue';
-import ResponsibilityDimension from './ResponsibilityDimension.vue';
-import InformationDimension from './InformationDimension.vue';
-import PersonDimension from './PersonDimension.vue';
-import DataCorrectionModal from '../DataCorrectionModal.vue';
-import AccuracyDetailModal from '../AccuracyDetailModal.vue';
+import { analyzeCase, queryTaskProgress, getAnalysisDetail } from '../api';
+import EventFactorCard from './CaseDashboard/EventFactorCard.vue';
+import EventDescriptionCard from './CaseDashboard/EventDescriptionCard.vue';
+import DimensionSwitch from './CaseDashboard/DimensionSwitch.vue';
+import TimeDimensionCard from './CaseDashboard/TimeDimensionCard.vue';
+import ResponsibilityDimension from './CaseDashboard/ResponsibilityDimension.vue';
+import InformationDimension from './CaseDashboard/InformationDimension.vue';
+import PersonDimension from './CaseDashboard/PersonDimension.vue';
+import DataCorrectionModal from './DataCorrectionModal.vue';
+import AccuracyDetailModal from './AccuracyDetailModal.vue';
 
 const props = defineProps({
   visible: Boolean,
