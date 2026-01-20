@@ -31,7 +31,7 @@
 
       <!-- 中部：事件成因分析标签 -->
       <div class="tag-section middle">
-        <div class="mini-label">核心成因分析 (Causes)</div>
+        <div class="mini-label">根因分析 (Causes)</div>
         <div class="tag-cloud">
           <span 
             v-for="(item, index) in displayedCauses" 
@@ -52,7 +52,7 @@
             <div class="chart-scan-beam highlight large"></div>
             <div ref="causePieRef" class="pie-chart"></div>
           </div>
-          <div class="chart-label">致因推动比例分布</div>
+          <div class="chart-label">根因权重分布</div>
         </div>
       </div>
     </template>

@@ -159,7 +159,7 @@
                   <p>3. 行为动机被有效抑制，案件触发风险降低。</p>
                 </div>
               </div>
-              <div class="protocol-seal">已归因</div>
+              <div class="protocol-seal">已根因</div>
             </div>
           </Transition>
         </div>

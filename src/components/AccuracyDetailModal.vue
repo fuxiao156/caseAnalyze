@@ -4,7 +4,7 @@
       <div class="modal-header">
         <div class="header-title">
           <span class="icon-pulse"></span>
-          <span class="title-text">归因分析数据概览</span>
+          <span class="title-text">根因分析数据概览</span>
         </div>
         <button class="close-btn" @click="$emit('close')">✕</button>
       </div>
@@ -62,7 +62,7 @@
         <div class="info-section">
           <div class="section-label">计算方式说明</div>
           <p class="description-text">
-            系统的<span class="highlight">综合介入率</span>是通过对各类案件中人工参与处理的案件数量与总案件量的比值进行加权统计而得。该指标反映了平台在不同领域的自动化处理效能与人工干预强度。介入率越低，代表系统的自动化归因与处理能力越强。
+            系统的<span class="highlight">综合介入率</span>是通过对各类案件中人工参与处理的案件数量与总案件量的比值进行加权统计而得。该指标反映了平台在不同领域的自动化处理效能与人工干预强度。
           </p>
         </div>
       </div>

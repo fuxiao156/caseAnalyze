@@ -145,10 +145,10 @@
                     <button class="add-btn mini" @click="person.biases.push({ label: '', desc: '' })">+ 添加认知偏差</button>
                   </div>
 
-                  <!-- 核心归因结论 -->
+                  <!-- 核心根因结论 -->
                   <div class="sub-section">
-                    <div class="sub-label">核心归因结论 (Attribution)</div>
-                    <textarea v-model="person.attribution" class="tech-textarea custom-scrollbar small-height" placeholder="请输入核心归因结论..."></textarea>
+                    <div class="sub-label">核心根因结论 (Attribution)</div>
+                    <textarea v-model="person.attribution" class="tech-textarea custom-scrollbar small-height" placeholder="请输入核心根因结论..."></textarea>
                   </div>
                 </div>
               </div>

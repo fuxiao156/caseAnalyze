@@ -67,12 +67,12 @@
                 </div>
               </div>
 
-              <!-- 右侧：核心归因结论 -->
+              <!-- 右侧：核心根因结论 -->
               <div class="attr-right">
                 <div class="attribution-conclusion">
                   <div class="conclusion-header">
                     <span class="c-icon">🔍</span>
-                    核心致因归因 (Case Attribution)
+                    核心致因根因 (Case Attribution)
                   </div>
                   <div class="conclusion-text">
                     {{ activePerson.attribution }}
@@ -300,7 +300,7 @@ watch(() => displayedData.value.characters, (newChars) => {
   transform: translateY(0);
 }
 
-/* 归因面板样式 */
+/* 根因面板样式 */
 .attribution-panel {
   flex: 1;
   background: rgba(0, 0, 0, 0.2);
@@ -364,7 +364,7 @@ watch(() => displayedData.value.characters, (newChars) => {
 .b-title { color: #ff6b6b; font-weight: bold; }
 .b-desc { color: #cfd9e5; }
 
-/* 归因结论框 */
+/* 根因结论框 */
 .attribution-conclusion {
   height: 100%;
   background: linear-gradient(135deg, rgba(0, 242, 255, 0.1) 0%, transparent 100%);

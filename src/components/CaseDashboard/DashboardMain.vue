@@ -3,11 +3,11 @@
     <div class="dashboard-scale-wrapper" :style="scaleStyle">
       <!-- 头部：大屏标题与全局指标 -->
       <header class="dashboard-header">
-        <div class="header-title">案件归因分析表盘</div>
+        <div class="header-title">案件根因分析表盘</div>
         <div class="header-meta">
           <button class="accuracy-detail-btn" @click="accuracyModalVisible = true">
             <span class="btn-icon">📈</span>
-            <span>归因分析数据概览</span>
+            <span>根因分析数据概览</span>
           </button>
           <button class="close-btn" @click="$emit('close')">✕</button>
         </div>
@@ -19,7 +19,7 @@
           <div class="loading-content">
             <div class="loading-spinner"></div>
             <div class="loading-text">
-              <span class="main-text">归因分析中...</span>
+              <span class="main-text">根因分析中...</span>
               <span class="percent-text">{{ analysisData?.progress || 0 }}%</span>
             </div>
             
@@ -141,7 +141,7 @@
       @update-all="handleDataUpdate"
     />
 
-    <!-- 归因分析数据概览 Modal -->
+    <!-- 根因分析数据概览 Modal -->
     <AccuracyDetailModal
       v-if="accuracyModalVisible"
       :visible="accuracyModalVisible"
@@ -304,7 +304,7 @@ const mockResult = {
     ]
   },
   "驱动力维度数据": {
-    "summary": "动力平衡归因分析：通过模拟案件发生前的驱动力与约束力博弈，识别导致失衡的关键致因。",
+    "summary": "动力平衡根因分析：通过模拟案件发生前的驱动力与约束力博弈，识别导致失衡的关键致因。",
     "states": [
       {
         "name": "失衡诱发",
