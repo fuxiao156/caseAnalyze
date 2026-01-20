@@ -49,7 +49,6 @@ const handleClose = () => {
 
     <!-- 结果展示面板 -->
     <DashboardMain 
-      v-if="isDashboardVisible"
       :visible="isDashboardVisible" 
       :id="currentAnalysisId"
       :content="inputText"

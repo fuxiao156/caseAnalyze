@@ -361,6 +361,7 @@ const analysisData = ref(null);
 const loading = ref(false);
 const originData = ref(null);
 const dataChanged = ref(false);
+const detailFetchFailed = ref(false);
 
 const dimensions = [
   { id: 'time', name: '时间维度' },
@@ -387,9 +388,14 @@ const handleDataUpdate = (newData) => {
 
 // 获取详情或启动分析逻辑
 const fetchDetailOrAnalyze = async (id) => {
+  analysisData.value = null;
+  originData.value = null;
+  dataChanged.value = false;
+  detailFetchFailed.value = false;
   if (!id) return;
   
   loading.value = true;
+  detailFetchFailed.value = false;
   try {
     const res = await getAnalysisDetail(id);
     // 根据接口3返回结构：{ origin: {}, new: {} }
@@ -398,13 +404,19 @@ const fetchDetailOrAnalyze = async (id) => {
       originData.value = res.data.origin;
       dataChanged.value = res.data.new ? true : false;
       loading.value = false;
-    } else {
-      // 详情不存在，启动分析
-      await startAnalysis(id);
     }
-  } catch (error) {
-    console.error('获取详情失败，尝试启动分析:', error);
-    await startAnalysis(id);
+    } catch (error) {
+    console.error('获取详情失败:', error);
+    detailFetchFailed.value = true;
+    analysisData.value = null;
+    originData.value = null;
+    if (props.content) {
+      await startAnalysis(id);
+    } else {
+      loading.value = false;
+      alert('根因分析失败，事件描述为空');
+      emit('close');
+    }
   }
 };
 
@@ -467,10 +479,27 @@ const startAnalysis = async (id) => {
   }
 };
 
-// 监听 id 变动
-watch(() => props.id, (newId) => {
-  if (newId) {
-    fetchDetailOrAnalyze(newId);
+const lastId = ref(null);
+
+watch([() => props.id, () => props.visible, () => props.content], ([newId, newVisible, newContent]) => {
+  if(newVisible){
+    if(!newId){
+      emit('close');
+      alert('获取案件ID错误');
+      return;
+    }
+    if (newId !== lastId.value && newId) {
+      lastId.value = newId;
+      fetchDetailOrAnalyze(newId);
+    }
+    if(newId === lastId.value && detailFetchFailed.value  && !loading.value ){
+      if(newContent){
+        startAnalysis(newId);
+      }else{
+        emit('close');
+        alert('根因分析失败，事件描述为空');
+      }
+    }
   }
 }, { immediate: true });
 
