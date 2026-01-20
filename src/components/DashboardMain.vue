@@ -266,6 +266,7 @@ const startAnalysis = async (id) => {
       if (taskData.status === 'success') {
         analysisData.value = taskData.result;
         isFinished = true;
+        detailFetchFailed.value = false;
       } else if (taskData.status === 'failed' || taskData.status === 'error') {
         throw new Error(taskData.current_message || '分析任务执行失败');
       } else {
